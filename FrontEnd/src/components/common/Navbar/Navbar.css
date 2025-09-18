@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.navTitle {
+  @apply text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] font-medium transition-colors;
+}
