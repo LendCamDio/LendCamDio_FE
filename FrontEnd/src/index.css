@@ -42,16 +42,12 @@
   --color-orange-5020: rgba(245, 158, 11, 0.2);
   --color-orange-500: rgba(245, 158, 11, 0);
 
-  --gradient-hero: radial-gradient(
-      230.27% 74.65% at 30% 20%,
+  --gradient-hero: radial-gradient(230.27% 74.65% at 30% 20%,
       var(--color-white-10) 0%,
-      var(--color-white-0) 50%
-    ),
-    radial-gradient(
-      230.27% 74.65% at 70% 80%,
+      var(--color-white-0) 50%),
+    radial-gradient(230.27% 74.65% at 70% 80%,
       var(--color-orange-5020) 0%,
-      var(--color-orange-500) 50%
-    );
+      var(--color-orange-500) 50%);
   --gradient-card: linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%);
   --gradient-button: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
 
@@ -133,19 +129,19 @@
 .bg-gradient-hero {
   background: var(--gradient-hero);
 }
+
 .bg-gradient-card {
   background: var(--gradient-card);
 }
+
 .bg-gradient-button {
   background: var(--gradient-button);
 }
 
 .text-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary),
-    var(--color-accent)
-  );
+  background: linear-gradient(135deg,
+      var(--color-secondary),
+      var(--color-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -156,6 +152,7 @@
   transition: all var(--transition-normal);
   border: 1px solid var(--color-border);
 }
+
 .equipment-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
@@ -173,6 +170,7 @@
   transition: all var(--transition-fast);
   cursor: pointer;
 }
+
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
@@ -189,12 +187,15 @@
   font-size: 0.875rem;
   font-weight: 500;
 }
+
 .status-available {
   background-color: var(--color-success);
 }
+
 .status-limited {
   background-color: var(--color-warning);
 }
+
 .status-unavailable {
   background-color: var(--color-error);
 }
@@ -203,11 +204,13 @@
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out forwards;
 }
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -234,9 +237,11 @@
   margin-right: 0.5rem;
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
 }
+
 .studio-indicator.cool {
   background: var(--color-studio-cool);
 }
+
 .studio-indicator.warm {
   background: var(--color-studio-warm);
 }
@@ -246,6 +251,7 @@
   .equipment-card {
     margin-bottom: 1rem;
   }
+
   .btn-primary {
     width: 100%;
     padding: 1rem;

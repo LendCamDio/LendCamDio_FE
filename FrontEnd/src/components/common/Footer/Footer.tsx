@@ -1,121 +1,127 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFacebookF,
+  faInstagram,
+  faYoutube,
+  faTiktok,
+} from "@fortawesome/free-brands-svg-icons";
+import {
+  faMapMarkerAlt,
+  faPhone,
+  faEnvelope,
+  faClock,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   const services = [
-    { title: "Wedding Photography", to: "#" },
-    { title: "Portrait Sessions", to: "#" },
-    { title: "Event Coverage", to: "#" },
-    { title: "Commercial Shoots", to: "#" },
+    { title: "Thuê Studio", to: "/studio-booking" },
+    { title: "Thuê máy ảnh", to: "/camera-rental" },
+    { title: "Chụp ảnh sự kiện", to: "#" },
+    { title: "Quay video", to: "#" },
+    { title: "Tư vấn concept", to: "#" },
   ];
 
-  const quickLinks = [
-    { title: "About Us", to: "#" },
-    { title: "Portfolio", to: "#" },
-    { title: "Blog", to: "#" },
-    { title: "Contact", to: "#" },
+  const support = [
+    { title: "Liên hệ", to: "/contact" },
+    { title: "Hướng dẫn đặt lịch", to: "#" },
+    { title: "FAQ", to: "#" },
+    { title: "Chính sách", to: "#" },
+    { title: "Điều khoản", to: "#" },
   ];
 
   return (
-    <footer className="bg-[color:var(--color-surface)] border-t border-[color:var(--color-border)]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* 4-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer className="footer">
+      <div className="container">
+        <div className="row">
           {/* Brand Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-display font-bold text-[color:var(--color-text-primary)]">
-              LendCamDio
-            </h3>
-            <p className="text-sm text-[color:var(--color-text-secondary)]">
-              Capturing moments with precision and creativity. Your vision, our
-              lens.
+          <div className="col-md-3 col-sm-6 mb-4">
+            <h5>LENDCAMDIO</h5>
+            <p>
+              Không gian chụp ảnh chuyên nghiệp và dịch vụ cho thuê thiết bị
+              hàng đầu tại Việt Nam.
             </p>
-            <div className="flex space-x-4 text-[color:var(--color-text-muted)]">
-              <a href="#" className="hover:text-[color:var(--color-accent)]">
-                Facebook
+            <div className="social-links mt-3">
+              <a href="#" className="social-link">
+                <FontAwesomeIcon icon={faFacebookF} />
               </a>
-              <a href="#" className="hover:text-[color:var(--color-accent)]">
-                Instagram
+              <a href="#" className="social-link">
+                <FontAwesomeIcon icon={faInstagram} />
               </a>
-              <a href="#" className="hover:text-[color:var(--color-accent)]">
-                Twitter
+              <a href="#" className="social-link">
+                <FontAwesomeIcon icon={faYoutube} />
+              </a>
+              <a href="#" className="social-link">
+                <FontAwesomeIcon icon={faTiktok} />
               </a>
             </div>
           </div>
 
           {/* Services */}
-          <div>
-            <h3 className="text-lg font-bold text-[color:var(--color-text-primary)] mb-4">
-              Services
-            </h3>
-            <ul className="space-y-2 text-sm">
+          <div className="col-md-3 col-sm-6 mb-4">
+            <h5>Dịch vụ</h5>
+            <ul className="footer-links">
               {services.map((service) => (
                 <li key={service.title}>
-                  <a
-                    href={service.to}
-                    className="text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] transition-colors"
-                  >
+                  <Link to={service.to}>
+                    <FontAwesomeIcon icon={faChevronRight} />
                     {service.title}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-bold text-[color:var(--color-text-primary)] mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2 text-sm">
-              {quickLinks.map((link) => (
-                <li key={link.title}>
-                  <a
-                    href={link.to}
-                    className="text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] transition-colors"
-                  >
-                    {link.title}
-                  </a>
+          {/* Support */}
+          <div className="col-md-3 col-sm-6 mb-4">
+            <h5>Hỗ trợ</h5>
+            <ul className="footer-links">
+              {support.map((item) => (
+                <li key={item.title}>
+                  <Link to={item.to}>
+                    <FontAwesomeIcon icon={faChevronRight} /> {item.title}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-bold text-[color:var(--color-text-primary)] mb-4">
-              Contact Us
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li className="text-[color:var(--color-text-secondary)]">
-                <span className="studio-indicator warm"></span>
-                123 Studio Lane, Creative City
-              </li>
-              <li>
-                <a
-                  href="mailto:info@studio.com"
-                  className="text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] transition-colors"
-                >
-                  info@studio.com
-                </a>
-              </li>
-              <li>
-                <a
-                  href="tel:+1234567890"
-                  className="text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] transition-colors"
-                >
-                  +1 (234) 567-890
-                </a>
-              </li>
-              <li>
-                <button className="btn-primary mt-4">Book a Session</button>
-              </li>
-            </ul>
+          <div className="col-md-3 col-sm-6 mb-4">
+            <h5>Liên hệ</h5>
+            <div className="contact-info">
+              <p>
+                <FontAwesomeIcon icon={faMapMarkerAlt} /> 123 Đường ABC, Quận 1,
+                TP.HCM
+              </p>
+              <p>
+                <FontAwesomeIcon icon={faPhone} /> 0123-456-789
+              </p>
+              <p>
+                <FontAwesomeIcon icon={faEnvelope} /> info@lenscamdio.com
+              </p>
+              <p>
+                <FontAwesomeIcon icon={faClock} /> 8:00 - 22:00 (Thứ 2 - Chủ
+                nhật)
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-[color:var(--color-border)] pt-6 text-center">
-          <p className="text-[color:var(--color-text-muted)] text-sm">
-            &copy; {new Date().getFullYear()} LendCamDio. All rights reserved.
-          </p>
+        <div className="footer-bottom">
+          <div className="row align-items-center">
+            <div className="col-md-6">
+              <p className="mb-0">
+                &copy; {new Date().getFullYear()} LENDCAMDIO. Tất cả quyền được
+                bảo lưu.
+              </p>
+            </div>
+            <div className="col-md-6 text-md-end">
+              <p className="mb-0">Thiết kế bởi LENDCAMDIO Team</p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

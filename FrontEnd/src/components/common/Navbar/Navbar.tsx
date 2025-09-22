@@ -1,68 +1,62 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faHome,
+  faCalendar,
+  faCamera,
+  faBox,
+  faCalendarCheck,
+  faEnvelope,
+  faShoppingCart,
+} from "@fortawesome/free-solid-svg-icons";
+import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 
 const NAV_ITEMS = [
-  { name: "Home", to: "/" },
-  { name: "Products", to: "/products" },
-  { name: "About", to: "/about" },
+  { name: "Trang chủ", to: "/", icon: faHome },
+  { name: "Đặt lịch Studio", to: "/studio-booking", icon: faCalendar },
+  { name: "Thuê máy ảnh", to: "/camera-rental", icon: faCamera },
+  { name: "Sản phẩm", to: "/products", icon: faBox },
+  { name: "Lịch của tôi", to: "/my-booking", icon: faCalendarCheck },
+  { name: "Liên hệ", to: "/contact", icon: faEnvelope },
+  { name: "Giỏ hàng", to: "/cart", icon: faShoppingCart },
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <nav className="bg-[color:var(--color-background)] border-b border-[color:var(--color-border)]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/vite.svg" alt="LendCamDio Logo" className="h-8 w-8" />
-            <span className="font-display font-bold text-lg text-[color:var(--color-text-primary)]">
-              LendCamDio
-            </span>
-          </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
-            {/* Other */}
-            {NAV_ITEMS.map((item) => (
-              <Link key={item.name} to={item.to} className="navTitle">
-                {item.name}
-              </Link>
-            ))}
-            {/* Login */}
-            <Link to="/auth/login" className="btn-primary ml-4 inline-block">
-              Login
-            </Link>
-          </div>
-
-          {/* Mobile Button */}
-          <button
-            className="md:hidden text-[color:var(--color-text-primary)]"
-            onClick={() => setIsOpen(!isOpen)}
+    <nav className="bg-white shadow-md">
+      <div className="container-nav mx-auto flex justify-between items-center py-4">
+        <NavLink
+          style={{ backgroundColor: "red" }}
+          to="/"
+          end
+          className="navbar-brand text-blue-600 hover:scale-101 transition"
+        >
+          <img src="/vite.svg" alt="Logo" /> LendCamDio
+        </NavLink>
+        <div className="flex navbar-nav">
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.name}
+              end
+              to={item.to}
+              className={`nav-link text-gray-700 hover:text-blue-600 transition nav-link ${
+                item.name === "Giỏ hàng" ? "cart-link" : ""
+              }`}
+            >
+              <FontAwesomeIcon icon={item.icon} />
+              <span className="nav-text">{item.name}</span>
+            </NavLink>
+          ))}
+          <NavLink
+            to="/auth/login"
+            className="navbar-nav navbar-link login-btn-nav"
           >
-            ☰
-          </button>
+            <FontAwesomeIcon icon={faUser} />
+            <span className="nav-text">Login</span>
+          </NavLink>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-t border-[color:var(--color-border)] bg-[color:var(--color-surface)]">
-          <div className="px-4 py-3 space-y-2">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.name}
-                to={item.to}
-                className="block text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-accent)] transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </nav>
   );
 }

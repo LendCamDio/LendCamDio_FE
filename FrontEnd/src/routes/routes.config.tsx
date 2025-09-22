@@ -7,6 +7,8 @@ import { publicRoutes } from "./public.routes";
 import { privateRoutes } from "./private.routes";
 import { adminRoutes } from "./admin.routes";
 import LoginPage from "../pages/Login";
+import RegisterPage from "../pages/Register";
+import ForgotPasswordPage from "../pages/Forgot-password";
 
 export const routesConfig = [
   {
@@ -31,7 +33,8 @@ export const routesConfig = [
     element: <AuthLayout />,
     children: [
       { path: "login", element: <LoginPage /> },
-      { path: "register", element: <div>RegisterPage</div> },
+      { path: "register", element: <RegisterPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
     ],
   },
 ];

@@ -1,29 +1,61 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import Navbar from "../components/common/Navbar/Navbar";
+import Footer from "../components/common/Footer/Footer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-screen flex bg-[color:var(--color-surface)]">
-      {/* Left (Branding / Banner) */}
-      <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-gradient-hero text-white p-12">
-        <Link to="/" className="flex items-center space-x-3 mb-8">
-          <img src="/vite.svg" alt="LendCamDio Logo" className="h-12 w-12" />
-          <span className="font-display text-3xl font-bold">LendCamDio</span>
-        </Link>
-        <h2 className="text-4xl font-display font-bold mb-4">
-          Capture Your Vision
-        </h2>
-        <p className="text-lg text-white/80 max-w-md text-center leading-relaxed">
-          Join our platform to rent cameras, book studios and bring your
-          creativity to life.
-        </p>
+    <div className="min-h-screen flex flex-col animate-fade-in">
+      {/* Header */}
+      <div className="sticky top-0 z-10">
+        <Navbar />
       </div>
 
-      {/* Right (Auth Form Wrapper) */}
-      <div className="flex flex-col justify-center items-center w-full lg:w-1/2 bg-[color:var(--color-background)]">
-        <div className="w-full max-w-md p-8 rounded-lg shadow-lg bg-[color:var(--color-background)]">
-          <Outlet />
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-grow container mx-auto px-4 py-8 animate-fade-in-up">
+        <section className="login-section">
+          <div className="login-container row">
+            {/* Left Column - Image */}
+            <div className="col-md-6 login-image">
+              <div className="login-image-content">
+                <img
+                  src="https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                  alt="Login"
+                />
+                <div className="login-image-overlay">
+                  <h3>Chào mừng đến với LENSCAMDIO</h3>
+                  <p>Trải nghiệm dịch vụ chụp ảnh chuyên nghiệp tốt nhất</p>
+                  <div className="login-features">
+                    <div className="feature-item">
+                      <FontAwesomeIcon icon={faUser} />
+                      <span>Đặt lịch online dễ dàng</span>
+                    </div>
+                    <div className="feature-item">
+                      <FontAwesomeIcon icon={faUser} />
+                      <span>Quản lý booking thuận tiện</span>
+                    </div>
+                    <div className="feature-item">
+                      <FontAwesomeIcon icon={faUser} />
+                      <span>Tích điểm và ưu đãi độc quyền</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Form */}
+            <div className="col-md-6 login-form-section">
+              <div className="login-form-container">
+                <Outlet />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

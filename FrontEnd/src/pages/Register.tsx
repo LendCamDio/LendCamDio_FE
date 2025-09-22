@@ -1,7 +1,5 @@
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
-import { loginWithGoogle, loginWithEmail } from "../services/authService";
-import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, type FormEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -10,44 +8,18 @@ import {
   faLock,
   faEye,
   faEyeSlash,
-  faSignInAlt,
+  faUserPlus,
+  faPhone,
 } from "@fortawesome/free-solid-svg-icons";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import { registerWithGoogle } from "../services/authService";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState<"Customer" | "Supplier">("customer");
+  const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>(
     {}
   );
-
-  const handleGoogleSuccess = async (
-    credentialResponse: CredentialResponse
-  ) => {
-    if (credentialResponse.credential) {
-      try {
-        const data = await loginWithGoogle(credentialResponse.credential);
-        localStorage.setItem("token", data.token);
-        navigate("/");
-      } catch (err) {
-        console.error("Google login failed:", err);
-      }
-    }
-  };
-
-  const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    try {
-      const data = await loginWithEmail(email, password);
-      localStorage.setItem("token", data.token);
-      navigate("/");
-    } catch (err) {
-      console.error("Email login failed:", err);
-    }
-  };
 
   const togglePassword = (fieldId: string) => {
     setShowPassword((prev) => ({
@@ -60,8 +32,30 @@ export default function LoginPage() {
     setUserType(type);
   };
 
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse
+  ) => {
+    if (credentialResponse.credential) {
+      try {
+        const data = await registerWithGoogle(credentialResponse.credential);
+        console.log(data);
+        localStorage.setItem("token", data.token);
+        navigate("/");
+      } catch (err) {
+        console.error("Google login failed:", err);
+      }
+    }
+  };
+
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle registration logic here
+    console.log("Register form submitted");
+  };
+
   return (
-    <div className="m-4">
+    <div>
+      {/* User Type Selection */}
       <div className="user-type-selection mb-4">
         <div className="text-center mb-3">
           <h3>Chọn loại tài khoản</h3>
@@ -97,7 +91,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Login Form */}
+      {/* Register Form */}
       <div className="auth-form">
         <div className="auth-header">
           <h2
@@ -105,19 +99,35 @@ export default function LoginPage() {
             className="animate-fade-in-up"
           >
             {userType === "Customer"
-              ? "Đăng nhập khách hàng"
-              : "Đăng nhập chủ studio"}
+              ? "Đăng ký khách hàng"
+              : "Đăng ký chủ studio"}
           </h2>
           <p key={userType + "-desc"} className="animate-fade-in-up">
             {userType === "Customer"
-              ? "Đăng nhập để đặt lịch studio và thuê thiết bị"
-              : "Đăng nhập để quản lý studio của bạn"}
+              ? "Tạo tài khoản để đặt lịch studio và thuê thiết bị"
+              : "Tạo tài khoản để quản lý studio của bạn"}
           </p>
         </div>
 
-        <form onSubmit={handleEmailLogin}>
+        <form onSubmit={handleRegister}>
           <div className="form-group">
-            <label htmlFor="loginEmail" className="form-label">
+            <label htmlFor="registerName" className="form-label">
+              Họ và tên
+            </label>
+            <div className="input-group">
+              <FontAwesomeIcon icon={faUser} />
+              <input
+                type="text"
+                className="form-control"
+                name="name"
+                placeholder="Nhập họ và tên"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="registerEmail" className="form-label">
               Email
             </label>
             <div className="input-group">
@@ -133,13 +143,29 @@ export default function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="loginPassword" className="form-label">
+            <label htmlFor="registerPhone" className="form-label">
+              Số điện thoại
+            </label>
+            <div className="input-group">
+              <FontAwesomeIcon icon={faPhone} />
+              <input
+                type="tel"
+                className="form-control"
+                name="phone"
+                placeholder="Nhập số điện thoại"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="registerPassword" className="form-label">
               Mật khẩu
             </label>
             <div className="input-group">
               <FontAwesomeIcon icon={faLock} />
               <input
-                type={showPassword.password ? "password" : "text"}
+                type={showPassword.registerPassword ? "text" : "password"}
                 className="form-control"
                 name="password"
                 placeholder="Nhập mật khẩu"
@@ -148,10 +174,35 @@ export default function LoginPage() {
               <button
                 type="button"
                 className="password-toggle"
-                onClick={() => togglePassword("password")}
+                onClick={() => togglePassword("registerPassword")}
               >
                 <FontAwesomeIcon
-                  icon={showPassword.password ? faEye : faEyeSlash}
+                  icon={showPassword.registerPassword ? faEyeSlash : faEye}
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="form-label">
+              Xác nhận mật khẩu
+            </label>
+            <div className="input-group">
+              <FontAwesomeIcon icon={faLock} />
+              <input
+                type={showPassword.confirmPassword ? "text" : "password"}
+                className="form-control"
+                name="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => togglePassword("confirmPassword")}
+              >
+                <FontAwesomeIcon
+                  icon={showPassword.confirmPassword ? faEyeSlash : faEye}
                 />
               </button>
             </div>
@@ -159,16 +210,16 @@ export default function LoginPage() {
 
           <div className="form-options">
             <div className="checkbox-group">
-              <input type="checkbox" id="rememberMe" />
-              <label htmlFor="rememberMe">Nhớ đăng nhập</label>
+              <input type="checkbox" id="agreeTerms" required />
+              <label htmlFor="agreeTerms">
+                Tôi đồng ý với <a href="#">Điều khoản sử dụng</a> và{" "}
+                <a href="#">Chính sách bảo mật</a>
+              </label>
             </div>
-            <Link to="/auth/forgot-password" className="forgot-password">
-              Quên mật khẩu?
-            </Link>
           </div>
 
           <button type="submit" className="btn-primary auth-btn">
-            <FontAwesomeIcon icon={faSignInAlt} /> Đăng nhập
+            <FontAwesomeIcon icon={faUserPlus} /> Đăng ký
           </button>
         </form>
 
@@ -185,15 +236,15 @@ export default function LoginPage() {
 
         <div className="auth-footer">
           <p>
-            Chưa có tài khoản?{" "}
+            Đã có tài khoản?{" "}
             <Link
-              to="/auth/register"
+              to="/auth/login"
               style={{
                 color: "#3b82f6",
                 textDecoration: "underline",
               }}
             >
-              Đăng ký ngay
+              Đăng nhập ngay
             </Link>
           </p>
         </div>
