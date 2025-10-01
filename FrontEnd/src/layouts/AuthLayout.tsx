@@ -46,7 +46,7 @@ export default function AuthLayout() {
 
             {/* Right Column - Form */}
             <div className="col-md-6 login-form-section">
-              <div className="login-form-container">
+              <div className="login-form-container animate-fade-in-up">
                 <Outlet />
               </div>
             </div>

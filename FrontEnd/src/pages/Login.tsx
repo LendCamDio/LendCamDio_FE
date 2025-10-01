@@ -12,10 +12,14 @@ import {
   faEyeSlash,
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const showToast = useUniqueToast();
   const navigate = useNavigate();
-  const [userType, setUserType] = useState<"Customer" | "Supplier">("customer");
+  const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -24,12 +28,19 @@ export default function LoginPage() {
     credentialResponse: CredentialResponse
   ) => {
     if (credentialResponse.credential) {
+      showToast("Đang xử lý đăng nhập...", "info");
+
       try {
         const data = await loginWithGoogle(credentialResponse.credential);
-        localStorage.setItem("token", data.token);
+        // Đợi login hoàn thành (token + user được set)
+        await login(data.token);
+        showToast("Đăng nhập thành công", "success");
         navigate("/");
       } catch (err) {
-        console.error("Google login failed:", err);
+        const msgErr = (err as { response?: { data?: string } }).response
+          ?.data as string;
+        console.error("Google login failed:", msgErr || err);
+        showToast("Đăng nhập thất bại", "error");
       }
     }
   };
@@ -42,10 +53,12 @@ export default function LoginPage() {
 
     try {
       const data = await loginWithEmail(email, password);
-      localStorage.setItem("token", data.token);
+      await login(data.token);
+      showToast("Đăng nhập thành công", "success");
       navigate("/");
     } catch (err) {
       console.error("Email login failed:", err);
+      showToast("Đăng nhập thất bại", "error");
     }
   };
 
@@ -139,7 +152,7 @@ export default function LoginPage() {
             <div className="input-group">
               <FontAwesomeIcon icon={faLock} />
               <input
-                type={showPassword.password ? "password" : "text"}
+                type={showPassword.password ? "text" : "password"}
                 className="form-control"
                 name="password"
                 placeholder="Nhập mật khẩu"
@@ -151,7 +164,7 @@ export default function LoginPage() {
                 onClick={() => togglePassword("password")}
               >
                 <FontAwesomeIcon
-                  icon={showPassword.password ? faEye : faEyeSlash}
+                  icon={showPassword.password ? faEyeSlash : faEye}
                 />
               </button>
             </div>
@@ -178,6 +191,7 @@ export default function LoginPage() {
 
         <div className="social-login">
           <GoogleLogin
+            locale="vi"
             onSuccess={handleGoogleSuccess}
             onError={() => console.log("Login Failed")}
           />

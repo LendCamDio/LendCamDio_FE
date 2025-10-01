@@ -1,12 +1,8 @@
-import { Suspense } from "react";
+// import AuthProvider from "./contexts/AuthProvider";
 import AppRoutes from "./routes";
 
 const App = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AppRoutes />
-    </Suspense>
-  );
+  return <AppRoutes />;
 };
 
 export default App;

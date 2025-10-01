@@ -8,31 +8,38 @@ import {
   faCalendarCheck,
   faEnvelope,
   faShoppingCart,
+  faGear,
+  faShoppingBag,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
+import { useAuth } from "@/hooks/auth/useAuth";
+import UserDropdown from "./UserDropdown";
 
 const NAV_ITEMS = [
   { name: "Trang chủ", to: "/", icon: faHome },
-  { name: "Đặt lịch Studio", to: "/studio-booking", icon: faCalendar },
-  { name: "Thuê máy ảnh", to: "/camera-rental", icon: faCamera },
+  { name: "Đặt lịch Studio", to: "/studios", icon: faCalendar },
+  { name: "Thuê máy ảnh", to: "/cameras", icon: faCamera },
   { name: "Sản phẩm", to: "/products", icon: faBox },
-  { name: "Lịch của tôi", to: "/my-booking", icon: faCalendarCheck },
+  { name: "Lịch của tôi", to: "/booking-history", icon: faCalendarCheck },
   { name: "Liên hệ", to: "/contact", icon: faEnvelope },
-  { name: "Giỏ hàng", to: "/cart", icon: faShoppingCart },
+  { name: "Giỏ hàng", to: "/customers/cart", icon: faShoppingCart },
 ];
 
 export default function Navbar() {
+  const { user } = useAuth();
+
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container-nav mx-auto flex justify-between items-center py-4">
+    <nav className="bg-white shadow-md animate-fade-in-down">
+      <div className="container-nav mx-auto flex justify-between items-center py-2">
         <NavLink
-          style={{ backgroundColor: "red" }}
           to="/"
           end
-          className="navbar-brand text-blue-600 hover:scale-101 transition"
+          className="navbar-brand text-blue-600 cursor-pointer hover:scale-101 transition"
         >
-          <img src="/vite.svg" alt="Logo" /> LendCamDio
+          <img src="/vite.svg" alt="Logo" className="cursor-default" />
+          <p>LendCamDio</p>
         </NavLink>
         <div className="flex navbar-nav">
           {NAV_ITEMS.map((item) => (
@@ -48,13 +55,25 @@ export default function Navbar() {
               <span className="nav-text">{item.name}</span>
             </NavLink>
           ))}
-          <NavLink
-            to="/auth/login"
-            className="navbar-nav navbar-link login-btn-nav"
-          >
-            <FontAwesomeIcon icon={faUser} />
-            <span className="nav-text">Login</span>
-          </NavLink>
+          {user ? (
+            <UserDropdown
+              items={[
+                { label: "My Profile", to: "#", icon: faUser },
+                { label: "Settings", to: "#", icon: faGear },
+                { label: "Orders", to: "#", icon: faShoppingBag },
+                { label: "Cart", to: "/customers/cart", icon: faShoppingCart },
+                { label: "Wishlist", to: "#", icon: faHeart },
+              ]}
+            />
+          ) : (
+            <NavLink
+              to="/auth/login"
+              className="navbar-nav navbar-link login-btn-nav"
+            >
+              <FontAwesomeIcon icon={faUser} />
+              <span className="nav-text">Login</span>
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>

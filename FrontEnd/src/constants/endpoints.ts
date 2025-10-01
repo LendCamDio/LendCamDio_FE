@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export const AUTH_ENDPOINTS = {
   LOGIN: "/auth/signin",
+  GOOGLE: "/auth/signin-google",
   REGISTER: "/auth/register",
   REGISTER_GOOGLE: "/auth/register-google",
-  GOOGLE: "/auth/signin-google",
   LOGOUT: "/auth/logout",
   CHANGE_PASSWORD: "/auth/change-password",
-  VERIFY_USER: (userId: string) => `/auth/verify-user/${userId}`,
+  VERIFY_EMAIL: (_email: string, _token: string) => `/auth/verify-email`,
 };
 
 export const USER_ENDPOINTS = {
@@ -77,4 +78,12 @@ export const EQUIPMENT_IMAGE_ENDPOINTS = {
   BELONGS_TO: (imageId: string, equipmentId: string) =>
     `/equipment-images/${imageId}/belongs-to/${equipmentId}`,
   UPLOAD: "/equipment-images/upload",
+};
+
+export const REVIEW_ENDPOINTS = {
+  LIST: "/reviews",
+  COUNT_BY_EQUIPMENT: (equipmentId: string) =>
+    `/reviews/equipment/${equipmentId}/review-count`,
+  AVERAGE_RATING_BY_EQUIPMENT: (equipmentId: string) =>
+    `/reviews/equipment/${equipmentId}/average-rating`,
 };

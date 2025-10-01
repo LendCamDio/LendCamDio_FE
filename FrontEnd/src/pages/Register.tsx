@@ -13,8 +13,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { registerWithGoogle } from "../services/authService";
+import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 export default function RegisterPage() {
+  const { login } = useAuth();
+  const showToast = useUniqueToast();
   const navigate = useNavigate();
   const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>(
@@ -38,19 +42,19 @@ export default function RegisterPage() {
     if (credentialResponse.credential) {
       try {
         const data = await registerWithGoogle(credentialResponse.credential);
-        console.log(data);
-        localStorage.setItem("token", data.token);
+        await login(data.token);
+        showToast("Đăng ký thành công", "success");
         navigate("/");
       } catch (err) {
-        console.error("Google login failed:", err);
+        const msgErr = (err as { response?: { data?: string } }).response
+          ?.data as string;
+        showToast(msgErr || "Đăng ký thất bại", "error");
       }
     }
   };
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log("Register form submitted");
   };
 
   return (
@@ -213,7 +217,9 @@ export default function RegisterPage() {
               <input type="checkbox" id="agreeTerms" required />
               <label htmlFor="agreeTerms">
                 Tôi đồng ý với <a href="#">Điều khoản sử dụng</a> và{" "}
-                <a href="#">Chính sách bảo mật</a>
+                <a href="#" className="text-[var(--primary-color)] underline">
+                  Chính sách bảo mật
+                </a>
               </label>
             </div>
           </div>
@@ -229,6 +235,7 @@ export default function RegisterPage() {
 
         <div className="social-login">
           <GoogleLogin
+            text="signup_with"
             onSuccess={handleGoogleSuccess}
             onError={() => console.log("Login Failed")}
           />

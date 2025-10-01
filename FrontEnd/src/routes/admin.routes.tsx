@@ -1,4 +1,14 @@
+import { Navigate } from "react-router-dom";
+import AdminLayout from "../layouts/AdminLayout";
+
 export const adminRoutes = [
-  { path: "admin/dashboard", element: <div>AdminDashboard</div> },
-  { path: "admin/users", element: <div>AdminUserManagement</div> },
+  {
+    path: "admin",
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Navigate to="dashboard" replace /> },
+      { path: "dashboard", element: <div>AdminDashboard</div> },
+      { path: "users", element: <div>AdminUserManagement</div> },
+    ],
+  },
 ];
