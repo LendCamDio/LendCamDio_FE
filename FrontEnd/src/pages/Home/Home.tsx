@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { lazy, Suspense } from "react";
 
 // Lazy load the DashboardSection component
-const DashboardSection = lazy(() => import("./customer/DashboardSection"));
+const DashboardSection = lazy(() => import("../customer/DashboardSection"));
 
 const Home = () => {
   const { token } = useAuth();

@@ -46,16 +46,36 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, [token]);
 
   // Hàm đăng nhập
-  const login = (newToken: string): Promise<void> => {
-    return new Promise((resolve) => {
+  const login = async (newToken: string): Promise<void> => {
+    try {
+      // Validate token first
+      const decoded = jwtDecode<JwtPayload>(newToken);
+      const timeExpMs = decoded.exp * 1000;
+
+      // Check token expiration
+      if (decoded.exp && Date.now() > timeExpMs) {
+        throw new Error("Token is expired");
+      }
+
+      // Token is valid, set it in localStorage and state
       localStorage.setItem("token", newToken);
       setToken(newToken);
 
-      // Wait for useEffect to process the token
-      setTimeout(() => {
-        resolve();
-      }, 100); // Small delay to ensure useEffect runs
-    });
+      // Set user immediately
+      setUser({
+        id: decoded.sub,
+        email: decoded.email,
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
+      });
+
+      console.log("Login successful. Decoded token:", decoded);
+    } catch (error) {
+      console.error("Login failed: Invalid token", error);
+      handleLogout();
+      throw error; // Re-throw to let the calling code handle it
+    }
   };
   // Hàm đăng xuất
   const handleLogout = () => {

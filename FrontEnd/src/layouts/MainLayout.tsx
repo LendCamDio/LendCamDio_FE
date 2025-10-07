@@ -1,6 +1,8 @@
 import Navbar from "../components/common/Navbar/Navbar";
 import Footer from "../components/common/Footer/Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageWrapper from "@/components/common/PageWrapper";
 
 const MainLayout = () => {
   return (
@@ -12,7 +14,11 @@ const MainLayout = () => {
 
       {/* Main Content */}
       <main className="flex-grow animate-fade-in-up">
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <PageWrapper key={useLocation().pathname}>
+            <Outlet /> {/* Render page content */}
+          </PageWrapper>
+        </AnimatePresence>
       </main>
 
       {/* Footer */}

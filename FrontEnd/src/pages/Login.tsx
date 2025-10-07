@@ -29,18 +29,23 @@ export default function LoginPage() {
   ) => {
     if (credentialResponse.credential) {
       showToast("Đang xử lý đăng nhập...", "info");
-
       try {
         const data = await loginWithGoogle(credentialResponse.credential);
+        console.log("API response:", data); // Debug log
+
+        if (!data.data.token) {
+          throw new Error("No token received from server");
+        }
+
         // Đợi login hoàn thành (token + user được set)
-        await login(data.token);
+        await login(data.data.token);
         showToast("Đăng nhập thành công", "success");
         navigate("/");
       } catch (err) {
         const msgErr = (err as { response?: { data?: string } }).response
           ?.data as string;
         console.error("Google login failed:", msgErr || err);
-        showToast("Đăng nhập thất bại", "error");
+        showToast(`Đăng nhập thất bại: ${msgErr || "Unknown error"}`, "error");
       }
     }
   };
@@ -52,13 +57,22 @@ export default function LoginPage() {
     const password = formData.get("password") as string;
 
     try {
+      showToast("Đang xử lý đăng nhập...", "info");
       const data = await loginWithEmail(email, password);
+      console.log("API response:", data); // Debug log
+
+      if (!data.token) {
+        throw new Error("No token received from server");
+      }
+
       await login(data.token);
       showToast("Đăng nhập thành công", "success");
       navigate("/");
     } catch (err) {
+      const msgErr = (err as { response?: { data?: string } }).response
+        ?.data as string;
       console.error("Email login failed:", err);
-      showToast("Đăng nhập thất bại", "error");
+      showToast(`Đăng nhập thất bại: ${msgErr || "Unknown error"}`, "error");
     }
   };
 

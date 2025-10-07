@@ -28,7 +28,7 @@ const NAV_ITEMS = [
 ];
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { token } = useAuth();
 
   return (
     <nav className="bg-white shadow-md animate-fade-in-down">
@@ -55,7 +55,7 @@ export default function Navbar() {
               <span className="nav-text">{item.name}</span>
             </NavLink>
           ))}
-          {user ? (
+          {token ? (
             <UserDropdown
               items={[
                 { label: "My Profile", to: "#", icon: faUser },

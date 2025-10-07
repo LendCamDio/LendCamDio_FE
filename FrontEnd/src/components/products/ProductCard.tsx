@@ -4,33 +4,50 @@ import { Rating } from "../common/Rating";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useUniqueToast } from "@/hooks/useUniqueToast";
-
-const categories = (key: string) => {
-  switch (key) {
-    case "Cameras":
-      return "camera";
-    case "Lenses":
-      return "Ống kính";
-    case "accessory":
-      return "Phụ kiện";
-    default:
-      return key;
-  }
-};
+import defPic from "@/assets/defaultPic1.jpg";
 
 const ProductCard = ({ equipment }: { equipment: Equipment | null }) => {
   const navigate = useNavigate();
   const showToast = useUniqueToast();
   if (!equipment) return null;
 
+  const getCategory = (categoryName: string) => {
+    switch (categoryName) {
+      case "studio":
+        return "studio";
+      case "Cameras":
+        return "camera";
+      case "Ống kính":
+        return "lense";
+      case "Phụ kiện":
+        return "accessory";
+      default:
+        return categoryName.toLowerCase();
+    }
+  };
+
   const handleViewDetails = () => {
-    // Navigate to product details page
-    showToast("Chức năng đang phát triển", "info", { allowSpam: false });
+    navigate(`/products/product-detail/${equipment.equipmentId}`);
   };
   const handleAddToFavorites = () => {
     // Add to favorites logic here
     showToast("Chức năng đang phát triển", "info");
   };
+
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.src = defPic;
+  };
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true; // Nếu URL hợp lệ
+    } catch {
+      return false; // Nếu URL không hợp lệ
+    }
+  };
+
+  const imageSrc = isValidUrl(equipment.imageUrl) ? equipment.imageUrl : defPic;
 
   // #region Temporary hardcoded data for demonstration
   // equipment = {
@@ -78,14 +95,18 @@ const ProductCard = ({ equipment }: { equipment: Equipment | null }) => {
       data-price={equipment.dailyPrice}
     >
       <div className="product-image">
-        <img src={equipment.images?.[0].imageUrl} alt="Studio Modern A" />
+        <img
+          loading="lazy"
+          decoding="async"
+          src={imageSrc}
+          alt={equipment.imageUrl || "Default Alt"}
+          onError={handleImageError}
+        />
         {equipment.categoryName && (
           <div
-            className={`product-badge ${categories(
-              equipment.categoryName
-            ).toLowerCase()}`}
+            className={`product-badge ${getCategory(equipment.categoryName)}`}
           >
-            {categories(equipment.categoryName)}
+            {equipment.categoryName}
           </div>
         )}
         <div className="product-actions">

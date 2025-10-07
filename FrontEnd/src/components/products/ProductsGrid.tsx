@@ -12,28 +12,25 @@ const ProductsGrid = ({
   console.log("ProductsGrid render with products:", products);
   if (isLoading) {
     return (
-      <>
-        <div className="loading">
-          <Loading size="md" text="Đang tải sản phẩm..." />
-        </div>
-        <div className="loading">
-          <Loading size="md" text="Đang tải sản phẩm..." />
-        </div>
-        <div className="loading">
-          <Loading size="md" text="Đang tải sản phẩm..." />
-        </div>
-        <div className="loading">
-          <Loading size="md" text="Đang tải sản phẩm..." />
-        </div>
-      </>
+      <div className="grid grid-cols-3 gap-6">
+        <Loading size="lg" text="Đang tải sản phẩm..." />
+        <Loading size="lg" text="Đang tải sản phẩm..." />
+        <Loading size="lg" text="Đang tải sản phẩm..." />
+      </div>
     );
   }
 
   return (
-    <div className="">
-      {products.map((product) => (
-        <ProductCard key={product.equipmentId} equipment={product} />
-      ))}
+    <div className="products-grid " id="productsGrid">
+      {products.length > 0 ? (
+        products.map((product) => (
+          <ProductCard key={product.equipmentId} equipment={product} />
+        ))
+      ) : (
+        <div className="min-h- col-span-3 text-center text-gray-500">
+          Không có sản phẩm nào để hiển thị.
+        </div>
+      )}
     </div>
   );
 };

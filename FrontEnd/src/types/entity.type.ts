@@ -33,17 +33,17 @@ export type Equipment = {
   insuranceRequired: boolean;
   condition: number;
   availability: boolean;
-  status: number;
-  createdAt: string;
-  images?: EquipmentImage[];
+  status: string;
+  imageId: string;
+  imageUrl: string;
   rating?: ReviewAverage[];
+  createdAt: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 };
 
-export type EquipmentRating = {
-  equipmentId: string;
-  averageRating: number;
-  reviewCount: number;
-};
+export type EquipmentImageStatus = ["Active", "Inactive"] | string;
 
 export type EquipmentImage = {
   imageId: string;
@@ -51,12 +51,31 @@ export type EquipmentImage = {
   imageUrl: string;
   type: number;
   isPrimary: boolean;
-  status: number;
+  status: EquipmentImageStatus;
   createdAt: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 };
 
 export type EquipmentResponse = ApiResponse<PaginatedData<Equipment>>;
 // #endregion
+
+// #region Equipment Category Types
+export type CategoryStatus = ["Active", "Inactive"] | string;
+
+export type EquipmentCategory = {
+  categoryId: string;
+  name: string;
+  description: string;
+  status: CategoryStatus;
+  parentId?: string;
+  parentName?: string;
+  createdAt?: string;
+};
+export type EquipmentCategoryResponse = ApiResponse<
+  PaginatedData<EquipmentCategory>
+>;
 
 // #region Review Types
 export type Review = {

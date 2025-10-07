@@ -1,4 +1,5 @@
 const sizeStyles: Record<string, string> = {
+  xs: "w-6 h-6 border-2",
   sm: "w-8 h-8 border-2",
   md: "w-12 h-12 border-4",
   lg: "w-16 h-16 border-4",
@@ -16,14 +17,18 @@ const Loading = ({
   color = "primary", // Default color: primary
   text = "Loading...", // Default text
   showText = true, // Default: show text
+  height = "auto",
 }: {
   size?: keyof typeof sizeStyles;
   color?: keyof typeof colorStyles;
   text?: string;
   showText?: boolean;
+  height?: string;
 }) => {
   return (
-    <div className="w-full flex flex-col items-center justify-center h-full min-h-[200px] animate-fade-in-up">
+    <div
+      className={`w-full h-[${height}] flex flex-col items-center justify-center h-full min-h-[200px] animate-fade-in-up`}
+    >
       <div
         className={`
           ${sizeStyles[size] || sizeStyles.md}
