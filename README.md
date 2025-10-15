@@ -1,71 +1,153 @@
-# 🔗 Routing Checklist – LendCamDio
+# LendCamDio Frontend
 
-## 1. Public (không cần login)
+Đây là project frontend chính cho nền tảng cho thuê thiết bị LendCamDio, được xây dựng trên nền tảng React, TypeScript và Vite. Dự án áp dụng kiến trúc component-based hiện đại, được thiết kế để đảm bảo trải nghiệm người dùng tốt nhất, hiệu suất cao và dễ dàng mở rộng.
 
-* `/` → Trang chủ
-* `/auth/login` → Đăng nhập
-* `/auth/register` → Đăng ký
-* `/studios` → Danh sách studio
-* `/studios/:id` → Chi tiết studio
-* `/equipments` → Danh sách thiết bị
-* `/equipments/:id` → Chi tiết thiết bị
-* `/about` → Giới thiệu
-* `/contact` → Liên hệ
-* `/help` → Trợ giúp
+## Mục lục
 
----
+- [LendCamDio Frontend](#lendcamdio-frontend)
+  - [Mục lục](#mục-lục)
+  - [Kiến trúc](#kiến-trúc)
+  - [Công nghệ sử dụng](#công-nghệ-sử-dụng)
+  - [Tính năng chính](#tính-năng-chính)
+  - [Yêu cầu](#yêu-cầu)
+  - [Hướng dẫn cài đặt \& Cấu hình](#hướng-dẫn-cài-đặt--cấu-hình)
+  - [Khởi chạy dự án](#khởi-chạy-dự-án)
+    - [Development Mode](#development-mode)
+    - [Production Build](#production-build)
+  - [Cấu trúc dự án](#cấu-trúc-dự-án)
+  - [Đóng góp](#đóng-góp)
+  - [License](#license)
+  - [Dự án liên quan](#dự-án-liên-quan)
 
-## 2. Customer (người thuê)
+## Kiến trúc
 
-Prefix: `/customer`
+Dự án được xây dựng theo kiến trúc component-based hiện đại của React, với sự tách biệt rõ ràng các thành phần:
 
-* `/customer/profile` → Hồ sơ cá nhân
-* `/customer/bookings` → Danh sách đơn thuê
-* `/customer/bookings/:id` → Chi tiết đơn thuê
-* `/customer/payments` → Lịch sử thanh toán
-* `/customer/favorites` → Danh sách thiết bị/studio đã lưu
-* `/customer/recommendations` → Gợi ý thiết bị AI
-
----
-
-## 3. Supplier (chủ studio / cho thuê thiết bị)
-
-Prefix: `/supplier`
-
-* `/supplier/dashboard` → Dashboard tổng quan
-* `/supplier/equipments` → Quản lý thiết bị
-* `/supplier/equipments/create` → Đăng thiết bị mới
-* `/supplier/equipments/:id/edit` → Chỉnh sửa thiết bị
-* `/supplier/bookings` → Danh sách đơn thuê liên quan đến thiết bị/studio của mình
-* `/supplier/payments` → Quản lý thanh toán nhận được
-* `/supplier/profile` → Hồ sơ nhà cung cấp (studio info, verification)
+- **Component Layer**: Chứa các thành phần UI có thể tái sử dụng.
+- **Pages Layer**: Tổ hợp các component để tạo thành các trang hoàn chỉnh.
+- **Routing Layer**: Quản lý điều hướng giữa các trang và phân quyền người dùng.
+- **Services Layer**: Chịu trách nhiệm giao tiếp với API và các dịch vụ bên ngoài.
+- **Context & Hooks**: Quản lý state toàn cục và cung cấp các hook tái sử dụng.
 
 ---
 
-## 4. Admin
+## Công nghệ sử dụng
 
-Prefix: `/admin`
-
-* `/admin/dashboard` → Dashboard tổng quan
-* `/admin/users` → Quản lý user
-* `/admin/users/:id` → Chi tiết user
-* `/admin/studios` → Quản lý studio
-* `/admin/equipments` → Quản lý thiết bị
-* `/admin/bookings` → Quản lý đơn thuê
-* `/admin/payments` → Quản lý thanh toán
-* `/admin/reports` → Báo cáo & thống kê
-* `/admin/settings` → Cấu hình hệ thống
+- **Framework UI**: React (v19)
+- **Ngôn ngữ**: TypeScript
+- **Build Tool**: Vite
+- **Routing**: React Router DOM (v7)
+- **State Management**: React Query (@tanstack/react-query)
+- **Form Handling**: React Hook Form
+- **Styling**: Tailwind CSS
+- **HTTP Client**: Axios
+- **UI Components**:
+  - Radix UI components
+  - Dialog, Form và các component tùy chỉnh khác
+- **Notifications**: Sonner
+- **Animations**: Framer Motion
+- **Maps Integration**: Google Maps (@react-google-maps/api)
+- **Authentication**: Google OAuth (@react-oauth/google)
 
 ---
 
-## 5. Quy tắc bổ sung
+## Tính năng chính
 
-* **Consistent**: mọi resource CRUD theo pattern:
+- Giao diện người dùng hiện đại và responsive
+- Xác thực người dùng (Đăng nhập, Đăng ký, Quên mật khẩu)
+- Phân quyền người dùng (Khách hàng, Nhà cung cấp, Admin)
+- Trang chủ với các sản phẩm nổi bật và danh mục
+- Tìm kiếm và lọc sản phẩm
+- Trang chi tiết sản phẩm với gallery hình ảnh
+- Hệ thống đánh giá và nhận xét sản phẩm
+- Giỏ hàng và quy trình thanh toán
+- Tích hợp bản đồ để hiển thị vị trí studio
+- Dashboard cho khách hàng, nhà cung cấp và admin
+- Tích hợp AI Assistant cho hỗ trợ khách hàng
 
-  * `/resource` → danh sách
-  * `/resource/:id` → chi tiết
-  * `/resource/create` → tạo mới
-  * `/resource/:id/edit` → chỉnh sửa
-* **Role prefix** (`/customer`, `/supplier`, `/admin`) giúp dễ tách layout, phân quyền.
-* **SEO-friendly slug**: ngoài `:id` có thể thêm `:slug`.
-  Ví dụ: `/studios/:id-:slug` → `/studios/123-studio-quan-1`
+---
+
+## Yêu cầu
+
+- Node.js (version 16 hoặc cao hơn)
+- npm hoặc yarn
+- Tài khoản và API Keys từ:
+  - Google Maps API
+  - Google Cloud Platform (cho Google Auth)
+
+---
+
+## Hướng dẫn cài đặt & Cấu hình
+
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/LendCamDio/LendCamDio-FE.git
+   cd LendCamDio-FE/FrontEnd
+   ```
+
+2. **Cài đặt dependencies:**
+   ```bash
+   npm install
+   # hoặc
+   yarn
+   ```
+
+3. **Cấu hình môi trường:**
+   Tạo file `.env` trong thư mục gốc dựa trên mẫu sau:
+   ```
+   VITE_API_URL=http://localhost:7119/api
+   VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   ```
+
+---
+
+## Khởi chạy dự án
+
+### Development Mode
+
+```bash
+npm run dev
+# hoặc
+yarn dev
+```
+
+Ứng dụng sẽ được khởi chạy tại địa chỉ http://localhost:5173
+
+### Production Build
+
+```bash
+npm run build
+npm run preview
+# hoặc
+yarn build
+yarn preview
+```
+
+---
+
+## Cấu trúc dự án
+
+- `/src` - Mã nguồn chính
+  - `/assets` - Tài nguyên tĩnh (hình ảnh, icons, fonts)
+  - `/components` - Các component UI có thể tái sử dụng
+    - `/common` - Các component dùng chung (Navbar, Footer, etc.)
+    - `/ui` - Các component cơ bản (Button, Form elements, etc.)
+    - `/products`, `/studios`, etc. - Components cho từng module cụ thể
+  - `/contexts` - React contexts cho quản lý state toàn cục
+  - `/hooks` - Custom React hooks
+  - `/layouts` - Các layout trang (Main, Admin, Auth, etc.)
+  - `/pages` - Các trang trong ứng dụng
+  - `/routes` - Cấu hình routing và bảo vệ route
+  - `/services` - Các service giao tiếp API
+  - `/utils` - Các hàm tiện ích
+  - `/types` - TypeScript type definitions
+
+## Đóng góp
+Vui lòng đọc [CONTRIBUTING.md](CONTRIBUTING.md) để biết chi tiết về quy trình đóng góp và code of conduct.
+
+## License
+Dự án này được cấp phép theo giấy phép Apache License 2.0 - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+
+## Dự án liên quan
+- [LendCamDio Backend](https://github.com/LendCamDio/LendCamDio-BE.git)
