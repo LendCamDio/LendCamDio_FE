@@ -1,0 +1,113 @@
+/* Navigation text spacing */
+.nav-text {
+    margin-left: 0.5rem;
+}
+
+/* Base navbar styles */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+/* Mobile First Approach */
+/* Extra Small screens (phones, <576px) - show only icons */
+@media (max-width: 575px) {
+    .nav-text {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 0.375rem;
+        min-width: 2rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .navbar-nav {
+        gap: 0.125rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.8rem;
+    }
+
+    .container-nav {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Small screens (landscape phones, 576px - 767px) - show only icons */
+@media (min-width: 576px) and (max-width: 767px) {
+    .nav-text {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
+        min-width: 2.25rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .navbar-nav {
+        gap: 0.25rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.85rem;
+    }
+}
+
+/* Medium screens (tablets, 768px - 991px) - show only icons */
+@media (min-width: 768px) and (max-width: 991px) {
+    .nav-text {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
+        min-width: 2.5rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .navbar-nav {
+        gap: 0.375rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+}
+
+/* Large screens (desktops, 992px - 1199px) - show only icons */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .nav-text {
+        display: none;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
+        min-width: 2.5rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .navbar-nav {
+        gap: 0.5rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.95rem;
+    }
+}
