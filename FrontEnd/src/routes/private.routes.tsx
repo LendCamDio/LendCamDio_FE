@@ -10,8 +10,11 @@ export const privateRoutes = [
       {
         children: [
           { index: true, element: <Navigate to="profile" replace /> },
-          { path: "booking-history", element: <div>OrderHistory</div> },
-          { path: "cart", element: <Cart /> },
+          {
+            path: "/customers/booking-history",
+            element: <div>OrderHistory</div>,
+          },
+          { path: "/customers/cart", element: <Cart /> },
         ],
       },
     ],

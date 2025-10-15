@@ -23,6 +23,7 @@ export default function UserDropdown({ items }: { items: DropdownItem[] }) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { logout, user } = useAuth();
   const showToast = useUniqueToast();
+  // const userDetail = await
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -59,6 +60,7 @@ export default function UserDropdown({ items }: { items: DropdownItem[] }) {
       >
         <FontAwesomeIcon icon={faUserCircle} className="text-lg mr-2" />
         <span className="hidden md:inline">{user?.email.split("@")[0]}</span>
+        {/* <span className="hidden md:inline">{user?.fullName}</span> */}
         <span className="ml-1 border-t-4 border-l-4 border-r-4 border-t-current border-l-transparent border-r-transparent"></span>
       </button>
 

@@ -7,6 +7,13 @@ interface ToastOptions {
   duration?: number;
   allowSpam?: boolean; // default: false
   id?: string;
+  position?:
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "top-center"
+    | "bottom-center";
 }
 
 export const useUniqueToast = () => {
@@ -17,17 +24,25 @@ export const useUniqueToast = () => {
     type: ToastType = "info",
     options: ToastOptions = {}
   ) => {
-    const { duration = 2000, allowSpam = false, id = message } = options;
+    const {
+      duration = 2000,
+      allowSpam = false,
+      id = message,
+      position = "top-right",
+    } = options;
     if (!allowSpam && activeToasts[id]) return; // Already showing this toast
     setActiveToasts((prev) => ({ ...prev, [id]: true }));
 
     const toastOptions = {
       id: allowSpam ? undefined : id,
       duration,
-      className: `toast-${type}`,
+      className: `toast-${type} ${
+        position.includes("top") ? "toast-top-all" : ""
+      }`,
       onDismiss: () => {
         setActiveToasts((prev) => ({ ...prev, [id]: false }));
       },
+      position,
     };
 
     switch (type) {

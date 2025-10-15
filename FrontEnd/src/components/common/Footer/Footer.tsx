@@ -32,7 +32,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="footer">
+    <footer className="footer min-h-[200px]">
       <div className="container">
         <div className="row">
           {/* Brand Info */}

@@ -1,16 +1,24 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { ImageDialog } from "@/components/ui/Dialog";
+import { useLoaderData } from "react-router-dom";
+import type { Equipment } from "@/types/index.type";
 
 interface ProductGalleryProps {
-  images: string[];
+  images: string[] | undefined;
   productName: string;
   categoryName: string;
 }
+
+// Extended type for our component with additional properties
+type ExtendedEquipment = Equipment & {
+  images?: string[];
+  specifications?: Record<string, string>;
+};
 
 export const ProductGallery = ({
   images,
@@ -22,35 +30,41 @@ export const ProductGallery = ({
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleMainSwiperInit = useCallback((swiper: SwiperType) => {
-    setMainSwiper(swiper);
-  }, []);
+  console.log("ProductGallery images:", images);
+  console.log("ProductGallery productName:", productName);
+  console.log("ProductGallery categoryName:", categoryName);
 
-  const handleThumbsSwiperInit = useCallback((swiper: SwiperType) => {
-    setThumbsSwiper(swiper);
-  }, []);
+  // Dùng data từ loader
+  const mockProduct: Equipment = useLoaderData();
 
-  const handleSlideChange = useCallback((swiper: SwiperType) => {
-    setCurrentImageIndex(swiper.activeIndex);
-  }, []);
-
-  const handleThumbnailClick = useCallback(
-    (index: number) => {
-      mainSwiper?.slideTo(index);
-      setCurrentImageIndex(index);
+  // Mô phỏng dữ liệu chi tiết sản phẩm với hình ảnh và thông số kỹ thuật
+  const extendedMockProduct: ExtendedEquipment = {
+    ...mockProduct,
+    images: [
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+      "/src/assets/defaultPic1.jpg",
+    ],
+    specifications: {
+      resolution: "45.0 MP",
+      sensor: "Full-frame CMOS",
+      videoRecording: "8K RAW, 4K 120p",
+      mount: "RF Mount",
+      weight: "738g",
+      battery: "LP-E6NH",
     },
-    [mainSwiper]
-  );
+  };
 
-  const thumbsConfig = useMemo(
-    () => ({
-      swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-    }),
-    [thumbsSwiper]
-  );
+  const [product] = useState<ExtendedEquipment>(extendedMockProduct); // Replace with actual API call
 
   return (
     <div className="product-detail-gallery col-md-5">
+      {/* Product Thumbnail */}
       <div
         className="product-detail-thumbnail"
         onClick={() => setIsImgDialogOpen(true)}
@@ -59,70 +73,73 @@ export const ProductGallery = ({
           className="opacity-0"
           isOpen={isImgDialogOpen}
           onClose={() => setIsImgDialogOpen(false)}
-          imageUrl={images[currentImageIndex]}
-          alt={productName}
+          imageUrl={product.images?.[currentImageIndex]}
+          alt={product.name}
         />
         <Swiper
-          onSwiper={handleMainSwiperInit}
+          onSwiper={setMainSwiper}
           modules={[Navigation, Thumbs]}
           spaceBetween={10}
-          thumbs={thumbsConfig}
-          onSlideChange={handleSlideChange}
+          thumbs={{ swiper: thumbsSwiper }}
+          onSlideChange={(swiper) => setCurrentImageIndex(swiper.activeIndex)}
           className="rounded-md overflow-hidden"
-          watchSlidesProgress={false}
-          allowTouchMove={true}
         >
-          {images.map((image: string, index: number) => (
-            <SwiperSlide key={`main-slide-${index}`}>
+          {product.images?.map((image: string, index: number) => (
+            <SwiperSlide key={index}>
               <img
                 src={image}
-                alt={`${productName} ${index + 1}`}
+                alt={`${product.name} ${index + 1}`}
                 onClick={() => setIsImgDialogOpen(true)}
               />
             </SwiperSlide>
           ))}
         </Swiper>
 
+        {/* Product badge */}
         <span
-          className={`product-detail-thumbnail-badge ${categoryName.toLowerCase()}`}
+          className={`product-detail-thumbnail-badge ${product.categoryName.toLowerCase()}`}
         >
           <FontAwesomeIcon icon={faCamera} className="me-2" />
-          {categoryName}
+          {product.categoryName}
         </span>
       </div>
 
       {/* Thumbnail navigation */}
       <div className="product-detail-thumbnails-imgs mt-30">
         <Swiper
-          key="thumbs-swiper"
-          onSwiper={handleThumbsSwiperInit}
+          onSwiper={setThumbsSwiper}
           modules={[Navigation, Thumbs]}
           slidesPerView={4}
-          navigation={true}
-          watchSlidesProgress={true}
+          navigation
+          watchSlidesProgress
           breakpoints={{
             320: { slidesPerView: 3 },
             640: { slidesPerView: 4 },
             1024: { slidesPerView: 6 },
           }}
-          className="thumbs-swiper"
         >
-          {images.map((image: string, index: number) => (
-            <SwiperSlide key={`thumb-slide-${index}`}>
-              <img
-                src={image}
-                alt={`${productName} thumb ${index}`}
-                onClick={() => handleThumbnailClick(index)}
-                className={`transition-all duration-200 cursor-pointer ${
-                  currentImageIndex === index
-                    ? "active border-2 border-blue-500"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
-              />
-            </SwiperSlide>
-          ))}
+          {product &&
+            product.images &&
+            product.images.map((image: string, index: number) => (
+              <SwiperSlide key={index}>
+                <img
+                  src={image}
+                  alt={`${product.name} thumb ${index}`}
+                  onClick={() => {
+                    mainSwiper?.slideTo(index);
+                    setCurrentImageIndex(index);
+                  }}
+                  className={`transition-all duration-200 ${
+                    currentImageIndex === index
+                      ? "active"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                />
+              </SwiperSlide>
+            ))}
         </Swiper>
       </div>
+      {/* Dialog */}
     </div>
   );
 };

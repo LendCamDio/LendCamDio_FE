@@ -1,7 +1,7 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { loginWithGoogle, loginWithEmail } from "../services/authService";
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -14,9 +14,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useUniqueToast } from "@/hooks/useUniqueToast";
 import { useAuth } from "@/hooks/auth/useAuth";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { loginSchema, type LoginSchema } from "@/utils/validations/LoginSchema";
+import { FormField } from "@/components/ui/Form/FormField";
+import { jwtDecode } from "jwt-decode";
+import type { JwtPayload } from "@/types/index.type";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const showToast = useUniqueToast();
   const navigate = useNavigate();
   const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
@@ -24,55 +31,65 @@ export default function LoginPage() {
     {}
   );
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+  } = useForm<LoginSchema>({
+    mode: "onBlur",
+    delayError: 400,
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
   const handleGoogleSuccess = async (
     credentialResponse: CredentialResponse
   ) => {
     if (credentialResponse.credential) {
       showToast("Đang xử lý đăng nhập...", "info");
-      try {
-        const data = await loginWithGoogle(credentialResponse.credential);
-        console.log("API response:", data); // Debug log
+      const result = await loginWithGoogle(
+        credentialResponse.credential,
+        userType
+      );
 
-        if (!data.data.token) {
-          throw new Error("No token received from server");
+      if (result.success && result.data) {
+        const decoded = jwtDecode<JwtPayload>(result.data.token);
+        if (
+          decoded[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ] !== userType
+        ) {
+          logout();
+          showToast("Vui lòng chọn đúng loại tài khoản", "error", {
+            allowSpam: true,
+          });
+        } else {
+          login(result.data.token, false);
+          showToast("Đăng nhập thành công", "success");
+          navigate("/");
         }
-
-        // Đợi login hoàn thành (token + user được set)
-        await login(data.data.token);
-        showToast("Đăng nhập thành công", "success");
-        navigate("/");
-      } catch (err) {
-        const msgErr = (err as { response?: { data?: string } }).response
-          ?.data as string;
-        console.error("Google login failed:", msgErr || err);
-        showToast(`Đăng nhập thất bại: ${msgErr || "Unknown error"}`, "error");
+      } else {
+        const errorMessage = result.error?.message || "Đăng ký thất bại";
+        showToast(errorMessage, "error");
       }
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-
-    try {
-      showToast("Đang xử lý đăng nhập...", "info");
-      const data = await loginWithEmail(email, password);
-      console.log("API response:", data); // Debug log
-
-      if (!data.token) {
-        throw new Error("No token received from server");
-      }
-
-      await login(data.token);
+  const handleEmailLogin = async (data: LoginSchema) => {
+    showToast("Đang xử lý đăng nhập...", "info");
+    const result = await loginWithEmail(data.email, data.password, userType);
+    if (result.success && result.data) {
+      login(result.data.token, data.rememberMe ? true : false);
       showToast("Đăng nhập thành công", "success");
       navigate("/");
-    } catch (err) {
-      const msgErr = (err as { response?: { data?: string } }).response
-        ?.data as string;
-      console.error("Email login failed:", err);
-      showToast(`Đăng nhập thất bại: ${msgErr || "Unknown error"}`, "error");
+    } else {
+      const errorMessage = result.error?.message || "Đăng nhập thất bại";
+      showToast(errorMessage, "error");
     }
   };
 
@@ -86,6 +103,15 @@ export default function LoginPage() {
   const selectUserType = (type: "Customer" | "Supplier") => {
     setUserType(type);
   };
+
+  // Tự động điền email nếu đã nhớ trước đó
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    if (rememberedEmail) {
+      setValue("email", rememberedEmail); // Tự động điền email
+      setValue("rememberMe", true); // Tự động check vào ô
+    }
+  }, [setValue]);
 
   return (
     <div className="m-4">
@@ -142,35 +168,29 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleEmailLogin}>
-          <div className="form-group">
-            <label htmlFor="loginEmail" className="form-label">
-              Email
-            </label>
+        <form onSubmit={handleSubmit(handleEmailLogin)} noValidate>
+          <FormField label="Email" error={errors.email} classNameField="mb-4">
             <div className="input-group">
               <FontAwesomeIcon icon={faEnvelope} />
               <input
+                {...register("email")}
                 type="email"
-                className="form-control"
-                name="email"
                 placeholder="Nhập email của bạn"
-                required
               />
             </div>
-          </div>
+          </FormField>
 
-          <div className="form-group">
-            <label htmlFor="loginPassword" className="form-label">
-              Mật khẩu
-            </label>
+          <FormField
+            label="Mật khẩu"
+            error={errors.password}
+            classNameField="mb-10"
+          >
             <div className="input-group">
               <FontAwesomeIcon icon={faLock} />
               <input
+                {...register("password")}
                 type={showPassword.password ? "text" : "password"}
-                className="form-control"
-                name="password"
                 placeholder="Nhập mật khẩu"
-                required
               />
               <button
                 type="button"
@@ -182,11 +202,15 @@ export default function LoginPage() {
                 />
               </button>
             </div>
-          </div>
+          </FormField>
 
           <div className="form-options">
             <div className="checkbox-group">
-              <input type="checkbox" id="rememberMe" />
+              <input
+                type="checkbox"
+                id="rememberMe"
+                {...register("rememberMe")}
+              />
               <label htmlFor="rememberMe">Nhớ đăng nhập</label>
             </div>
             <Link to="/auth/forgot-password" className="forgot-password">
@@ -194,8 +218,13 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <button type="submit" className="btn-primary auth-btn">
-            <FontAwesomeIcon icon={faSignInAlt} /> Đăng nhập
+          <button
+            type="submit"
+            className="btn-primary auth-btn"
+            disabled={isSubmitting}
+          >
+            <FontAwesomeIcon icon={faSignInAlt} />
+            {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 

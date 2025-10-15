@@ -1,7 +1,10 @@
 export interface JwtPayload {
   sub: string;
   email: string;
+  AvatarUrl: string;
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
+  IsVerified: string;
   jti: string;
   exp: number;
   iss: string;
@@ -20,7 +23,7 @@ export interface AuthContextType {
   role: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (token: string, rememberMe: boolean) => Promise<void>;
   logout: () => void;
 }
 

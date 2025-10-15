@@ -3,13 +3,34 @@ export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export const AUTH_ENDPOINTS = {
+  // Email/Password Authentication
   LOGIN: "/auth/signin",
-  GOOGLE: "/auth/signin-google",
+  ADMIN_LOGIN: "/auth/admin/signin",
+  SUPPLIER_LOGIN: "/auth/supplier/signin",
+  // Google Authentication
+  LOGIN_GOOGLE: "/auth/signin-google",
+  ADMIN_LOGIN_GOOGLE: "/auth/admin/signin-google",
+  SUPPLIER_LOGIN_GOOGLE: "/auth/supplier/signin-google",
+  // Registration
   REGISTER: "/auth/register",
   REGISTER_GOOGLE: "/auth/register-google",
+  // User Actions
   LOGOUT: "/auth/logout",
   CHANGE_PASSWORD: "/auth/change-password",
   VERIFY_EMAIL: (_email: string, _token: string) => `/auth/verify-email`,
+};
+
+export const AI_ENDPOINTS = {
+  CHAT: "/api/ai/chat",
+  GENERATE_RECOMMENDATIONS: (customerId: string) =>
+    `/api/ai/generate-recommendations/${customerId}`,
+  GENERATE_RECOMMENDATIONS_BY_CATEGORY: (
+    customerId: string,
+    categoryName: string
+  ) =>
+    `/api/ai/generate-recommendations/${customerId}/category/${categoryName}`,
+  RATE_RECOMMENDATION: "/api/ai/rate-recommendation",
+  RECOMMEND: (customerId: string) => `/api/ai/recommend/${customerId}`,
 };
 
 export const USER_ENDPOINTS = {

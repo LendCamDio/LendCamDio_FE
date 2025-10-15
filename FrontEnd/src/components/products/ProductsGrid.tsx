@@ -9,7 +9,7 @@ const ProductsGrid = ({
   products: Equipment[];
   isLoading: boolean;
 }) => {
-  console.log("ProductsGrid render with products:", products);
+  // console.log("ProductsGrid render with products:", products);
   if (isLoading) {
     return (
       <div className="grid grid-cols-3 gap-6">

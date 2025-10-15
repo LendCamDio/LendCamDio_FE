@@ -13,9 +13,9 @@ import { lazy, Suspense } from "react";
 const DashboardSection = lazy(() => import("../customer/DashboardSection"));
 
 const Home = () => {
-  const { token } = useAuth();
+  const { role } = useAuth();
 
-  // Sample data for studios and equipment
+  // #region Sample data for studios and equipment
   const studios = [
     {
       image:
@@ -94,6 +94,7 @@ const Home = () => {
       },
     ],
   };
+  // #endregion
 
   return (
     <>
@@ -101,7 +102,7 @@ const Home = () => {
       <section className="hero">
         <div className="container">
           <div className="text-center">
-            <h1>Chào mừng đến với LENSCAMDIO</h1>
+            <h1>Chào mừng đến với LENDCAMDIO</h1>
             <p>
               Không gian chụp ảnh chuyên nghiệp và dịch vụ cho thuê thiết bị
               hàng đầu
@@ -118,7 +119,7 @@ const Home = () => {
         </div>
       </section>
 
-      {token && (
+      {role && role === "admin" && (
         <Suspense fallback={<Loading />}>
           <DashboardSection />
         </Suspense>
@@ -126,7 +127,7 @@ const Home = () => {
 
       {/* Studio nổi bật */}
       <section className="section">
-        <div className="container h-fit">
+        <div className="container min-h-[300px]">
           <h2 className="section-title">Studio nổi bật</h2>
           <p className="section-subtitle">
             Khám phá những studio chụp ảnh đẹp nhất của chúng tôi

@@ -9,13 +9,68 @@ export type PaginatedData<T> = {
   hasNext: boolean;
 };
 
+export type PaginationInfo = {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
 export type ApiResponse<T> = {
   success: boolean;
-  data: T;
-  timestamp: string;
+  data?: T;
+  error?: ApiError;
+  pagination?: PaginationInfo;
+  timestamp?: string;
   requestId?: string;
   metadata?: Record<string, string>;
+  warnings?: string[];
 };
+
+export type ApiError = {
+  code: number;
+  message: string;
+  validationErrors?: Record<string, string[]>;
+  detailedMessage?: string;
+};
+// #endregion
+
+// #region Auth Types
+export type AuthResponse = {
+  token: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  user: UserInfo;
+};
+
+export type UserInfo = {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: string;
+  phoneNumber?: string;
+  avatar?: string;
+};
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type RegisterRequest = {
+  email: string;
+  password: string;
+  fullName: string;
+  phoneNumber?: string;
+  role: "Customer" | "Supplier";
+};
+
+export type GoogleAuthRequest = {
+  idToken: string;
+};
+
 // #endregion
 
 // #region Equipment Types
@@ -36,7 +91,7 @@ export type Equipment = {
   status: string;
   imageId: string;
   imageUrl: string;
-  rating?: ReviewAverage[];
+  rating?: ReviewAverage;
   createdAt: string;
   createdBy?: string;
   updatedAt?: string;
@@ -62,7 +117,7 @@ export type EquipmentResponse = ApiResponse<PaginatedData<Equipment>>;
 // #endregion
 
 // #region Equipment Category Types
-export type CategoryStatus = ["Active", "Inactive"] | string;
+export type CategoryStatus = "Active" | "Inactive";
 
 export type EquipmentCategory = {
   categoryId: string;
@@ -98,3 +153,31 @@ export type ReviewAverage = {
 
 export type ReviewResponse = ApiResponse<PaginatedData<Review>>;
 // #endregion
+
+// #region AI Types
+export interface AIResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    message?: string;
+    recommendations?: Recommendation[];
+    ratingId?: string;
+    feedback?: string;
+  };
+  error?: string;
+}
+
+export interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  rating?: number;
+  feedback?: string;
+}
+
+export interface AIMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp?: Date;
+}

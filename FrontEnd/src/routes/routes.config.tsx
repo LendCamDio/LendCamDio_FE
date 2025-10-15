@@ -10,6 +10,7 @@ import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import ForgotPasswordPage from "@/pages/Forgot-password";
 import ErrorPage from "@/pages/Error";
+import AdminLoginPage from "@/pages/admin/AdminLoginPage";
 
 export const routesConfig = [
   {
@@ -20,15 +21,7 @@ export const routesConfig = [
       ...publicRoutes,
       {
         element: <ProtectedRoute />, // yêu cầu đăng nhập
-        children: [
-          ...privateRoutes,
-          {
-            path: "/admin",
-            element: <RoleBasedRoute allowedRoles={["Admin"]} />, // yêu cầu role Admin
-            children: adminRoutes,
-            errorElement: <ErrorPage />,
-          },
-        ],
+        children: [...privateRoutes],
       },
     ],
   },
@@ -40,6 +33,20 @@ export const routesConfig = [
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
       { path: "forgot-password", element: <ForgotPasswordPage /> },
+    ],
+  },
+  {
+    path: "/admin/login",
+    element: <AdminLoginPage />,
+  },
+  {
+    path: "/admin",
+    element: <RoleBasedRoute allowedRoles={["Admin"]} />,
+    children: [
+      {
+        children: [...adminRoutes],
+        errorElement: <ErrorPage />,
+      },
     ],
   },
 ];

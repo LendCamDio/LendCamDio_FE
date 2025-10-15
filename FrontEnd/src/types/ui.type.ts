@@ -6,6 +6,7 @@ export type DialogProps = {
 
 export type ImageDialogProps = {
   imageUrl: string | undefined;
+  imagesUrl?: string[] | undefined;
   alt?: string;
   className?: string;
   isOpen?: boolean;

@@ -6,7 +6,7 @@ const useEquipCategoryList = (page: number, pageSize: number) => {
     queryKey: ["equipCategories", page, pageSize],
     queryFn: () => getEquipCategories(page, pageSize),
     staleTime: 1000 * 60 * 60, // keep data fresh for 1 hour
-    retry: 3, // Retry failed requests up to 3 times
+    retry: 1, // Retry failed requests up to 1 time
     refetchOnWindowFocus: false, // Disable refetch on window focus
   });
 };

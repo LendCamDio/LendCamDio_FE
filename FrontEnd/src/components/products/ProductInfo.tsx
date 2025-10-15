@@ -8,6 +8,10 @@ import {
   faMapMarkerAlt,
   faCheckCircle,
   faTimesCircle,
+  faMinus,
+  faPlus,
+  faChevronUp,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { Rating } from "@/components/common/Rating";
 import { useUniqueToast } from "@/hooks/useUniqueToast";
@@ -26,8 +30,13 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedDays, setSelectedDays] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isSupplierInfoExpanded, setIsSupplierInfoExpanded] = useState(false);
 
   const totalPrice = product.dailyPrice * selectedDays * quantity;
+
+  const toggleSupplierInfo = () => {
+    setIsSupplierInfoExpanded(!isSupplierInfoExpanded);
+  };
 
   const handleAddToCart = () => {
     showToast(`Đã thêm ${quantity} ${product.name} vào giỏ hàng`, "info", {
@@ -109,7 +118,7 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               disabled={quantity <= 1}
             >
-              -
+              <FontAwesomeIcon icon={faMinus} />
             </button>
             <input
               type="number"
@@ -128,7 +137,7 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
               }
               disabled={quantity >= product.stockQuantity}
             >
-              +
+              <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
         </div>
@@ -193,13 +202,41 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
         </div>
       </div>
 
-      {/* Supplier Info */}
+      {/* Supplier Info with Toggle */}
       <div className="border-top pt-3">
-        <h6>Thông tin nhà cung cấp</h6>
+        <div className="d-flex justify-content-between align-items-center">
+          <h6>Thông tin nhà cung cấp</h6>
+          <button
+            className="btn btn-link p-0"
+            onClick={toggleSupplierInfo}
+            aria-label={
+              isSupplierInfoExpanded
+                ? "Thu gọn thông tin nhà cung cấp"
+                : "Mở rộng thông tin nhà cung cấp"
+            }
+          >
+            <FontAwesomeIcon
+              icon={isSupplierInfoExpanded ? faChevronUp : faChevronDown}
+              className="text-primary"
+            />
+          </button>
+        </div>
         <div className="d-flex align-items-center gap-2">
           <FontAwesomeIcon icon={faMapMarkerAlt} className="text-muted" />
           <span>{product.supplierName}</span>
         </div>
+        {isSupplierInfoExpanded && (
+          <div
+            className={`mt-3 transition-all duration-300 ease-in-out ${
+              isSupplierInfoExpanded ? "opacity-100" : "opacity-0 h-0"
+            }`}
+          >
+            {/* Example additional supplier info - adjust based on your data */}
+            <p className="text-muted mb-1">Địa chỉ: Chưa cung cấp địa chỉ</p>
+            <p className="text-muted mb-1">Liên hệ: Chưa cung cấp liên hệ</p>
+            <p className="text-muted mb-1">Email: Chưa cung cấp email</p>
+          </div>
+        )}
       </div>
     </div>
   );

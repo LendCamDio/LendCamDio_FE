@@ -50,7 +50,6 @@ api.interceptors.response.use(
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/auth/login";
     }
     return Promise.reject(error);
   }

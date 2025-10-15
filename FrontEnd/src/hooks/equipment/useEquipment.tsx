@@ -20,14 +20,14 @@ const useEquipmentList = (
     serviceFn = () =>
       selectedCategory === "all"
         ? getEquipments(page, pageSize)
-        : getEquipmentsByCategory(selectedCategory!, page, pageSize);
+        : getEquipmentsByCategory(selectedCategory || "", page, pageSize);
   }
 
   return useQuery({
     queryKey: ["equipments", page, pageSize, selectedCategory, searchName],
     queryFn: serviceFn,
     staleTime: 1000 * 60 * 10, // keep data fresh for 10 minutes
-    retry: 2, // Retry failed requests up to 3 times
+    retry: 3, // Retry failed requests up to 3 times
     refetchOnWindowFocus: false, // Disable refetch on window focus
   });
 };

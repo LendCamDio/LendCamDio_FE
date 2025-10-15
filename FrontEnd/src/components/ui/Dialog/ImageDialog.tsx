@@ -3,22 +3,62 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Dialog from "@radix-ui/react-dialog";
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Thumbs } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import {
+  useCallback,
+  // useMemo,
+  useState,
+} from "react";
 
 export const ImageDialog = ({
   imageUrl,
+  imagesUrl,
   alt,
   className,
   isOpen,
   onClose,
 }: ImageDialogProps) => {
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose?.();
   };
 
+  // const handleMainSwiperInit = useCallback((swiper: SwiperType) => {
+  //   setMainSwiper(swiper);
+  // }, []);
+
+  const handleThumbsSwiperInit = useCallback((swiper: SwiperType) => {
+    setThumbsSwiper(swiper);
+  }, []);
+
+  // const handleSlideChange = useCallback((swiper: SwiperType) => {
+  //   setCurrentImageIndex(swiper.activeIndex);
+  // }, []);
+
+  const handleThumbnailClick = useCallback(
+    (index: number) => {
+      mainSwiper?.slideTo(index);
+      setCurrentImageIndex(index);
+    },
+    [mainSwiper]
+  );
+
+  // const thumbsConfig = useMemo(
+  //   () => ({
+  //     swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+  //   }),
+  //   [thumbsSwiper]
+  // );
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <img src={imageUrl} alt={alt} className={className} />
+        <img src={imageUrl?.[0]} alt={alt} className={className} />
       </Dialog.Trigger>
       <Dialog.Portal>
         <motion.div
@@ -49,14 +89,79 @@ export const ImageDialog = ({
                 <FontAwesomeIcon icon={faXmark} />
               </button>
             </Dialog.Close>
-            <Dialog.Title className="sr-only">{alt}</Dialog.Title>
-            <Dialog.Description className="sr-only">{alt}</Dialog.Description>
-            <img
-              src={imageUrl}
-              alt={alt}
-              className="max-w-full max-h-[80vh] 
-                        object-contain"
-            />
+            <Dialog.Title className="flex flex-col items-center justify-center">
+              <h2 className="text-lg font-bold">{alt}</h2>
+              {Array.isArray(imagesUrl) && imagesUrl.length > 0 ? (
+                <div className="mb-2">
+                  <Swiper
+                    onSwiper={setMainSwiper}
+                    modules={[Navigation, Thumbs]}
+                    spaceBetween={10}
+                    thumbs={{ swiper: thumbsSwiper }}
+                    onSlideChange={(swiper) =>
+                      setCurrentImageIndex(swiper.activeIndex)
+                    }
+                    className="rounded-md overflow-hidden"
+                  >
+                    {imagesUrl.map((image: string, index: number) => (
+                      <SwiperSlide key={index}>
+                        <img
+                          src={image}
+                          alt={`${alt} ${index + 1}`}
+                          className="max-h-[80vh] w-auto mx-auto"
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
+              ) : (
+                <div className="mb-2">
+                  <img
+                    src={imageUrl}
+                    alt={alt}
+                    className="max-h-[80vh] w-auto mx-auto"
+                  />
+                </div>
+              )}
+            </Dialog.Title>
+            <Dialog.Description className="">
+              {/* Thumbnail navigation */}
+              {Array.isArray(imagesUrl) && imagesUrl.length > 0 ? (
+                <Swiper
+                  key="thumbs-swiper"
+                  onSwiper={handleThumbsSwiperInit}
+                  modules={[Navigation, Thumbs]}
+                  slidesPerView={4}
+                  navigation
+                  watchSlidesProgress={true}
+                  breakpoints={{
+                    320: { slidesPerView: 3 },
+                    640: { slidesPerView: 4 },
+                    1024: { slidesPerView: 6 },
+                  }}
+                  className="thumbs-swiper"
+                >
+                  {imagesUrl.map((image: string, index: number) => (
+                    <SwiperSlide key={`thumb-slide-${index}`}>
+                      <img
+                        src={image}
+                        alt={`${alt} thumb ${index}`}
+                        onClick={() => handleThumbnailClick(index)}
+                        className={`transition-all duration-200 cursor-pointer ${
+                          currentImageIndex === index
+                            ? "active border-2 border-blue-500"
+                            : "border-gray-300 hover:border-gray-400"
+                        }`}
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <div>
+                  <p>No additional images available.</p>
+                </div>
+              )}
+            </Dialog.Description>
           </Dialog.Content>
         </motion.div>
       </Dialog.Portal>

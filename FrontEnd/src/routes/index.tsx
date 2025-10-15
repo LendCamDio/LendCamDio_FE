@@ -6,7 +6,7 @@ const AppRoutes = () => {
   const router = createBrowserRouter(routesConfig);
   return (
     <>
-      <Toaster position="top-center" closeButton expand={false} />
+      <Toaster position="top-center" closeButton={true} expand={false} />
       <RouterProvider router={router} />
     </>
   );

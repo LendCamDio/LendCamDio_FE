@@ -5,7 +5,7 @@ export default function PageWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Khi component render lần đầu, scroll lên đầu
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, []); // Chỉ chạy khi pathname thay đổi
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.99 }} // Initial state: slightly faded, offset downward, and scaled down

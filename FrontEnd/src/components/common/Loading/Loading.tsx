@@ -18,16 +18,20 @@ const Loading = ({
   text = "Loading...", // Default text
   showText = true, // Default: show text
   height = "auto",
+  className = "",
 }: {
   size?: keyof typeof sizeStyles;
   color?: keyof typeof colorStyles;
   text?: string;
   showText?: boolean;
   height?: string;
+  className?: string;
 }) => {
   return (
     <div
-      className={`w-full h-[${height}] flex flex-col items-center justify-center h-full min-h-[200px] animate-fade-in-up`}
+      className={`w-full h-[${height}] 
+      flex flex-col items-center justify-center 
+      animate-fade-in-up ${className}`}
     >
       <div
         className={`
@@ -49,7 +53,7 @@ const Loading = ({
           `}
         />
       </div>
-      {showText && (
+      {showText && size !== "sm" && (
         <p
           className={`
             mt-4 text-${color || "primary"} 

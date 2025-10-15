@@ -1,10 +1,12 @@
+import { lazy as lazyImport } from "react";
 import { getEquipmentById } from "@/services/equipmentService";
 import ErrorPage from "@/pages/Error";
 import type { Equipment } from "@/types/entity.type";
-import { lazy as lazyImport } from "react";
+import type { LoaderFunctionArgs } from "react-router-dom";
 // Lazy load the Home component
 const Home = lazyImport(() => import("@/pages/Home/Home"));
-const StudioBooking = lazyImport(() => import("@/pages/StudioBooking"));
+const StudioBooking = lazyImport(() => import("@/pages/Studio/StudioBooking"));
+const StudioDetail = lazyImport(() => import("@/pages/Studio/StudioDetail"));
 const CameraRental = lazyImport(() => import("@/pages/CameraRental"));
 const Products = lazyImport(() => import("@/pages/Product/Products"));
 const ProductDetail = lazyImport(() => import("@/pages/Product/ProductDetail"));
@@ -22,6 +24,26 @@ export const publicRoutes = [
   },
   {
     path: "/studios",
+    children: [
+      {
+        index: true,
+        element: <StudioBooking />,
+        handle: { breadcrumb: () => "Studios" },
+      },
+      {
+        path: "/studios/:id",
+        element: <StudioDetail />,
+        loader: async ({ params }: LoaderFunctionArgs) => {
+          const { id } = params;
+          if (!id) throw new Error("ID is required");
+          const response = await getEquipmentById(id);
+          return response.data;
+        },
+        handle: {
+          breadcrumb: (data: Equipment) => data.name || "Studio",
+        },
+      },
+    ],
     element: <StudioBooking />,
     handle: {
       breadcrumb: () => "Studio",
@@ -39,10 +61,15 @@ export const publicRoutes = [
       {
         path: "/products/product-detail/:id",
         element: <ProductDetail />,
-        loader: async ({ params }: { params: { id: string } }) => {
+        loader: async ({ params }: LoaderFunctionArgs) => {
           const { id } = params;
           if (!id) throw new Error("ID is required");
           const response = await getEquipmentById(id);
+          if (!response.success) {
+            throw new Error(
+              response.error?.message || "Failed to load product"
+            );
+          }
           return response.data;
         },
         handle: {

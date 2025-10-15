@@ -1,3 +1,4 @@
+import { AxiosError, isAxiosError } from "axios";
 import {
   useRouteError,
   isRouteErrorResponse,
@@ -8,18 +9,20 @@ const ErrorPage = () => {
   const navigate = useNavigate();
   const error = useRouteError();
 
-  let errorStatus = 500;
-  let errorMessage = "Something went wrong";
+  let errorStatus: number | undefined = 500;
+  let errorMessage: string | undefined = "Something went wrong";
 
-  if (isRouteErrorResponse(error)) {
+  if (isRouteErrorResponse(error) || isAxiosError(error)) {
     errorStatus = error.status;
-    errorMessage =
-      error.statusText || error.data?.message || "An error occurred";
+    errorMessage = isRouteErrorResponse(error)
+      ? error.statusText || "An error occurred"
+      : (error as AxiosError<{ message?: string }>).response?.data?.message ||
+        error.message;
   } else if (error instanceof Error) {
     errorMessage = error.message;
   }
 
-  const getErrorTitle = (status: number) => {
+  const getErrorTitle = (status: number | undefined) => {
     switch (status) {
       case 404:
         return "Page Not Found";

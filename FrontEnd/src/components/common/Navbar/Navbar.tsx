@@ -22,7 +22,11 @@ const NAV_ITEMS = [
   { name: "Đặt lịch Studio", to: "/studios", icon: faCalendar },
   { name: "Thuê máy ảnh", to: "/cameras", icon: faCamera },
   { name: "Sản phẩm", to: "/products", icon: faBox },
-  { name: "Lịch của tôi", to: "/booking-history", icon: faCalendarCheck },
+  {
+    name: "Lịch của tôi",
+    to: "/customers/booking-history",
+    icon: faCalendarCheck,
+  },
   { name: "Liên hệ", to: "/contact", icon: faEnvelope },
   { name: "Giỏ hàng", to: "/customers/cart", icon: faShoppingCart },
 ];
@@ -38,8 +42,7 @@ export default function Navbar() {
           end
           className="navbar-brand text-blue-600 cursor-pointer hover:scale-101 transition"
         >
-          <img src="/vite.svg" alt="Logo" className="cursor-default" />
-          <p>LendCamDio</p>
+          <img src="/logo_transparent.png" alt="Logo" />
         </NavLink>
         <div className="flex navbar-nav">
           {NAV_ITEMS.map((item) => (

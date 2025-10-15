@@ -6,15 +6,15 @@ import { useUniqueToast } from "@/hooks/useUniqueToast";
 import { faPlus, faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo, useState } from "react";
-import CategoryFilter from "./component/CategoryFilter";
+import CategoryFilter from "../../components/common/CategoryFilter";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
 
 const Products = () => {
   const showToast = useUniqueToast();
   const [loadMore, setLoadMore] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(6);
+  const [pageSize] = useState(9);
   const [sortBy, setSortBy] = useState("name");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,9 +23,9 @@ const Products = () => {
     data: dataCat,
     isLoading: isLoadingCat,
     error: errorCat,
-  } = useEquipCategoryList(page, pageSize);
+  } = useEquipCategoryList(1, 100);
   const categories: { key: string; label: string }[] =
-    dataCat?.data.items.map((cat) => ({
+    dataCat?.data?.items.map((cat) => ({
       key: cat.categoryId,
       label: cat.name,
     })) || [];
@@ -48,6 +48,7 @@ const Products = () => {
     console.error("Error fetching data:", errorCat || error);
   }
 
+  // Sort cho sản phẩm
   const sortedEquips = useMemo(() => {
     if (!data?.data?.items) return [];
 
@@ -62,8 +63,7 @@ const Products = () => {
       case "popular":
         return items.sort(
           (a, b) =>
-            (b.rating?.[0]?.averageRating || 0) -
-            (a.rating?.[0]?.averageRating || 0)
+            (b.rating?.averageRating || 0) - (a.rating?.averageRating || 0)
         );
       default:
         return items;
@@ -75,7 +75,6 @@ const Products = () => {
   };
 
   const handleLoadMore = () => {
-    setLoading(true);
     setLoadMore(true);
   };
 
@@ -114,6 +113,7 @@ const Products = () => {
             <CategoryFilter
               isLoading={isLoadingCat}
               setSelectedCategory={(cat) => {
+                setPage(1);
                 setSelectedCategory(cat);
               }}
               listFilteredCategories={categories}
