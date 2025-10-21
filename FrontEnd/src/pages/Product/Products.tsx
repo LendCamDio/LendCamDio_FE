@@ -2,12 +2,13 @@ import SortDropdown from "@/components/common/Dropdown/SortDropdown";
 import Pagination from "@/components/common/Pagination/Pagination";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import { useEquipmentList } from "@/hooks/equipment/useEquipment";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { faPlus, faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo, useState } from "react";
-import CategoryFilter from "../../components/common/CategoryFilter";
+import CategoryFilter from "../../components/common/Filter/CategoryFilter";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
+import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
 
 const Products = () => {
   const showToast = useUniqueToast();
@@ -57,9 +58,27 @@ const Products = () => {
       case "name":
         return items.sort((a, b) => a.name.localeCompare(b.name));
       case "price-low":
-        return items.sort((a, b) => a.dailyPrice - b.dailyPrice);
+        return items.sort((a, b) => {
+          const priceA = a.dailyPrice ?? a.price;
+          const priceB = b.dailyPrice ?? b.price;
+          // Xử lý trường hợp item không có giá (đẩy chúng xuống cuối)
+          if (priceA == null) return 1;
+          if (priceB == null) return -1;
+          return priceA - priceB;
+        });
       case "price-high":
-        return items.sort((a, b) => b.dailyPrice - a.dailyPrice);
+        return items
+          .sort((a, b) => {
+            const priceA = a.dailyPrice ?? a.price;
+            const priceB = b.dailyPrice ?? b.price;
+
+            // Xử lý trường hợp item không có giá (đẩy chúng xuống cuối)
+            if (priceA == null) return 1;
+            if (priceB == null) return -1;
+
+            return priceA - priceB;
+          })
+          .reverse();
       case "popular":
         return items.sort(
           (a, b) =>
@@ -84,7 +103,7 @@ const Products = () => {
   };
 
   return (
-    <div>
+    <PageWrapper animation="fade">
       <section className="hero">
         <div className="container">
           <div className="text-center">
@@ -184,7 +203,7 @@ const Products = () => {
           )}
         </div>
       </section>
-    </div>
+    </PageWrapper>
   );
 };
 

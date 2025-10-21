@@ -1,6 +1,5 @@
 import {
   sendMessage,
-  generateRecommendations,
   rateRecommendation,
   generateCategoryRecommendations,
   getRecommendations,
@@ -8,28 +7,40 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
- * Hook để lấy phản hồi từ AI
+ * Hook để gửi tin nhắn đến AI (POST)
  */
-export function useChatting(message: string) {
-  return useQuery({
-    queryKey: ["aiResponse", message],
-    queryFn: () => sendMessage(message),
-    enabled: !!message,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+export function useChatting() {
+  return useMutation({
+    mutationFn: (message: string) => sendMessage(message),
     retry: 1,
+    onError: (error) => {
+      console.error("Lỗi khi gửi tin nhắn:", error);
+    },
   });
 }
-
 /**
  * Hook để tạo đề xuất cho khách hàng
  */
-export function useGenerateRecommendations(customerId: string) {
-  return useQuery({
-    queryKey: ["recommendations", customerId],
-    queryFn: () => generateRecommendations(customerId),
-    enabled: !!customerId,
-    staleTime: 10 * 60 * 1000,
+export function useGenerateRecommendations() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      customerId,
+      categoryName,
+    }: {
+      customerId: string;
+      categoryName: string;
+    }) => generateCategoryRecommendations(customerId, categoryName),
+    onSuccess: (data, { customerId }) => {
+      console.log("Successfully generated recommendations:", data);
+      // Invalidate để refetch danh sách đề xuất
+      queryClient.invalidateQueries({
+        queryKey: ["userRecommendations", customerId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["categoryRecommendations", customerId],
+      });
+    },
     retry: 1,
   });
 }
@@ -37,15 +48,27 @@ export function useGenerateRecommendations(customerId: string) {
 /**
  * Hook để tạo đề xuất theo danh mục
  */
-export function useCategoryRecommendations(
-  customerId: string,
-  categoryName: string
-) {
-  return useQuery({
-    queryKey: ["categoryRecommendations", customerId, categoryName],
-    queryFn: () => generateCategoryRecommendations(customerId, categoryName),
-    enabled: !!customerId && !!categoryName,
-    staleTime: 10 * 60 * 1000,
+export function useCategoryRecommendations() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      customerId,
+      categoryName,
+    }: {
+      customerId: string;
+      categoryName: string;
+    }) => generateCategoryRecommendations(customerId, categoryName),
+    onSuccess: (data, { customerId }) => {
+      console.log("Successfully generated category recommendations:", data);
+      // Invalidate để refetch danh sách đề xuất
+      queryClient.invalidateQueries({
+        queryKey: ["userRecommendations", customerId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["categoryRecommendations", customerId],
+      });
+    },
     retry: 1,
   });
 }
@@ -59,7 +82,9 @@ export function useGetRecommendations(customerId: string) {
     queryFn: () => getRecommendations(customerId),
     enabled: !!customerId,
     staleTime: 5 * 60 * 1000,
-    retry: 1,
+    retry: 2,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 }
 

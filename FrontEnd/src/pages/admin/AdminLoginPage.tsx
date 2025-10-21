@@ -11,7 +11,7 @@ import {
   faShieldAlt,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { loginWithEmail, loginWithGoogle } from "@/services/authService";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";

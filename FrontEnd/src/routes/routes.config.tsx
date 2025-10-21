@@ -45,7 +45,6 @@ export const routesConfig = [
     children: [
       {
         children: [...adminRoutes],
-        errorElement: <ErrorPage />,
       },
     ],
   },

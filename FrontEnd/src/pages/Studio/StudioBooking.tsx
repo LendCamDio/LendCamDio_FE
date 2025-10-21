@@ -1,7 +1,7 @@
 import Pagination from "@/components/common/Pagination/Pagination";
 import StudiosGrid from "@/components/studios/StudiosGrid";
 import { useEquipmentList } from "@/hooks/equipment/useEquipment";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { faPlus, faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -63,9 +63,7 @@ const StudioBooking = () => {
 
       {/* Studios Grid Section */}
       <section className="section">
-        <div className="container">
-          <StudiosGrid studios={studios} isLoading={isLoading} />
-        </div>
+        <StudiosGrid studios={studios} isLoading={isLoading} />
 
         {/* Load More Button / Pagination */}
         <div

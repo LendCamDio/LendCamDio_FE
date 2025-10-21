@@ -1,6 +1,10 @@
 import api from "./api";
 import { AUTH_ENDPOINTS } from "../constants/endpoints";
-import type { ApiResponse, AuthResponse } from "@/types/entity.type";
+import type {
+  ApiResponse,
+  AuthResponse,
+  RegisterRequest,
+} from "@/types/entity.type";
 import { handleApiError } from "./apiErrorHandler";
 
 export const loginWithGoogle = async (
@@ -77,12 +81,7 @@ export const registerWithEmail = async ({
   email,
   password,
   phone,
-}: {
-  fullName: string;
-  email: string;
-  password: string;
-  phone: string;
-}): Promise<ApiResponse<AuthResponse>> => {
+}: RegisterRequest): Promise<ApiResponse<AuthResponse>> => {
   try {
     const res = await api.post<ApiResponse<AuthResponse>>(
       AUTH_ENDPOINTS.REGISTER,
@@ -105,5 +104,52 @@ export const registerWithGoogle = async (
     return res.data;
   } catch (error) {
     return handleApiError<AuthResponse>(error);
+  }
+};
+
+export const logout = async (): Promise<ApiResponse<object>> => {
+  try {
+    const res = await api.post<ApiResponse<object>>(AUTH_ENDPOINTS.LOGOUT);
+    return res.data;
+  } catch (error) {
+    return handleApiError<object>(error);
+  }
+};
+
+export const changePassword = async ({
+  oldPassword,
+  newPassword,
+}: {
+  oldPassword: string;
+  newPassword: string;
+}): Promise<ApiResponse<object>> => {
+  try {
+    const res = await api.post<ApiResponse<object>>(
+      AUTH_ENDPOINTS.CHANGE_PASSWORD,
+      { oldPassword, newPassword }
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<object>(error);
+  }
+};
+
+export const verifyEmail = async (
+  email: string,
+  token: string
+): Promise<ApiResponse<object>> => {
+  try {
+    const res = await api.get<ApiResponse<object>>(
+      AUTH_ENDPOINTS.VERIFY_EMAIL,
+      {
+        params: { email, token },
+      }
+    );
+    if (!res.data.success) {
+      throw new Error(res.data.error?.message || "Xác thực email thất bại");
+    }
+    return res.data;
+  } catch (error) {
+    return handleApiError<object>(error);
   }
 };

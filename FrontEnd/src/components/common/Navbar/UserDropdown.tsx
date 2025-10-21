@@ -7,7 +7,7 @@ import {
   type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../../hooks/auth/useAuth";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { twMerge } from "tailwind-merge";
 
 interface DropdownItem {

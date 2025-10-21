@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Rating } from "../common/Rating";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import defPic from "@/assets/defaultPic1.jpg";
 import Loading from "../common/Loading/Loading";
 import { useEffect, useState } from "react";
@@ -57,6 +57,21 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
     // Add to favorites logic here
     showToast("Chức năng đang phát triển", "info");
   };
+
+  // 🏷️ Giá hiển thị hợp lý
+  const displayPrice =
+    equipment.dailyPrice && equipment.dailyPrice > 0
+      ? `${equipment.dailyPrice.toLocaleString()}đ/ngày`
+      : equipment.price && equipment.price > 0
+      ? `${equipment.price.toLocaleString()}đ`
+      : "Liên hệ";
+
+  const actionLabel =
+    equipment.dailyPrice && equipment.dailyPrice > 0
+      ? "Đặt lịch ngay"
+      : equipment.price && equipment.price > 0
+      ? "Mua ngay"
+      : "Liên hệ";
 
   return (
     <div
@@ -135,25 +150,53 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
         </motion.div>
       </div>
 
-      <div className="product-info">
-        <h3 className="product-title">{equipment.name}</h3>
-        <p className="product-description">{equipment.description}</p>
-        <div className="product-rating">
+      {/* Content */}
+      <div className="p-4 space-y-2">
+        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+          {equipment.name}
+        </h3>
+        <p className="text-sm text-gray-500 line-clamp-2">
+          {equipment.description || "Chưa có mô tả chi tiết."}
+        </p>
+
+        <div className="flex items-center justify-between">
           <Rating
             value={equipment.rating ? equipment.rating.averageRating : 0}
           />
+          {equipment.availability ? (
+            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+              Còn hàng
+            </span>
+          ) : (
+            <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">
+              Hết hàng
+            </span>
+          )}
         </div>
-        <div className="product-price">
-          {equipment.dailyPrice.toLocaleString()}đ/ngày
+
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-blue-600 font-bold text-lg">{displayPrice}</p>
         </div>
         <motion.button
-          className="btn-primary product-btn"
-          onClick={() => navigate("/studios")}
+          onClick={() => {
+            if (equipment.dailyPrice && equipment.dailyPrice > 0)
+              navigate("/studios");
+            else
+              showToast("Tính năng đang phát triển", "info", {
+                allowSpam: true,
+              });
+          }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}
+          className="
+            btn
+            btn-primary
+            w-full mt-2 py-2 
+            bg-gradient-to-r from-blue-600 to-indigo-600 
+            text-white font-semibold rounded-lg shadow hover:shadow-lg transition"
         >
-          Đặt lịch ngay
+          {actionLabel}
         </motion.button>
       </div>
     </div>

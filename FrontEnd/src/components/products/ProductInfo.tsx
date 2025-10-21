@@ -14,7 +14,7 @@ import {
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { Rating } from "@/components/common/Rating";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import type { Equipment } from "@/types/entity.type";
 
 type ExtendedEquipment = Equipment & {
@@ -32,7 +32,9 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isSupplierInfoExpanded, setIsSupplierInfoExpanded] = useState(false);
 
-  const totalPrice = product.dailyPrice * selectedDays * quantity;
+  const totalPrice = product.dailyPrice
+    ? product.dailyPrice * selectedDays * quantity
+    : 0;
 
   const toggleSupplierInfo = () => {
     setIsSupplierInfoExpanded(!isSupplierInfoExpanded);
@@ -50,14 +52,16 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
 
       {/* Rating */}
       <div className="product-rating mb-3">
-        <Rating value={product.rating ? product.rating[0].averageRating : 0} />
+        <Rating value={product.rating ? product.rating.averageRating : 0} />
       </div>
 
       {/* Price */}
       <div className="product-price mb-4">
         <div className="d-flex align-items-center gap-3">
           <span className="h3 text-primary mb-0">
-            {product.dailyPrice.toLocaleString("vi-VN")}đ
+            {product.dailyPrice
+              ? product.dailyPrice.toLocaleString("vi-VN") + "đ"
+              : "Liên hệ"}
           </span>
           <span className="text-muted">/ ngày</span>
         </div>
@@ -174,7 +178,9 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
           </div>
           <small className="text-muted">
             {quantity} x {selectedDays} ngày x{" "}
-            {product.dailyPrice.toLocaleString("vi-VN")}đ
+            {product.dailyPrice
+              ? product.dailyPrice.toLocaleString("vi-VN") + "đ"
+              : "Liên hệ"}
           </small>
         </div>
 

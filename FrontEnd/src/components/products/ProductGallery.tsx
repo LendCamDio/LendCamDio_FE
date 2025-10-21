@@ -10,8 +10,6 @@ import type { Equipment } from "@/types/index.type";
 
 interface ProductGalleryProps {
   images: string[] | undefined;
-  productName: string;
-  categoryName: string;
 }
 
 // Extended type for our component with additional properties
@@ -20,19 +18,15 @@ type ExtendedEquipment = Equipment & {
   specifications?: Record<string, string>;
 };
 
-export const ProductGallery = ({
-  images,
-  productName,
-  categoryName,
-}: ProductGalleryProps) => {
+export const ProductGallery = ({ images }: ProductGalleryProps) => {
   const [isImgDialogOpen, setIsImgDialogOpen] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  console.log("ProductGallery images:", images);
-  console.log("ProductGallery productName:", productName);
-  console.log("ProductGallery categoryName:", categoryName);
+  // console.group("ProductGallery images:", images);
+  // console.log("ProductGallery productName:", productName);
+  // console.log("ProductGallery categoryName:", categoryName);
 
   // Dùng data từ loader
   const mockProduct: Equipment = useLoaderData();
@@ -41,6 +35,7 @@ export const ProductGallery = ({
   const extendedMockProduct: ExtendedEquipment = {
     ...mockProduct,
     images: [
+      ...(images || []),
       "/src/assets/defaultPic1.jpg",
       "/src/assets/defaultPic1.jpg",
       "/src/assets/defaultPic1.jpg",

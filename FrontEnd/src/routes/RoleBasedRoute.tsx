@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/auth/useAuth";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 
 interface Props {
   allowedRoles: string[];
@@ -17,6 +17,7 @@ export function RoleBasedRoute({ allowedRoles }: Props) {
 
   if (!token) {
     // Lưu trạng thái / đường dẫn hiện tại để chuyển hướng sau khi đăng nhập
+    showToast("Vui lòng đăng nhập để tiếp tục", "error", { duration: 1000 });
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
@@ -26,7 +27,9 @@ export function RoleBasedRoute({ allowedRoles }: Props) {
     : false;
 
   if (!flag) {
-    showToast("Bạn không có quyền truy cập trang này", "info", undefined, 1000);
+    showToast("Bạn không có quyền truy cập trang này", "info", {
+      duration: 1000,
+    });
     return <Navigate to="/" replace />;
   }
 

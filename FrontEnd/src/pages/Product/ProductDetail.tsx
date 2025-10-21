@@ -1,162 +1,204 @@
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import ProductCard from "@/components/products/ProductCard";
 import type { Equipment } from "@/types/entity.type";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
-import { ProductInfo } from "@/components/products/ProductInfo";
-import { ProductGallery } from "@/components/products/ProductGallery";
-// import { ImageDialog } from "@/components/ui/Dialog";
+import ProductCard from "@/components/products/ProductCard";
+import { Breadcrumbs } from "@/components/common/Breaddcrumbs/Breadcrumbs";
+import { Rating } from "@/components/common/Rating";
+import { motion } from "framer-motion";
+import {
+  ShieldCheck,
+  Store,
+  Package,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import defPic from "@/assets/defaultPic1.jpg";
 
-// Extended type for our component with additional properties
+// Extended Equipment for detail
 type ExtendedEquipment = Equipment & {
   images?: string[];
   specifications?: Record<string, string>;
 };
 
-const mockRelatedProducts: Equipment[] = [
-  {
-    equipmentId: "2",
-    name: "Canon RF 24-70mm f/2.8L IS USM",
-    description: "Ống kính zoom tiêu chuẩn chuyên nghiệp",
-    dailyPrice: 450000,
-    depositAmount: 2500000,
-    condition: 8,
-    availability: true,
-    stockQuantity: 3,
-    categoryId: "lens",
-    categoryName: "Lens",
-    supplierId: "supplier1",
-    supplierName: "Studio Pro Equipment",
-    imageId: "img2",
-    imageUrl: "/src/assets/defaultPic1.jpg",
-    insuranceRequired: false,
-    status: "active",
-    createdAt: "2024-01-01T00:00:00Z",
-    rating: { equipmentId: "2", averageRating: 4.6 },
-  },
-  {
-    equipmentId: "3",
-    name: "Sony Alpha 7R V",
-    description: "Máy ảnh mirrorless độ phân giải cao",
-    dailyPrice: 920000,
-    depositAmount: 5500000,
-    condition: 9,
-    availability: true,
-    stockQuantity: 2,
-    categoryId: "camera",
-    categoryName: "Camera",
-    supplierId: "supplier2",
-    supplierName: "Digital Camera House",
-    imageId: "img3",
-    imageUrl: "/src/assets/defaultPic1.jpg",
-    insuranceRequired: false,
-    status: "active",
-    createdAt: "2024-01-01T00:00:00Z",
-    rating: { equipmentId: "3", averageRating: 4.7 },
-  },
-  {
-    equipmentId: "4",
-    name: "Godox AD600Pro",
-    description: "Đèn flash studio chuyên nghiệp",
-    dailyPrice: 650000,
-    depositAmount: 3000000,
-    condition: 7,
-    availability: true,
-    stockQuantity: 4,
-    categoryId: "lighting",
-    categoryName: "Lighting",
-    supplierId: "supplier3",
-    supplierName: "Lighting Solutions",
-    imageId: "img4",
-    imageUrl: "/src/assets/defaultPic1.jpg",
-    insuranceRequired: false,
-    status: "active",
-    createdAt: "2024-01-01T00:00:00Z",
-    rating: { equipmentId: "4", averageRating: 4.5 },
-  },
-];
 const ProductDetail = () => {
-  // const { id } = useParams<{ id: string }>();
-
-  // Dùng data từ loader
   const mockProduct: Equipment = useLoaderData();
-  console.log("Loader data:", mockProduct);
-
-  // Mô phỏng dữ liệu chi tiết sản phẩm với hình ảnh và thông số kỹ thuật
   const extendedMockProduct: ExtendedEquipment = {
     ...mockProduct,
-    images: [
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-    ],
+    images: Array(6).fill(defPic),
     specifications: {
-      resolution: "45.0 MP",
-      sensor: "Full-frame CMOS",
-      videoRecording: "8K RAW, 4K 120p",
-      mount: "RF Mount",
-      weight: "738g",
-      battery: "LP-E6NH",
+      dddd: "45.0 MP",
+      aaaa: "Full-frame CMOS",
+      "Quay video": "8K RAW, 4K 120p",
+      "Ngàm ống kính": "RF Mount",
+      Wiet: "738g",
+      Pin: "LP-E6NH",
     },
   };
 
-  // Thay đổi để sử dụng dữ liệu mô phỏng
   const [product] = useState<ExtendedEquipment>(extendedMockProduct);
 
-  console.log("Product data:", product); // Use the product data
+  const mockRelatedProducts: Equipment[] = [
+    {
+      equipmentId: "2",
+      name: "Canon RF 24-70mm f/2.8L IS USM",
+      description: "Ống kính zoom tiêu chuẩn chuyên nghiệp",
+      dailyPrice: 450000,
+      depositAmount: 2500000,
+      condition: 8,
+      availability: true,
+      stockQuantity: 3,
+      categoryId: "lens",
+      categoryName: "Lens",
+      supplierId: "supplier1",
+      supplierName: "Studio Pro Equipment",
+      imageId: "img2",
+      imageUrl: defPic,
+      insuranceRequired: false,
+      status: "active",
+      createdAt: "2024-01-01T00:00:00Z",
+      rating: { equipmentId: "2", averageRating: 4.6 },
+    },
+  ];
 
   return (
-    <div className="animate-fadeInUp">
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 text-center my-4">
-            <Breadcrumbs className="text-lg" />
-          </div>
+    <div className="animate-fadeInUp py-10">
+      <div className="container mx-auto px-4">
+        {/* Breadcrumb */}
+        <div className="mb-6 text-center">
+          <Breadcrumbs />
         </div>
-      </div>
 
-      {/* Product Detail Section */}
-      <section className="section py-5">
-        <div className="container">
-          <div className="row product-detail">
-            {/* Product Gallery */}
-            <ProductGallery
-              images={product.images || [product.imageUrl]}
-              productName={product.name}
-              categoryName={product.categoryName}
-            />
-
-            {/* Product Information */}
-            <ProductInfo product={product} />
+        {/* Product Section */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+          {/* Gallery */}
+          <div className="space-y-4">
+            <div className="aspect-square rounded-2xl overflow-hidden shadow-md">
+              <img
+                src={product.images?.[0] || defPic}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="grid grid-cols-6 gap-3">
+              {product.images?.slice(0, 6).map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={`thumb-${i}`}
+                  className="h-20 w-full object-cover rounded-lg cursor-pointer hover:opacity-80 transition"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Related Products Section */}
-      <section className="section py-5 bg-light">
-        <div className="container">
-          <div className="text-center mb-5">
-            <h2 className="section-title">Sản phẩm liên quan</h2>
-            <p className="section-subtitle">
-              Khám phá thêm các sản phẩm tương tự
+          {/* Product Info */}
+          <div className="space-y-4">
+            <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
+            <div className="flex flex-wrap gap-3 text-sm text-gray-500">
+              <span className="flex items-center gap-1">
+                <Store size={16} /> {product.supplierName || "Không xác định"}
+              </span>
+              <span className="flex items-center gap-1">
+                <Package size={16} /> {product.categoryName}
+              </span>
+            </div>
+
+            {/* Rating + Availability */}
+            <div className="flex items-center gap-4">
+              <Rating value={product.rating?.averageRating ?? 0} />
+              {product.availability ? (
+                <span className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                  <CheckCircle size={16} /> Còn hàng ({product.stockQuantity})
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-red-600 text-sm font-medium">
+                  <AlertCircle size={16} /> Hết hàng
+                </span>
+              )}
+            </div>
+
+            {/* Pricing */}
+            <div className="space-y-1">
+              <p className="text-2xl font-bold text-blue-600">
+                {product.dailyPrice
+                  ? `${product.dailyPrice.toLocaleString("vi-VN")}đ/ngày`
+                  : product.price
+                  ? `${product.price.toLocaleString("vi-VN")}đ`
+                  : "Liên hệ"}
+              </p>
+              {product.depositAmount && (
+                <p className="text-sm text-gray-500">
+                  Cọc: {product.depositAmount.toLocaleString("vi-VN")}đ
+                </p>
+              )}
+              {product.insuranceRequired && (
+                <p className="flex items-center gap-2 text-yellow-600 text-sm">
+                  <ShieldCheck size={16} /> Yêu cầu bảo hiểm khi thuê
+                </p>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-gray-700 text-sm leading-relaxed border-t pt-3">
+              {product.description ||
+                "Không có mô tả chi tiết cho thiết bị này."}
+            </p>
+
+            {/* Specifications */}
+            {product.specifications && (
+              <div className="mt-4">
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Thông số kỹ thuật
+                </h3>
+                <div className="bg-gray-50 border rounded-xl overflow-hidden divide-y divide-gray-100">
+                  {Object.entries(product.specifications).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between px-4 py-2 text-sm text-gray-600"
+                      >
+                        <span className="font-medium">{key}</span>
+                        <span>{value}</span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Action */}
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow hover:shadow-lg transition"
+            >
+              {product.dailyPrice
+                ? "Đặt lịch ngay"
+                : product.price
+                ? "Mua ngay"
+                : "Liên hệ"}
+            </motion.button>
+          </div>
+        </section>
+
+        {/* Related Products */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Sản phẩm liên quan
+            </h2>
+            <p className="text-gray-500">
+              Khám phá thêm các sản phẩm tương tự từ hệ thống
             </p>
           </div>
 
-          <div className="products-grid">
-            {mockRelatedProducts.map((relatedProduct) => (
-              <ProductCard
-                key={relatedProduct.equipmentId}
-                equipment={relatedProduct}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockRelatedProducts.map((related) => (
+              <ProductCard key={related.equipmentId} equipment={related} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

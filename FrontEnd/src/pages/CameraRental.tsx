@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import CategoryFilter from "../components/common/CategoryFilter";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import CategoryFilter from "../components/common/Filter/CategoryFilter";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
 import { useEquipmentList } from "@/hooks/equipment/useEquipment";
 import Pagination from "@/components/common/Pagination/Pagination";
@@ -27,6 +27,10 @@ const CameraRental = () => {
       key: cat.categoryId,
       label: cat.name,
     })) || [];
+  const exceptCategory = ["Studio"];
+  const filteredCategories = categories.filter(
+    (cat) => !exceptCategory.includes(cat.label)
+  );
 
   const { data, isLoading, error } = useEquipmentList(
     page,
@@ -91,7 +95,7 @@ const CameraRental = () => {
                 setActiveCategory(cat);
                 setPage(1);
               }}
-              listFilteredCategories={categories}
+              listFilteredCategories={filteredCategories}
             />
           </div>
         </div>

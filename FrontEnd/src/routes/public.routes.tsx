@@ -11,6 +11,7 @@ const CameraRental = lazyImport(() => import("@/pages/CameraRental"));
 const Products = lazyImport(() => import("@/pages/Product/Products"));
 const ProductDetail = lazyImport(() => import("@/pages/Product/ProductDetail"));
 const Contacts = lazyImport(() => import("@/pages/Contacts"));
+const VerifyEmail = lazyImport(() => import("@/pages/VerifyEmail"));
 
 // Define public routes
 export const publicRoutes = [
@@ -88,5 +89,9 @@ export const publicRoutes = [
     handle: {
       breadcrumb: () => "Studio",
     },
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
   },
 ];

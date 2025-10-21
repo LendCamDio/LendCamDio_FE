@@ -2,6 +2,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../constants/endpoints";
 import { jwtDecode } from "jwt-decode";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 // Tạo instance axios
 const api = axios.create({
@@ -49,7 +50,8 @@ api.interceptors.response.use(
   (error) => {
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
+      const { logout } = useAuth();
+      logout(); // automatically clear auth
     }
     return Promise.reject(error);
   }

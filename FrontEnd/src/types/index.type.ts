@@ -11,7 +11,7 @@ export interface JwtPayload {
   aud: string;
 }
 
-export interface User {
+export interface UserTokenPayload {
   id: string;
   email: string;
   role: string;
@@ -19,7 +19,7 @@ export interface User {
 
 export interface AuthContextType {
   token: string | null;
-  user: User | null;
+  user: UserTokenPayload | null;
   role: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
