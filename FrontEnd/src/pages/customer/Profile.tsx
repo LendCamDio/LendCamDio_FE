@@ -25,7 +25,7 @@ const Profile = () => {
   const { user: userPayload } = useAuth();
   const { data } = useUser();
   const user = {
-    ...data?.data,
+    ...data,
     role: userPayload?.role,
   };
   const [isEditing, setIsEditing] = useState(false);

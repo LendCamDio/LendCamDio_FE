@@ -47,7 +47,9 @@ export default function UserDropdown({ items }: { items: DropdownItem[] }) {
   const handleLogout = () => {
     logout();
     setIsOpen(false);
-    showToast("Đăng xuất thành công", "success", "logout-success");
+    showToast("Đăng xuất thành công", "success", {
+      allowSpam: false,
+    });
   };
 
   return (

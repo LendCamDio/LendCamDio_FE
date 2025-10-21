@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarDays,
@@ -53,11 +53,11 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
     // Tính giá tạm thời
     if (id === "duration") {
       const hours = Number(value);
-      const dailyPrice = studio
-        ? studio.dailyPrice
-          ? studio.dailyPrice / 24
-          : 0
-        : 0;
+      // const dailyPrice = studio
+      //   ? studio.dailyPrice
+      //     ? studio.dailyPrice / 24
+      //     : 0
+      //   : 0;
       const hourlyRate = 250000; // 250k/giờ — có thể thay đổi theo DB
       setPrice(hours * hourlyRate);
     }

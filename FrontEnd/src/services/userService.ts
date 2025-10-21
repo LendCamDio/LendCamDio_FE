@@ -3,10 +3,8 @@ import { USER_ENDPOINTS } from "@/constants/endpoints";
 import { handleApiError } from "./apiErrorHandler";
 import type {
   ApiResponse,
-  PaginatedData,
   UpdateUserRequestDto,
   UpdateUserResponse,
-  UserInfo,
   UserResponse,
 } from "@/types/entity.type";
 
