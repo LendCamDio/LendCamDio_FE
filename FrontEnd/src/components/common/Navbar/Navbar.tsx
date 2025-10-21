@@ -24,11 +24,11 @@ const NAV_ITEMS = [
   { name: "Sản phẩm", to: "/products", icon: faBox },
   {
     name: "Lịch của tôi",
-    to: "/customers/booking-history",
+    to: "/customer/booking-history",
     icon: faCalendarCheck,
   },
   { name: "Liên hệ", to: "/contact", icon: faEnvelope },
-  { name: "Giỏ hàng", to: "/customers/cart", icon: faShoppingCart },
+  { name: "Giỏ hàng", to: "/customer/cart", icon: faShoppingCart },
 ];
 
 export default function Navbar() {
@@ -61,11 +61,15 @@ export default function Navbar() {
           {token ? (
             <UserDropdown
               items={[
-                { label: "My Profile", to: "#", icon: faUser },
-                { label: "Settings", to: "#", icon: faGear },
-                { label: "Orders", to: "#", icon: faShoppingBag },
-                { label: "Cart", to: "/customers/cart", icon: faShoppingCart },
-                { label: "Wishlist", to: "#", icon: faHeart },
+                { label: "My Profile", to: "/customer/profile", icon: faUser },
+                { label: "Settings", to: "/customer/settings", icon: faGear },
+                {
+                  label: "Orders",
+                  to: "/customer/orders",
+                  icon: faShoppingBag,
+                },
+                { label: "Cart", to: "/customer/cart", icon: faShoppingCart },
+                { label: "Wishlist", to: "/customer/wishlist", icon: faHeart },
               ]}
             />
           ) : (

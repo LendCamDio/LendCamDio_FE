@@ -12,7 +12,7 @@ import {
   faEyeSlash,
   faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +23,7 @@ import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@/types/index.type";
 
 export default function LoginPage() {
-  const { login, logout } = useAuth();
+  const { login, logout, user } = useAuth();
   const showToast = useUniqueToast();
   const navigate = useNavigate();
   const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
@@ -74,7 +74,8 @@ export default function LoginPage() {
           navigate("/");
         }
       } else {
-        const errorMessage = result.error?.message || "Đăng ký thất bại";
+        console.error("Google login error:", result.error?.message);
+        const errorMessage = "Đăng nhập thất bại";
         showToast(errorMessage, "error");
       }
     }
@@ -103,6 +104,20 @@ export default function LoginPage() {
   const selectUserType = (type: "Customer" | "Supplier") => {
     setUserType(type);
   };
+
+  // Cuộn đến form đăng nhập khi trang được load
+  useEffect(() => {
+    const element = document.getElementById("login-form");
+    element?.scrollIntoView({ block: "end", behavior: "smooth" });
+  }, []);
+
+  // Nếu đã đăng nhập thì chuyển hướng về trang chủ
+  useEffect(() => {
+    if (user) {
+      showToast("Bạn đã đăng nhập", "info");
+      navigate("/");
+    }
+  }, []);
 
   // Tự động điền email nếu đã nhớ trước đó
   useEffect(() => {
@@ -151,7 +166,7 @@ export default function LoginPage() {
       </div>
 
       {/* Login Form */}
-      <div className="auth-form">
+      <div className="auth-form" id="login-form">
         <div className="auth-header">
           <h2
             key={userType} // giúp React hiểu có 2 trạng thái khác nhau

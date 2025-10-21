@@ -1,44 +1,25 @@
-import type { ImageDialogProps } from "@/types/ui.type";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as Dialog from "@radix-ui/react-dialog";
-import { motion } from "framer-motion";
+import type { ImageDialogProps } from "@/types/ui/ui.type";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import {
-  useCallback,
-  // useMemo,
-  useState,
-} from "react";
+import { useCallback, useState } from "react";
+import { Dialog } from "./Dialog";
 
 export const ImageDialog = ({
   imageUrl,
   imagesUrl,
-  alt,
+  alt = "Image",
   className,
-  isOpen,
-  onClose,
+  isOpen = false,
+  onClose = () => {},
 }: ImageDialogProps) => {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) onClose?.();
-  };
-
-  // const handleMainSwiperInit = useCallback((swiper: SwiperType) => {
-  //   setMainSwiper(swiper);
-  // }, []);
-
   const handleThumbsSwiperInit = useCallback((swiper: SwiperType) => {
     setThumbsSwiper(swiper);
   }, []);
-
-  // const handleSlideChange = useCallback((swiper: SwiperType) => {
-  //   setCurrentImageIndex(swiper.activeIndex);
-  // }, []);
 
   const handleThumbnailClick = useCallback(
     (index: number) => {
@@ -48,123 +29,103 @@ export const ImageDialog = ({
     [mainSwiper]
   );
 
-  // const thumbsConfig = useMemo(
-  //   () => ({
-  //     swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-  //   }),
-  //   [thumbsSwiper]
-  // );
+  // If we have an array of images, use the first one as the default
+  const singleImageUrl = Array.isArray(imageUrl) ? imageUrl[0] : imageUrl;
+  // Use imagesUrl if provided, otherwise convert single imageUrl to array
+  const images =
+    Array.isArray(imagesUrl) && imagesUrl.length > 0
+      ? imagesUrl
+      : singleImageUrl
+      ? [singleImageUrl]
+      : [];
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <Dialog.Trigger asChild>
-        <img src={imageUrl?.[0]} alt={alt} className={className} />
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.4 } }}
-        >
-          <Dialog.Overlay className="fixed inset-0 bg-gray-400 opacity-50" />
-          <Dialog.Content
-            className="fixed top-1/2 left-1/2 
-                -translate-x-1/2 -translate-y-1/2 
-                max-w-6xl max-h-[95vh] 
-                bg-amber-50
-                p-2 rounded-sm shadow-lg"
-          >
-            <Dialog.Close asChild>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent the click from propagating to the overlay
-                  onClose?.();
-                }}
-                aria-label="Close image preview"
-                className="absolute top-1.8 right-2.5 opacity-70
-                    text-[var(--text-light)] transition duration-100
-                    hover:text-[var(--text-dark)] hover:scale-105
-                    w-fit text-xl font-bold"
+    <>
+      {/* Clickable image thumbnail */}
+      {!isOpen && (
+        <img
+          src={singleImageUrl}
+          alt={alt}
+          className={className}
+          onClick={() => onClose()}
+          style={{ cursor: "pointer" }}
+        />
+      )}
+
+      {/* Image Dialog */}
+      <Dialog
+        isOpen={isOpen}
+        onClose={onClose}
+        size="full"
+        position="center"
+        contentClassName="max-w-5xl max-h-[90vh] bg-white p-4 rounded-md"
+        showCloseButton={true}
+      >
+        <div className="flex flex-col items-center justify-center">
+          <h2 className="text-lg font-bold mb-3">{alt}</h2>
+
+          {/* Main image swiper */}
+          {images.length > 0 && (
+            <div className="mb-4 w-full">
+              <Swiper
+                onSwiper={setMainSwiper}
+                modules={[Navigation, Thumbs]}
+                spaceBetween={10}
+                thumbs={{ swiper: thumbsSwiper }}
+                onSlideChange={(swiper) =>
+                  setCurrentImageIndex(swiper.activeIndex)
+                }
+                className="rounded-md overflow-hidden"
               >
-                <FontAwesomeIcon icon={faXmark} />
-              </button>
-            </Dialog.Close>
-            <Dialog.Title className="flex flex-col items-center justify-center">
-              <h2 className="text-lg font-bold">{alt}</h2>
-              {Array.isArray(imagesUrl) && imagesUrl.length > 0 ? (
-                <div className="mb-2">
-                  <Swiper
-                    onSwiper={setMainSwiper}
-                    modules={[Navigation, Thumbs]}
-                    spaceBetween={10}
-                    thumbs={{ swiper: thumbsSwiper }}
-                    onSlideChange={(swiper) =>
-                      setCurrentImageIndex(swiper.activeIndex)
-                    }
-                    className="rounded-md overflow-hidden"
-                  >
-                    {imagesUrl.map((image: string, index: number) => (
-                      <SwiperSlide key={index}>
-                        <img
-                          src={image}
-                          alt={`${alt} ${index + 1}`}
-                          className="max-h-[80vh] w-auto mx-auto"
-                        />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
-              ) : (
-                <div className="mb-2">
-                  <img
-                    src={imageUrl}
-                    alt={alt}
-                    className="max-h-[80vh] w-auto mx-auto"
-                  />
-                </div>
-              )}
-            </Dialog.Title>
-            <Dialog.Description className="">
-              {/* Thumbnail navigation */}
-              {Array.isArray(imagesUrl) && imagesUrl.length > 0 ? (
-                <Swiper
-                  key="thumbs-swiper"
-                  onSwiper={handleThumbsSwiperInit}
-                  modules={[Navigation, Thumbs]}
-                  slidesPerView={4}
-                  navigation
-                  watchSlidesProgress={true}
-                  breakpoints={{
-                    320: { slidesPerView: 3 },
-                    640: { slidesPerView: 4 },
-                    1024: { slidesPerView: 6 },
-                  }}
-                  className="thumbs-swiper"
-                >
-                  {imagesUrl.map((image: string, index: number) => (
-                    <SwiperSlide key={`thumb-slide-${index}`}>
-                      <img
-                        src={image}
-                        alt={`${alt} thumb ${index}`}
-                        onClick={() => handleThumbnailClick(index)}
-                        className={`transition-all duration-200 cursor-pointer ${
-                          currentImageIndex === index
-                            ? "active border-2 border-blue-500"
-                            : "border-gray-300 hover:border-gray-400"
-                        }`}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              ) : (
-                <div>
-                  <p>No additional images available.</p>
-                </div>
-              )}
-            </Dialog.Description>
-          </Dialog.Content>
-        </motion.div>
-      </Dialog.Portal>
-    </Dialog.Root>
+                {images.map((image: string, index: number) => (
+                  <SwiperSlide key={`main-slide-${index}-${image}`}>
+                    <img
+                      src={image}
+                      alt={`${alt} ${index + 1}`}
+                      className="max-h-[80vh] w-auto mx-auto"
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          )}
+
+          {/* Thumbnail navigation */}
+          {images.length > 1 && (
+            <div className="w-full max-w-3xl mx-auto mt-4">
+              <Swiper
+                key="thumbs-swiper"
+                onSwiper={handleThumbsSwiperInit}
+                modules={[Navigation, Thumbs]}
+                slidesPerView={4}
+                navigation
+                watchSlidesProgress={true}
+                breakpoints={{
+                  320: { slidesPerView: 3 },
+                  640: { slidesPerView: 4 },
+                  1024: { slidesPerView: 6 },
+                }}
+                className="thumbs-swiper"
+              >
+                {images.map((image: string, index: number) => (
+                  <SwiperSlide key={`thumb-slide-${index}`}>
+                    <img
+                      src={image}
+                      alt={`${alt} thumb ${index}`}
+                      onClick={() => handleThumbnailClick(index)}
+                      className={`transition-all duration-200 cursor-pointer h-16 object-cover ${
+                        currentImageIndex === index
+                          ? "border-2 border-blue-500"
+                          : "border border-gray-300 hover:border-gray-400"
+                      }`}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          )}
+        </div>
+      </Dialog>
+    </>
   );
 };

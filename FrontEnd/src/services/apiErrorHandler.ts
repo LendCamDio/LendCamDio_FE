@@ -46,7 +46,7 @@ export const handleApiError = <T>(error: unknown): ApiResponse<T> => {
   return {
     success: false,
     error: {
-      code: 500,
+      code: error instanceof AxiosError ? error?.response?.status || 500 : 500,
       message:
         error instanceof Error ? error.message : "Network error occurred",
     },

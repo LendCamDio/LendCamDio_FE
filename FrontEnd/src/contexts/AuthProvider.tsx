@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import type { AuthContextType, JwtPayload } from "../types/index.type";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "./AuthContext";
+import { logout as apiLogout } from "@/services/authService";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(
@@ -11,7 +12,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Hàm đăng xuất
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      await apiLogout(); // call backend
+    } catch (err) {
+      console.warn("Server logout failed, continuing local logout");
+    }
     // Clear both storage locations
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
@@ -48,7 +54,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
               isVerified: decoded.IsVerified === "True" && "true", // Chuyển đổi chuỗi "True" thành boolean
               avatarUrl: decoded.AvatarUrl,
             });
-            console.log("Decoded token:", decoded);
+            // console.log("Decoded token:", decoded);
           }
         } catch {
           console.error("Invalid token");
@@ -95,7 +101,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
           ],
         });
 
-        console.log("Login successful. Decoded token:", decoded);
+        // console.log("Login successful. Decoded token:", decoded);
       } catch (error) {
         console.error("Login failed: Invalid token", error);
         logout();

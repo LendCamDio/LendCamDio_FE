@@ -1,4 +1,6 @@
 import { Tooltip } from "@/components/ui/Tootlip";
+import { useAuth } from "@/hooks/auth/useAuth";
+import { usePaymentsByCustomer } from "@/hooks/payment/usePayment";
 import {
   faCalendarCheck,
   faClock,
@@ -8,10 +10,41 @@ import {
   faTruck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DashboardSection = () => {
   const navigate = useNavigate();
+  const [page] = useState(1);
+  const [pageSize] = useState(100);
+  const { user } = useAuth();
+
+  // Fetch statistics data
+  const { data: dataResPayment } = usePaymentsByCustomer(
+    user?.id || "",
+    page,
+    pageSize,
+    Boolean(user?.id)
+  );
+  const { data: dataResRental } = usePaymentsByCustomer(
+    user?.id || "",
+    page,
+    pageSize,
+    Boolean(user?.id)
+  );
+
+  const payments = dataResPayment?.data?.items || [];
+  const rentals = dataResRental?.data?.items || [];
+
+  const [totalSpent] = useState(() => {
+    return payments.reduce((sum, payment) => {
+      return sum + payment.amount;
+    }, 0);
+  });
+  const [totalRental] = useState(() => {
+    return rentals.length;
+  });
+
   // Sample data
   const nearlyActivitiesCols = [
     { header: "ID", accessor: "id" },
@@ -76,14 +109,14 @@ const DashboardSection = () => {
         </div>
 
         <div className="row mb-5">
+          {/* Đơn hàng */}
           <div className="col-md-3 mb-4">
-            {/* Đơn hàng */}
             <div className="stat-card">
               <div className="stat-icon dashUser-icon-shop">
                 <FontAwesomeIcon icon={faShoppingCart} />
               </div>
               <div className="stat-info">
-                <h3 id="user-total-orders">0</h3>
+                <h3 id="user-total-orders">{totalRental}</h3>
                 <p>Tổng đơn hàng</p>
               </div>
             </div>
@@ -108,7 +141,7 @@ const DashboardSection = () => {
               </div>
               <div className="stat-info">
                 <Tooltip content="Tổng chi tiêu của bạn">
-                  <h3 id="user-total-spent">0đ</h3>
+                  <h3 id="user-total-spent">{totalSpent} VND</h3>
                 </Tooltip>
                 <p>Tổng chi tiêu</p>
               </div>
@@ -127,95 +160,95 @@ const DashboardSection = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="row justify-center gap-5 h-[400px]">
-        {/* Hoạt động gần đây */}
-        {/* Chỉ hiển thị 5 hoạt động gần đây nhất, không cần fetch toàn bộ */}
-        <div className="h-full md:col-span-4 col-span-12 mt-4 md:mt-0">
-          <div className="dashboard-card">
-            <div className="dashboard-card-header">
-              <h4 className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faClockRotateLeft} /> Hoạt động gần đây
-              </h4>
-              <button
-                onClick={() => navigate("/history")}
-                className="btn btn-outline-primary"
-              >
-                Xem tất cả
-              </button>
-            </div>
+        <div className="row justify-around mb-5">
+          {/* Hoạt động gần đây */}
+          {/* Chỉ hiển thị 5 hoạt động gần đây nhất, không cần fetch toàn bộ */}
+          <div className="h-full col-md-5 mt-4">
+            <div className="dashboard-card">
+              <div className="dashboard-card-header">
+                <h4 className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faClockRotateLeft} /> Hoạt động gần đây
+                </h4>
+                <button
+                  onClick={() => navigate("/customer/booking-history")}
+                  className="btn btn-outline-primary"
+                >
+                  Xem tất cả
+                </button>
+              </div>
 
-            <div className="dashboard-card-table-container">
-              {/* Table header cố định */}
-              <table className="dashboard-card-table">
-                <thead className="dashboard-card-table-header">
-                  <tr>
-                    {nearlyActivitiesCols.map((col) => (
-                      <th key={col.accessor}>{col.header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="dashboard-card-table-body">
-                  {nearlyActivitiesData.length === 0 ? (
+              <div className="dashboard-card-table-container">
+                {/* Table header cố định */}
+                <table className="dashboard-card-table">
+                  <thead className="dashboard-card-table-header">
                     <tr>
-                      <td colSpan={3}>Chưa có hoạt động nào</td>
+                      {nearlyActivitiesCols.map((col) => (
+                        <th key={col.accessor}>{col.header}</th>
+                      ))}
                     </tr>
-                  ) : (
-                    nearlyActivitiesData.map((activity) => (
-                      <tr key={activity.id}>
-                        <td>{activity.id}</td>
-                        <td>{activity.activity}</td>
-                        <td>{activity.time}</td>
+                  </thead>
+                  <tbody className="dashboard-card-table-body">
+                    {nearlyActivitiesData.length === 0 ? (
+                      <tr>
+                        <td colSpan={3}>Chưa có hoạt động nào</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      nearlyActivitiesData.map((activity) => (
+                        <tr key={activity.id}>
+                          <td>{activity.id}</td>
+                          <td>{activity.activity}</td>
+                          <td>{activity.time}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        {/* Đơn hàng gần đây */}
-        {/* Chỉ hiển thị 5 đơn hàng gần đây nhất, không cần fetch toàn bộ */}
-        <div className="h-full md:col-span-4 col-span-12 mt-4 md:mt-0">
-          <div className="dashboard-card">
-            <div className="dashboard-card-header">
-              <h4 className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faTruck} /> Đơn hàng gần đây
-              </h4>
-              <button
-                onClick={() => navigate("/orders")}
-                className="btn btn-outline-primary"
-              >
-                Theo dõi
-              </button>
-            </div>
-            <div className="dashboard-card-table-container">
-              {/* Table header cố định */}
-              <table className="dashboard-card-table">
-                <thead className="dashboard-card-table-header">
-                  <tr>
-                    {recentOrderColumns.map((col) => (
-                      <th key={col.accessor}>{col.header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="dashboard-card-table-body">
-                  {recentOrdersData.length === 0 ? (
+          {/* Đơn hàng gần đây */}
+          {/* Chỉ hiển thị 5 đơn hàng gần đây nhất, không cần fetch toàn bộ */}
+          <div className="h-full col-md-7 mt-4">
+            <div className="dashboard-card">
+              <div className="dashboard-card-header">
+                <h4 className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faTruck} /> Đơn hàng gần đây
+                </h4>
+                <button
+                  onClick={() => navigate("/customer/cart")}
+                  className="btn btn-outline-primary"
+                >
+                  Theo dõi
+                </button>
+              </div>
+              <div className="dashboard-card-table-container">
+                {/* Table header cố định */}
+                <table className="dashboard-card-table">
+                  <thead className="dashboard-card-table-header">
                     <tr>
-                      <td colSpan={4}>Chưa có đơn hàng nào</td>
+                      {recentOrderColumns.map((col) => (
+                        <th key={col.accessor}>{col.header}</th>
+                      ))}
                     </tr>
-                  ) : (
-                    recentOrdersData.map((order) => (
-                      <tr key={order.id}>
-                        <td>{order.id}</td>
-                        <td>{order.date}</td>
-                        <td>{order.status}</td>
-                        <td>{order.total}</td>
+                  </thead>
+                  <tbody className="dashboard-card-table-body">
+                    {recentOrdersData.length === 0 ? (
+                      <tr>
+                        <td colSpan={4}>Chưa có đơn hàng nào</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      recentOrdersData.map((order) => (
+                        <tr key={order.id}>
+                          <td>{order.id}</td>
+                          <td>{order.date}</td>
+                          <td>{order.status}</td>
+                          <td>{order.total}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

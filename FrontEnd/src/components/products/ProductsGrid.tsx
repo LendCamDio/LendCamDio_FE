@@ -19,6 +19,7 @@ const ProductsGrid = ({
       </div>
     );
   }
+  console.log("Rendering ProductsGrid with products:", products);
 
   return (
     <div className="products-grid " id="productsGrid">

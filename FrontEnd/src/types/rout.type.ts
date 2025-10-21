@@ -1,3 +1,4 @@
+import type animations from "@/components/common/PageTransaction/animations";
 import type { ReactNode } from "react";
 
 export type RouteHandle = {
@@ -9,3 +10,8 @@ export type BreadcrumbItem = {
   breadcrumb: string;
   isDetail: boolean;
 };
+
+export interface PageTransitionProps {
+  children: ReactNode;
+  animation?: keyof typeof animations;
+}

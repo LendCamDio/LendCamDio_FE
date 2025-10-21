@@ -1,11 +1,20 @@
 import Navbar from "../components/common/Navbar/Navbar";
 import Footer from "../components/common/Footer/Footer";
 import { Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import PageWrapper from "@/components/common/PageWrapper";
-import ChatBox from "@/components/common/ChatBox/ChatBox";
+import { ChatBox } from "@/components/common/ChatBox";
+import { useEffect } from "react";
 
 const MainLayout = () => {
+  const location = useLocation();
+  useEffect(() => {
+    // Luôn thêm kiểm tra typeof window để an toàn trong SSR
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  }, [location.pathname]);
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -15,11 +24,7 @@ const MainLayout = () => {
 
       {/* Main Content */}
       <main className="flex-grow min-page-height">
-        <AnimatePresence mode="wait">
-          <PageWrapper key={useLocation().pathname}>
-            <Outlet /> {/* Render page content */}
-          </PageWrapper>
-        </AnimatePresence>
+        <Outlet /> {/* Render page content */}
       </main>
 
       <ChatBox />

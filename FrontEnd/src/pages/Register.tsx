@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { registerWithGoogle, registerWithEmail } from "../services/authService";
-import { useUniqueToast } from "@/hooks/useUniqueToast";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -73,6 +73,7 @@ export default function RegisterPage() {
       email: data.email,
       password: data.password,
       phone: data.phone || "",
+      role: "Customer",
     });
     if (result.success && result.data) {
       showToast("Đăng ký thành công", "success");
@@ -255,7 +256,11 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary auth-btn">
+          <button
+            type="submit"
+            className="btn-primary auth-btn"
+            disabled={isSubmitting}
+          >
             <FontAwesomeIcon icon={faUserPlus} />
             {isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
           </button>

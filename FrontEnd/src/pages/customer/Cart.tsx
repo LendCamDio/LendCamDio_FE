@@ -1,398 +1,314 @@
+import { motion } from "framer-motion";
+import {
+  faCreditCard,
+  faShieldAlt,
+  faTrash,
+  faTruck,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+interface CartItem {
+  name: string;
+  category: string;
+  image: string;
+  price: number;
+  quantity: number;
+}
 
 const Cart = () => {
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Giỏ Hàng</h1>
-      <p>Chức năng giỏ hàng đang được phát triển.</p>
-    </div>
-  );
-};
+  const navigate = useNavigate();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showPayment, setShowPayment] = useState(false);
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    note: "",
+  });
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    minimumFractionDigits: 0,
-  }).format(amount);
-};
-
-const CartItem = ({
-  item,
-  index,
-  updateQuantity,
-  removeFromCart,
-}: {
-  item: any;
-  index: number;
-  updateQuantity: (index: number, quantity: number) => void;
-  removeFromCart: (index: number) => void;
-}) => {
-  return (
-    <div className="cart-item flex items-center mb-4 p-4">
-      <div className="item-image mr-4">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-24 h-24 object-cover rounded-lg"
-        />
-      </div>
-      <div className="item-details flex-1">
-        <h5 className="item-name text-lg font-semibold">{item.name}</h5>
-        <p className="item-category text-sm text-gray-500">{item.category}</p>
-        <div className="item-price font-bold text-blue-600">
-          {formatCurrency(item.price)}/ngày
-        </div>
-      </div>
-      <div className="item-quantity flex items-center gap-2">
-        <button
-          className="btn-outline-secondary"
-          onClick={() => updateQuantity(index, item.quantity - 1)}
-        >
-          <i className="fa fa-minus"></i>
-        </button>
-        <span>{item.quantity}</span>
-        <button
-          className="btn-outline-secondary"
-          onClick={() => updateQuantity(index, item.quantity + 1)}
-        >
-          <i className="fa fa-plus"></i>
-        </button>
-      </div>
-      <div className="item-total ml-4 font-bold">
-        {formatCurrency(item.price * item.quantity)}
-      </div>
-      <div className="item-actions ml-3">
-        <button
-          className="btn-outline-danger"
-          onClick={() => removeFromCart(index)}
-        >
-          <i className="fa fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const PaymentModal = ({
-  isOpen,
-  closeModal,
-  cart,
-  processPayment,
-  updateCheckoutSummary,
-}: {
-  isOpen: boolean;
-  closeModal: () => void;
-  cart: any[];
-  processPayment: () => void;
-  updateCheckoutSummary: () => void;
-}) => {
-  const [paymentMethod, setPaymentMethod] = useState("qr");
-  const [orderCode] = useState(`LC${Date.now().toString().slice(-6)}`);
-
+  // Load from localStorage
   useEffect(() => {
-    if (isOpen) {
-      updateCheckoutSummary();
-    }
-  }, [isOpen]);
+    const saved = localStorage.getItem("cart");
+    if (saved) setCart(JSON.parse(saved));
+  }, []);
 
-  return (
-    <div className={`modal ${isOpen ? "block" : "hidden"}`}>
-      <div className="modal-dialog max-w-4xl mx-auto">
-        <div className="modal-content">
-          <div className="modal-header p-4 border-b">
-            <h5 className="modal-title text-xl font-semibold">
-              Thanh toán đơn hàng
-            </h5>
-            <button className="btn-close text-2xl" onClick={closeModal}>
-              &times;
-            </button>
-          </div>
-          <div className="modal-body p-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/2">
-                <h6 className="mb-4 font-semibold">
-                  Chọn phương thức thanh toán
-                </h6>
-                <div className="payment-methods flex flex-col gap-2">
-                  {[
-                    { method: "qr", icon: "fa-qrcode", label: "Quét mã QR" },
-                    {
-                      method: "card",
-                      icon: "fa-credit-card",
-                      label: "Thẻ tín dụng",
-                    },
-                    {
-                      method: "bank",
-                      icon: "fa-university",
-                      label: "Chuyển khoản",
-                    },
-                  ].map((pm) => (
-                    <div
-                      key={pm.method}
-                      className={`payment-method flex items-center p-4 ${
-                        paymentMethod === pm.method ? "active" : ""
-                      }`}
-                      data-method={pm.method}
-                      onClick={() => setPaymentMethod(pm.method)}
-                    >
-                      <i className={`fa ${pm.icon} mr-3 text-blue-600`}></i>
-                      <span>{pm.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  id="qr-payment"
-                  className={`payment-content ${
-                    paymentMethod === "qr" ? "active" : ""
-                  }`}
-                >
-                  <div className="text-center">
-                    <h6 className="mb-4">Quét mã QR để thanh toán</h6>
-                    <div className="qr-code-container p-4 bg-gray-50 rounded-lg">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LENSCAMDIO-${orderCode}`}
-                        alt="QR Code"
-                        className="w-48 h-48 mx-auto border-2 border-gray-200 rounded-lg"
-                      />
-                    </div>
-                    <p className="mt-3 text-gray-500">
-                      Mở ứng dụng ngân hàng và quét mã QR để thanh toán
-                    </p>
-                    <div className="bank-info mt-4 p-4 bg-gray-50 rounded-lg">
-                      <h6>Thông tin chuyển khoản</h6>
-                      <p>
-                        <strong>Ngân hàng:</strong> Vietcombank
-                        <br />
-                        <strong>Số tài khoản:</strong> 1234567890
-                        <br />
-                        <strong>Chủ tài khoản:</strong> LENSCAMDIO JSC
-                        <br />
-                        <strong>Nội dung:</strong>{" "}
-                        <span id="transfer-content">
-                          LENSCAMDIO {orderCode}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  id="card-payment"
-                  className={`payment-content ${
-                    paymentMethod === "card" ? "active" : ""
-                  }`}
-                >
-                  <div className="sample-card-info mb-4 p-3 bg-blue-50 border border-blue-500 rounded-lg text-sm">
-                    <div className="flex items-center mb-2 text-blue-700">
-                      <i className="fa fa-credit-card mr-2"></i>
-                      <strong>Thẻ demo:</strong>
-                    </div>
-                    <div className="font-mono">
-                      <div className="mb-1">
-                        <strong>Số thẻ:</strong> 4111 1111 1111 1111
-                      </div>
-                      <div className="flex gap-4">
-                        <span>
-                          <strong>Hạn:</strong> 12/25
-                        </span>
-                        <span>
-                          <strong>CVV:</strong> 123
-                        </span>
-                        <span>
-                          <strong>Tên:</strong> NGUYEN VAN A
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <form id="card-form">
-                    <div className="form-group mb-4">
-                      <label className="form-label">Số thẻ</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="card-number"
-                        placeholder="1234 5678 9012 3456"
-                        maxLength={19}
-                      />
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-1/2">
-                        <label className="form-label">Tháng/Năm</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="card-expiry"
-                          placeholder="MM/YY"
-                          maxLength={5}
-                        />
-                      </div>
-                      <div className="w-1/2">
-                        <label className="form-label">CVV</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="card-cvv"
-                          placeholder="123"
-                          maxLength={3}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group mt-4">
-                      <label className="form-label">Tên trên thẻ</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="card-name"
-                        placeholder="NGUYEN VAN A"
-                      />
-                    </div>
-                  </form>
-                </div>
-                <div
-                  id="bank-payment"
-                  className={`payment-content ${
-                    paymentMethod === "bank" ? "active" : ""
-                  }`}
-                >
-                  <div className="bank-info p-4 bg-gray-50 rounded-lg">
-                    <h6>Thông tin chuyển khoản</h6>
-                    <p>
-                      <strong>Ngân hàng:</strong> Vietcombank
-                      <br />
-                      <strong>Số tài khoản:</strong> 1234567890
-                      <br />
-                      <strong>Chủ tài khoản:</strong> CÔNG TY TNHH LENSCAMDIO
-                      <br />
-                      <strong>Chi nhánh:</strong> Hồ Chí Minh
-                      <br />
-                      <strong>Nội dung:</strong>{" "}
-                      <span id="bank-transfer-content">
-                        LENSCAMDIO {orderCode}
-                      </span>
-                    </p>
-                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <i className="fa fa-info-circle mr-2 text-blue-600"></i>
-                      Vui lòng chuyển khoản đúng số tiền và ghi đúng nội dung để
-                      đơn hàng được xử lý tự động.
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="md:w-1/2">
-                <h6 className="mb-4 font-semibold">Thông tin đơn hàng</h6>
-                <div className="order-summary p-4 bg-gray-50 rounded-lg">
-                  <div id="checkout-items"></div>
-                  <div className="order-total mt-4 pt-4 border-t-2 border-gray-200">
-                    <div className="flex justify-between py-2">
-                      <span>Tạm tính:</span>
-                      <span id="subtotal">0đ</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span>Phí dịch vụ:</span>
-                      <span id="service-fee">50.000đ</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span>Giảm giá:</span>
-                      <span id="discount">-0đ</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-t-2 border-gray-200 font-bold text-lg">
-                      <strong>Tổng cộng:</strong>
-                      <strong id="final-total">0đ</strong>
-                    </div>
-                  </div>
-                </div>
-                <div className="customer-info mt-4">
-                  <h6 className="mb-4 font-semibold">Thông tin khách hàng</h6>
-                  <form id="customer-form">
-                    <div className="form-group mb-4">
-                      <label className="form-label">Họ và tên *</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="customer-name"
-                        required
-                      />
-                    </div>
-                    <div className="form-group mb-4">
-                      <label className="form-label">Số điện thoại *</label>
-                      <input
-                        type="tel"
-                        className="form-control"
-                        id="customer-phone"
-                        required
-                      />
-                    </div>
-                    <div className="form-group mb-4">
-                      <label className="form-label">Email</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="customer-email"
-                      />
-                    </div>
-                    <div className="form-group mb-4">
-                      <label className="form-label">Ghi chú</label>
-                      <textarea
-                        className="form-control"
-                        id="customer-note"
-                        rows={3}
-                        placeholder="Ghi chú đặc biệt..."
-                      ></textarea>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-footer p-4 border-t flex justify-end gap-4">
-            <button className="btn-outline-primary" onClick={closeModal}>
-              Đóng
-            </button>
-            <button className="btn-primary" onClick={processPayment}>
-              <i className="fa fa-credit-card mr-2"></i> Thanh toán
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+  const updateCart = (newCart: CartItem[]) => {
+    setCart(newCart);
+    localStorage.setItem("cart", JSON.stringify(newCart));
+  };
+
+  const updateQuantity = (index: number, quantity: number) => {
+    if (quantity <= 0) return;
+    const updated = [...cart];
+    updated[index].quantity = quantity;
+    updateCart(updated);
+  };
+
+  const removeItem = (index: number) => {
+    const updated = cart.filter((_, i) => i !== index);
+    updateCart(updated);
+  };
+
+  const clearCart = () => {
+    updateCart([]);
+  };
+
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
   );
-};
+  const serviceFee = 50000;
+  const discount = 0;
+  const finalTotal = subtotal + serviceFee - discount;
 
-const SuccessModal = ({
-  isOpen,
-  closeModal,
-  orderCode,
-  goToOrderTracking,
-}: {
-  isOpen: boolean;
-  closeModal: () => void;
-  orderCode: string;
-  goToOrderTracking: () => void;
-}) => {
+  const formatCurrency = (n: number) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+    }).format(n);
+
+  const handlePayment = () => {
+    if (!customer.name || !customer.phone) {
+      alert("Vui lòng điền đầy đủ thông tin khách hàng!");
+      return;
+    }
+    setShowPayment(true);
+  };
+
   return (
-    <div className={`modal ${isOpen ? "block" : "hidden"}`}>
-      <div className="modal-dialog max-w-md mx-auto">
-        <div className="modal-content">
-          <div className="modal-body text-center py-12">
-            <div className="success-icon mb-4">
-              <i className="fa fa-check-circle text-6xl text-green-500"></i>
-            </div>
-            <h3 className="mb-4 text-2xl font-bold">Thanh toán thành công!</h3>
-            <p className="mb-4">
-              Đơn hàng của bạn đã được xác nhận. Mã đơn hàng:{" "}
-              <strong id="order-code">{orderCode}</strong>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <section className="section">
+        <div className="container">
+          <div className="text-center mb-5">
+            <h1 className="text-5xl font-bold mb-4 relative z-10">
+              Giỏ hàng của bạn
+            </h1>
+            <p className="text-xl mb-8 opacity-95 relative z-10">
+              Xem lại và thanh toán các sản phẩm đã chọn
             </p>
-            <div className="action-buttons flex justify-center gap-4">
-              <button className="btn-outline-primary" onClick={closeModal}>
-                Đóng
+          </div>
+        </div>
+      </section>
+
+      {/* Empty Cart */}
+      {cart.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-br from-gray-50 to-white"
+          >
+            <div className="inline-flex p-6 bg-blue-50 rounded-full mb-6">
+              <ShoppingCart size={48} className="text-[var(--primary-color)]" />
+            </div>
+            <h3 className="text-2xl font-bold text-[var(--text-dark)] mb-3">
+              Chưa có đơn hàng nào
+            </h3>
+            <p className="text-[var(--text-light)] mb-8 max-w-md mx-auto">
+              Bạn chưa có đơn hàng nào. Hãy khám phá và thuê thiết bị chụp ảnh
+              chuyên nghiệp ngay!
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/cameras")}
+              className="btn-primary px-8 py-3 bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] text-white rounded-lg hover:shadow-lg transition-all duration-300 font-semibold"
+            >
+              Bắt đầu thuê thiết bị
+            </motion.button>
+          </motion.div>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Cart Items */}
+          <div className="md:col-span-2 bg-white p-6 rounded-lg shadow">
+            <h3 className="text-xl font-semibold mb-6">
+              Sản phẩm trong giỏ hàng ({cart.length})
+            </h3>
+            {cart.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between border-b py-4"
+              >
+                <div className="flex items-center gap-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-20 h-20 rounded object-cover"
+                  />
+                  <div>
+                    <h4 className="font-semibold">{item.name}</h4>
+                    <p className="text-gray-500">{item.category}</p>
+                    <span className="font-semibold text-blue-600">
+                      {formatCurrency(item.price)}/ngày
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => updateQuantity(index, item.quantity - 1)}
+                    className="px-3 py-1 border rounded hover:bg-gray-100"
+                  >
+                    -
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(index, item.quantity + 1)}
+                    className="px-3 py-1 border rounded hover:bg-gray-100"
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex items-center gap-4">
+                  <strong>{formatCurrency(item.price * item.quantity)}</strong>
+                  <button
+                    onClick={() => removeItem(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="flex justify-between mt-6">
+              <button
+                onClick={clearCart}
+                className="border border-gray-400 text-gray-600 px-4 py-2 rounded hover:bg-gray-100"
+              >
+                <FontAwesomeIcon icon={faTrash} className="inline mr-2" />
+                Xóa tất cả
               </button>
-              <button className="btn-primary" onClick={goToOrderTracking}>
-                <i className="fa fa-truck mr-2"></i> Theo dõi đơn hàng
-              </button>
+              <a
+                onClick={() => navigate("/cameras")}
+                className="border border-blue-600 text-blue-600 px-4 py-2 rounded hover:bg-blue-50"
+              >
+                Tiếp tục mua sắm
+              </a>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h4 className="text-xl font-semibold mb-4">Tóm tắt đơn hàng</h4>
+            <div className="space-y-2 text-gray-700">
+              <div className="flex justify-between">
+                <span>Tạm tính:</span>
+                <span>{formatCurrency(subtotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Phí dịch vụ:</span>
+                <span>{formatCurrency(serviceFee)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Giảm giá:</span>
+                <span>-{formatCurrency(discount)}</span>
+              </div>
+              <div className="border-t pt-3 flex justify-between font-semibold">
+                <span>Tổng cộng:</span>
+                <span>{formatCurrency(finalTotal)}</span>
+              </div>
+            </div>
+
+            <h4 className="text-lg font-semibold mt-6 mb-3">
+              Thông tin khách hàng
+            </h4>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Họ và tên *"
+                className="w-full border px-3 py-2 rounded"
+                value={customer.name}
+                onChange={(e) =>
+                  setCustomer({ ...customer, name: e.target.value })
+                }
+              />
+              <input
+                type="tel"
+                placeholder="Số điện thoại *"
+                className="w-full border px-3 py-2 rounded"
+                value={customer.phone}
+                onChange={(e) =>
+                  setCustomer({ ...customer, phone: e.target.value })
+                }
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full border px-3 py-2 rounded"
+                value={customer.email}
+                onChange={(e) =>
+                  setCustomer({ ...customer, email: e.target.value })
+                }
+              />
+              <textarea
+                placeholder="Ghi chú (tuỳ chọn)"
+                rows={3}
+                className="w-full border px-3 py-2 rounded"
+                value={customer.note}
+                onChange={(e) =>
+                  setCustomer({ ...customer, note: e.target.value })
+                }
+              />
+            </div>
+
+            <button
+              onClick={handlePayment}
+              className="mt-6 bg-blue-600 w-full text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              <FontAwesomeIcon icon={faCreditCard} className="inline mr-2" />
+              Thanh toán
+            </button>
+
+            <div className="text-center mt-3 text-gray-500 text-sm">
+              <FontAwesomeIcon icon={faShieldAlt} className="inline mr-1" />
+              Thanh toán an toàn & bảo mật
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+            <button
+              className="absolute top-3 right-4 text-gray-500 hover:text-black text-2xl"
+              onClick={() => setShowPayment(false)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-semibold mb-4">Xác nhận thanh toán</h3>
+            <p className="text-gray-600 mb-3">
+              Cảm ơn {customer.name}! Vui lòng xác nhận để hoàn tất đơn hàng.
+            </p>
+            <div className="bg-gray-100 p-4 rounded mb-4">
+              <p>
+                <strong>Tổng cộng:</strong> {formatCurrency(finalTotal)}
+              </p>
+              <p>
+                <strong>Sản phẩm:</strong> {cart.length}
+              </p>
+            </div>
+            <button
+              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+              onClick={() => {
+                alert("Thanh toán thành công!");
+                localStorage.removeItem("cart");
+                setShowPayment(false);
+                window.location.href = "/order-tracking";
+              }}
+            >
+              <FontAwesomeIcon icon={faTruck} className="inline mr-2" />
+              Xác nhận & Theo dõi đơn hàng
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

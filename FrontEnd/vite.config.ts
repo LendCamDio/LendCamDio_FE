@@ -10,4 +10,10 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  build: {
+    sourcemap: false, // Disable source maps to prevent warnings
+  },
+  optimizeDeps: {
+    exclude: ["lucide-react"], // Skip pre-bundling for lucide-react
+  },
 });

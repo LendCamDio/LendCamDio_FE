@@ -108,10 +108,10 @@ const Home = () => {
               hàng đầu
             </p>
             <div className="mt-4">
-              <a href="studio-booking.html" className="btn-primary me-3">
+              <a href="/studios" className="btn-primary me-3">
                 Đặt lịch Studio
               </a>
-              <a href="camera-rental.html" className="btn-outline-primary">
+              <a href="/cameras" className="btn-outline-primary">
                 Thuê máy ảnh
               </a>
             </div>
@@ -119,7 +119,7 @@ const Home = () => {
         </div>
       </section>
 
-      {role && role === "admin" && (
+      {role && role !== "admin" && (
         <Suspense fallback={<Loading />}>
           <DashboardSection />
         </Suspense>
@@ -134,7 +134,10 @@ const Home = () => {
           </p>
           <div className="row">
             {studios.map((studio, index) => (
-              <div className="col-md-4 mb-5 " key={index}>
+              <div
+                className="col-md-4 mb-5 "
+                key={`studio-${studio.title}-${index}`}
+              >
                 <div className="card-outstanding animate-fade-in-up h-full">
                   <img
                     src={studio.image}
@@ -169,7 +172,10 @@ const Home = () => {
 
           <div className="row">
             {featuredEquipment.map((equipment, index) => (
-              <div className="col-md-3 mb-4" key={index}>
+              <div
+                className="col-md-3 mb-4"
+                key={`equipment-${equipment.title}-${index}`}
+              >
                 <div className="card-outstanding animate-fade-in-up">
                   <img
                     src={equipment.image}
@@ -193,7 +199,7 @@ const Home = () => {
           </div>
 
           <div className="text-center mt-4">
-            <a href="camera-rental.html" className="btn-outline-primary">
+            <a href="/products" className="btn-outline-primary">
               Xem tất cả thiết bị
             </a>
           </div>

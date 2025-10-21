@@ -24,7 +24,7 @@ const CategoryFilter = ({
   };
 
   return (
-    <div className="filter-group">
+    <div className="filter-group-full ">
       {isLoading ? (
         <div className="h-[200px] w-full flex items-center justify-center">
           <span className="loading loading-spinner"></span>
