@@ -1,4 +1,4 @@
-import { lazy, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
@@ -14,10 +14,9 @@ import {
   RentalStatusType,
   type RentalResponseDto,
 } from "@/types/entity.type";
-
-const BookingTabs = lazy(() => import("@/components/booking/BookingTabs"));
-const BookingGrid = lazy(() => import("@/components/booking/BookingGrid"));
-const DetailModal = lazy(() => import("@/components/booking/DetailModal"));
+import BookingTabs from "@/components/booking/BookingTabs";
+import BookingGrid from "@/components/booking/BookingGrid";
+import DetailModal from "@/components/booking/DetailModal";
 // Mock data - replace with actual API data
 // #region Mock Data
 // const mockBookings: RentalResponseDto[] = [
