@@ -14,9 +14,9 @@ import {
   RentalStatusType,
   type RentalResponseDto,
 } from "@/types/entity.type";
-import BookingGrid from "../../components/booking/BookingGrid.tsx";
-import BookingTabs from "../../components/booking/BookingTabs.tsx";
-import DetailModal from "../../components/booking/DetailModal.tsx";
+import BookingGrid from "@/components/booking/BookingGrid";
+import BookingTabs from "@/components/booking/BookingTabs";
+import DetailModal from "@/components/booking/DetailModal";
 
 const MyBooking = () => {
   const showToast = useUniqueToast();
