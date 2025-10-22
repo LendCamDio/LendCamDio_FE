@@ -15,9 +15,9 @@ import {
   type RentalResponseDto,
 } from "@/types/entity.type";
 
-const BookingTabs = lazy(() => import("../../components/booking/BookingTabs"));
-const BookingGrid = lazy(() => import("../../components/booking/BookingGrid"));
-const DetailModal = lazy(() => import("../../components/booking/DetailModal"));
+const BookingTabs = lazy(() => import("@/components/booking/BookingTabs"));
+const BookingGrid = lazy(() => import("@/components/booking/BookingGrid"));
+const DetailModal = lazy(() => import("@/components/booking/DetailModal"));
 // Mock data - replace with actual API data
 // #region Mock Data
 // const mockBookings: RentalResponseDto[] = [
