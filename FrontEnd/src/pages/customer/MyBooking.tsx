@@ -4,6 +4,8 @@ import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { useNavigate } from "react-router-dom";
+import BookingGrid from "@/components/booking/BookingGrid";
+import BookingTabs from "@/components/booking/BookingTabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useRentalList } from "@/hooks/rental/useRental";
@@ -14,9 +16,8 @@ import {
   RentalStatusType,
   type RentalResponseDto,
 } from "@/types/entity.type";
-import BookingTabs from "@/components/booking/BookingTabs";
-import BookingGrid from "@/components/booking/BookingGrid";
 import DetailModal from "@/components/booking/DetailModal";
+
 // Mock data - replace with actual API data
 // #region Mock Data
 // const mockBookings: RentalResponseDto[] = [
