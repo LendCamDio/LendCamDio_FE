@@ -36,8 +36,8 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
   const {
     data: customerData,
     isLoading,
-    isError,
-    error,
+    isError: isErrorFetchCustomer,
+    error: errorFetchCustomer,
   } = useCustomerByUserId(user?.id || "", Boolean(user?.id));
   const { mutate: createRentalMutate, isPending: isSubmitting } =
     useCreateRental();
@@ -81,7 +81,7 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
     endDateTime.setHours(endDateTime.getHours() + Number(form.duration));
 
     const rentalData: CreateRentalRequestDto = {
-      customerId: customerData?.data?.customerId || "unknown",
+      customerId: customerData?.data?.customerId || "",
       equipmentId: studio?.equipmentId || "",
       startDate: startDateTime.toISOString(),
       endDate: endDateTime.toISOString(),
@@ -95,7 +95,9 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
       },
       onError: (error: any) => {
         showToast(
-          error?.error?.message || "Có lỗi xảy ra khi tạo booking",
+          error?.error?.message ||
+            error.message ||
+            "Có lỗi xảy ra khi tạo booking",
           "error",
           {
             duration: 2000,
@@ -269,10 +271,11 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
                           <div className="space-y-4">
                             {isLoading ? (
                               <p>Đang tải thông tin khách hàng...</p>
-                            ) : isError ? (
+                            ) : isErrorFetchCustomer ? (
                               <p className="text-red-500">
                                 Lỗi:{" "}
-                                {error?.message || "Không thể tải thông tin"}
+                                {errorFetchCustomer?.message ||
+                                  "Không thể tải thông tin"}
                               </p>
                             ) : (
                               <div className="space-y-2">

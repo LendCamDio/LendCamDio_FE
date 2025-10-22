@@ -37,7 +37,7 @@ export const loginWithGoogle = async (
     }
     return res.data;
   } catch (error) {
-    return handleApiError<AuthResponse>(error);
+    return handleApiError(error);
   }
 };
 

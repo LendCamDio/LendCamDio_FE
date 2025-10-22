@@ -42,7 +42,6 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
 
   // Chạy khi hình ảnh không tải được
   const handleImageError = () => {
-    console.log("Hình ảnh không tải được:", equipment?.imageUrl);
     setImageSrc(defPic);
     setLoadingImg(false);
   };
@@ -99,6 +98,7 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: loadingImg ? 0 : 1 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
+          className=" product-image"
         >
           <img
             loading="lazy"
@@ -160,9 +160,7 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
         </p>
 
         <div className="flex items-center justify-between">
-          <Rating
-            value={equipment.rating ? equipment.rating.averageRating : 0}
-          />
+          <Rating value={equipment.rating || 0} />
           {equipment.availability ? (
             <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
               Còn hàng

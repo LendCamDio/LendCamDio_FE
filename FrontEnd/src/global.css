@@ -540,8 +540,8 @@
     @apply p-6;
   }
 
-  .card-outstanding-body .card-title {
-    @apply text-xl font-semibold mb-2 text-[var(--text-dark)];
+  .card-outstanding-body .card-title h5 {
+    @apply text-2xl font-semibold mb-1 text-[var(--text-dark)];
   }
 
   .card-outstanding-body .card-text {
@@ -559,7 +559,7 @@
   }
 
   .card-outstanding-body .price {
-    @apply text-2xl font-bold mb-4
+    @apply text-3xl font-bold mb-4
     text-transparent
     bg-clip-text bg-linear-[135deg] from-[var(--accent-color)] to-[#ff6b6b];
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -818,6 +818,11 @@
     @apply flex flex-wrap gap-4;
   }
 
+  .filter-buttons h5 {
+    @apply w-full text-[var(--text-dark)] font-semibold mb-4;
+  }
+
+
   .filter-btn {
     @apply px-4 py-1 border-2 border-[var(--primary-color)] text-[var(--primary-color)] rounded-full font-medium transition duration-300 cursor-pointer bg-transparent;
   }
@@ -843,13 +848,8 @@
     @apply py-16;
   }
 
-  .products-grid {
-    @apply grid mb-12 max-w-none;
-    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
-  }
-
   .product-card {
-    @apply min-w-[360px] max-h-[498px]
+    @apply min-w-[300px] max-h-[498px]
     bg-white rounded-xl overflow-hidden shadow-lg relative border border-white/20 transition duration-300 ease-in-out;
   }
 
@@ -1258,8 +1258,8 @@
 }
 
 @layer components {
-  /* Extra Small devices (phones, <576px) */
-  @media (max-width: 575px) {
+  /* Extra Small devices (phones, <800px) */
+  @media (max-width: px) {
     .products-grid {
       @apply grid-cols-1 gap-4;
     }
@@ -1469,10 +1469,10 @@
     }
   }
 
-  /* Small devices (landscape phones, 576px-767px) */
-  @media (min-width: 576px) and (max-width: 767px) {
+  /* Small devices (landscape phones, 800px-997px) */
+  @media (min-width: 799px) and (max-width: 997px) {
     .products-grid {
-      @apply grid-cols-1 gap-5;
+      @apply grid-cols-2 gap-5;
     }
 
     .filter-controls {
@@ -1563,7 +1563,7 @@
   }
 
   /* Extra large devices (large desktops, ≥1200px) */
-  @media (min-width: 1200px) {
+  @media (min-width: 1000px) {
     .products-grid {
       @apply grid grid-cols-3 gap-6;
     }
@@ -1680,7 +1680,7 @@
 
   /* Image */
   .cart-item .item-image {
-    @apply relative overflow-hidden rounded-lg;
+    @apply relative rounded-lg;
   }
 
   .cart-item .item-image img {
@@ -1692,20 +1692,11 @@
   }
 
   /* Texts */
-  .cart-item .item-name {
-    @apply text-[var(--text-dark)] font-semibold text-lg mb-2;
+  .item-details .item-category {
+    @apply text-[var(--text-light)] text-sm mb-4;
   }
 
-  .cart-item .item-category {
-    @apply text-sm font-semibold uppercase tracking-wide bg-clip-text text-transparent;
-    background: linear-gradient(
-      135deg,
-      var(--primary-color),
-      var(--accent-color)
-    );
-  }
-
-  .cart-item .item-price {
+  .item-details .item-price {
     @apply text-[var(--accent-color)] font-bold text-lg;
   }
 
@@ -2065,11 +2056,6 @@
     @apply w-7 h-7 block;
   }
 
-  #chatbox-messages {
-    @apply h-full
-    flex-1 p-4 overflow-y-auto bg-[#f3f6fa] text-base;
-  }
-
   #chatbox-input-row {
     @apply flex border-t border-gray-200 bg-white;
   }
@@ -2087,7 +2073,7 @@
   }
 
   .chatbox-message {
-    @apply flex-1 p-4 overflow-y-auto bg-[#f3f6fa] text-base my-2 rounded-lg max-w-[80%] break-words;
+    @apply  max-w-[80%] break-words px-3 py-2 rounded-2xl;
   }
 
   .chatbox-message.user {
@@ -2238,7 +2224,7 @@
   }
 
   .navbar-brand {
-    @apply text-sm;
+    @apply text-lg;
   }
 
   .container-nav {

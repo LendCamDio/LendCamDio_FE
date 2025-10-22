@@ -42,7 +42,7 @@ export default function Navbar() {
           end
           className="navbar-brand text-blue-600 cursor-pointer hover:scale-101 transition"
         >
-          <img src="/logo_transparent.png" alt="Logo" />
+          <img src="/public/logo_byHop-Photoroom.png" alt="Logo" />
         </NavLink>
         <div className="flex navbar-nav">
           {NAV_ITEMS.map((item) => (

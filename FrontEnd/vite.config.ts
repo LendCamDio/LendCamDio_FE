@@ -10,10 +10,29 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    hmr: {
+      overlay: false,
+    },
+    watch: {
+      usePolling: false,
+    },
+  },
   build: {
     sourcemap: false, // Disable source maps to prevent warnings
   },
   optimizeDeps: {
-    exclude: ["lucide-react"], // Skip pre-bundling for lucide-react
+    exclude: ["lucide-react"],
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@tanstack/react-query",
+      "axios",
+      "framer-motion",
+    ],
+  },
+  esbuild: {
+    drop: ["console", "debugger"],
   },
 });

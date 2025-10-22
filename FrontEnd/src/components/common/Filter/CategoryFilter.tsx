@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LoadingDot from "../Loading/LoadingDot";
 
 const CategoryFilter = ({
   isLoading,
@@ -24,15 +25,16 @@ const CategoryFilter = ({
   };
 
   return (
-    <div className="filter-group-full ">
+    <div className="filter-group">
       {isLoading ? (
-        <div className="h-[200px] w-full flex items-center justify-center">
-          <span className="loading loading-spinner"></span>
+        <div className="filter-buttons">
+          <h5>Danh mục</h5>
+          <LoadingDot />
         </div>
       ) : (
         <>
-          <h5>Danh mục</h5>
           <div className="filter-buttons">
+            <h5>Danh mục</h5>
             <button
               className={`filter-btn ${
                 activeCategory === "all" ? "active" : ""

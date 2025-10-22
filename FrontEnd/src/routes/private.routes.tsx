@@ -1,8 +1,10 @@
 import { Navigate } from "react-router-dom";
 import { RoleBasedRoute } from "./RoleBasedRoute";
-import Cart from "@/pages/customer/Cart";
-import Profile from "@/pages/customer/Profile";
-import MyBooking from "@/pages/customer/MyBooking";
+import { lazy } from "react";
+// Lazy load
+const Profile = lazy(() => import("../pages/customer/Profile"));
+const Cart = lazy(() => import("../pages/customer/Cart"));
+const MyBooking = lazy(() => import("../pages/customer/MyBooking"));
 
 export const privateRoutes = [
   {

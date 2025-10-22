@@ -62,11 +62,11 @@ const useCustomerList = (
 const useCustomerDetail = (id: string, enabled: boolean = false) => {
   return useQuery({
     queryKey: ["customer", id],
-    queryFn: () => getCustomerById(id),
+    queryFn: async () => getCustomerById(id),
     staleTime: 1000 * 60 * 5,
     retry: 3,
     refetchOnWindowFocus: false,
-    enabled: enabled && Boolean(id),
+    enabled: enabled,
   });
 };
 
@@ -74,14 +74,14 @@ const useCustomerDetail = (id: string, enabled: boolean = false) => {
 // 👤 Customer By User ID Hook
 // ============================
 
-const useCustomerByUserId = (userId: string, enabled: boolean = false) => {
+const useCustomerByUserId = (userId: string, enabled: boolean) => {
   return useQuery({
     queryKey: ["customerByUserId", userId],
     queryFn: () => getCustomerByUserId(userId),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 3,
     refetchOnWindowFocus: false,
-    enabled: enabled && Boolean(userId),
+    enabled: enabled,
   });
 };
 

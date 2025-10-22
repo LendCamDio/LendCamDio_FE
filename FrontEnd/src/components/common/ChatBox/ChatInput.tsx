@@ -35,7 +35,7 @@ const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
         type="submit"
         id="chatbox-send"
         disabled={isLoading}
-        className="bg-[var(--primary-color)] text-white px-5 
+        className="rounded-r-lg bg-[var(--primary-color)] text-white px-5 
         flex items-center justify-center transition-colors 
         hover:bg-[var(--secondary-color)] disabled:opacity-70
         focus:ring-2"

@@ -75,7 +75,7 @@ export default function LoginPage() {
         }
       } else {
         console.error("Google login error:", result.error?.message);
-        const errorMessage = "Đăng nhập thất bại";
+        const errorMessage = result.error?.message || "Đăng nhập thất bại";
         showToast(errorMessage, "error");
       }
     }

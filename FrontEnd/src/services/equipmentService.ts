@@ -44,6 +44,13 @@ export async function getEquipmentBySearchName(
 }
 export async function getEquipmentById(id: string): Promise<EquipmentResponse> {
   const res = await api.get(EQUIPMENT_ENDPOINTS.DETAILS(id));
+
+  const resRate = await api.get(
+    REVIEW_ENDPOINTS.AVERAGE_RATING_BY_EQUIPMENT(res.data.data.equipmentId)
+  );
+
+  res.data.data.rating = resRate.data.data.averageRating;
+
   return {
     success: res.data.success,
     data: res.data.data,
@@ -59,7 +66,18 @@ export async function getEquipmentsByCategory(
   const res = await api.get(EQUIPMENT_ENDPOINTS.CATEGORY(category), {
     params: { page, pageSize },
   });
-  console.log("Load equips:", res.data);
+  await Promise.all(
+    res.data.data.items.map(async (item: Equipment) => {
+      const resRate = await api.get(
+        REVIEW_ENDPOINTS.AVERAGE_RATING_BY_EQUIPMENT(item.equipmentId)
+      );
+      item.rating = resRate.data.data.averageRating || 0;
+    })
+  ).catch((error) => {
+    console.error("Error fetching ratings:", error);
+    res.data.success = false;
+  });
+  // console.log("Load equips:", res.data);
   return {
     success: res.data.success,
     data: res.data.data,

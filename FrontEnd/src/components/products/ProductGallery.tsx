@@ -5,136 +5,123 @@ import type { Swiper as SwiperType } from "swiper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { ImageDialog } from "@/components/ui/Dialog";
-import { useLoaderData } from "react-router-dom";
-import type { Equipment } from "@/types/index.type";
+import defPic from "@/assets/defaultPic1.jpg";
 
 interface ProductGalleryProps {
-  images: string[] | undefined;
+  images?: string[];
+  categoryName?: string;
+  productName?: string;
 }
 
-// Extended type for our component with additional properties
-type ExtendedEquipment = Equipment & {
-  images?: string[];
-  specifications?: Record<string, string>;
-};
-
-export const ProductGallery = ({ images }: ProductGalleryProps) => {
+export const ProductGallery = ({
+  images = [],
+  categoryName,
+  productName,
+}: ProductGalleryProps) => {
   const [isImgDialogOpen, setIsImgDialogOpen] = useState(false);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // console.group("ProductGallery images:", images);
-  // console.log("ProductGallery productName:", productName);
-  // console.log("ProductGallery categoryName:", categoryName);
+  const safeImages = images.length > 0 ? images : Array(5).fill(defPic);
 
-  // Dùng data từ loader
-  const mockProduct: Equipment = useLoaderData();
-
-  // Mô phỏng dữ liệu chi tiết sản phẩm với hình ảnh và thông số kỹ thuật
-  const extendedMockProduct: ExtendedEquipment = {
-    ...mockProduct,
-    images: [
-      ...(images || []),
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-      "/src/assets/defaultPic1.jpg",
-    ],
-    specifications: {
-      resolution: "45.0 MP",
-      sensor: "Full-frame CMOS",
-      videoRecording: "8K RAW, 4K 120p",
-      mount: "RF Mount",
-      weight: "738g",
-      battery: "LP-E6NH",
-    },
-  };
-
-  const [product] = useState<ExtendedEquipment>(extendedMockProduct); // Replace with actual API call
+  // Badge gradient theo category
+  const badgeGradient = (() => {
+    const map: Record<string, string> = {
+      Camera: "from-blue-500 to-indigo-600",
+      "Ống kính": "from-purple-500 to-pink-500",
+      Lens: "from-purple-400 to-violet-600",
+      Studio: "from-rose-400 to-red-500",
+    };
+    return map[categoryName ?? ""] || "from-gray-500 to-gray-700";
+  })();
 
   return (
-    <div className="product-detail-gallery col-md-5">
-      {/* Product Thumbnail */}
-      <div
-        className="product-detail-thumbnail"
-        onClick={() => setIsImgDialogOpen(true)}
-      >
+    <div className="w-full lg:w-full md:w-1/2 space-y-4">
+      <div className="hidden">
+        {/* Image Dialog */}
         <ImageDialog
-          className="opacity-0"
           isOpen={isImgDialogOpen}
           onClose={() => setIsImgDialogOpen(false)}
-          imageUrl={product.images?.[currentImageIndex]}
-          alt={product.name}
+          imageUrl={safeImages[currentImageIndex]}
+          alt={productName}
         />
+      </div>
+
+      {/* Main Swiper */}
+      <div
+        className="relative rounded-xl overflow-hidden border border-gray-100 shadow-sm cursor-pointer"
+        onClick={() => setIsImgDialogOpen(true)}
+      >
         <Swiper
           onSwiper={setMainSwiper}
           modules={[Navigation, Thumbs]}
           spaceBetween={10}
           thumbs={{ swiper: thumbsSwiper }}
           onSlideChange={(swiper) => setCurrentImageIndex(swiper.activeIndex)}
-          className="rounded-md overflow-hidden"
+          className="rounded-lg"
         >
-          {product.images?.map((image: string, index: number) => (
+          {safeImages.map((image, index) => (
             <SwiperSlide key={index}>
               <img
                 src={image}
-                alt={`${product.name} ${index + 1}`}
-                onClick={() => setIsImgDialogOpen(true)}
+                alt={`${productName || "Ảnh sản phẩm"} ${index + 1}`}
+                className="object-cover w-full h-[400px] sm:h-[500px]"
+                onError={(e) => ((e.target as HTMLImageElement).src = defPic)}
               />
             </SwiperSlide>
           ))}
         </Swiper>
 
-        {/* Product badge */}
-        <span
-          className={`product-detail-thumbnail-badge ${product.categoryName.toLowerCase()}`}
-        >
-          <FontAwesomeIcon icon={faCamera} className="me-2" />
-          {product.categoryName}
-        </span>
+        {/* Category Badge */}
+        {categoryName && (
+          <span
+            className={`
+              absolute top-3 left-3 z-10 
+              text-white text-xs font-semibold 
+              px-3 py-1 rounded-full 
+              bg-gradient-to-r ${badgeGradient}`}
+          >
+            <FontAwesomeIcon icon={faCamera} className="mr-1" />
+            {categoryName}
+          </span>
+        )}
       </div>
 
-      {/* Thumbnail navigation */}
-      <div className="product-detail-thumbnails-imgs mt-30">
-        <Swiper
-          onSwiper={setThumbsSwiper}
-          modules={[Navigation, Thumbs]}
-          slidesPerView={4}
-          navigation
-          watchSlidesProgress
-          breakpoints={{
-            320: { slidesPerView: 3 },
-            640: { slidesPerView: 4 },
-            1024: { slidesPerView: 6 },
-          }}
-        >
-          {product &&
-            product.images &&
-            product.images.map((image: string, index: number) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={image}
-                  alt={`${product.name} thumb ${index}`}
-                  onClick={() => {
-                    mainSwiper?.slideTo(index);
-                    setCurrentImageIndex(index);
-                  }}
-                  className={`transition-all duration-200 ${
-                    currentImageIndex === index
-                      ? "active"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
-                />
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      </div>
-      {/* Dialog */}
+      {/* Thumbnails */}
+      <Swiper
+        onSwiper={setThumbsSwiper}
+        modules={[Navigation, Thumbs]}
+        slidesPerView={5}
+        spaceBetween={10}
+        watchSlidesProgress
+        navigation
+        breakpoints={{
+          320: { slidesPerView: 3 },
+          640: { slidesPerView: 4 },
+          1024: { slidesPerView: 6 },
+        }}
+        className="mt-2"
+      >
+        {safeImages.map((image, index) => (
+          <SwiperSlide key={index}>
+            <img
+              src={image}
+              alt={`${productName || "thumb"} ${index}`}
+              onClick={() => {
+                mainSwiper?.slideTo(index);
+                setCurrentImageIndex(index);
+              }}
+              className={`cursor-pointer rounded-lg border-2 transition-all duration-200 ${
+                currentImageIndex === index
+                  ? "border-blue-500"
+                  : "border-gray-200 hover:border-blue-300"
+              }`}
+              onError={(e) => ((e.target as HTMLImageElement).src = defPic)}
+            />
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 };

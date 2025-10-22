@@ -3,12 +3,13 @@ import Pagination from "@/components/common/Pagination/Pagination";
 import ProductsGrid from "@/components/products/ProductsGrid";
 import { useEquipmentList } from "@/hooks/equipment/useEquipment";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
-import { faPlus, faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMemo, useState } from "react";
 import CategoryFilter from "../../components/common/Filter/CategoryFilter";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
 import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
+import Loading from "@/components/common/Loading/Loading";
 
 const Products = () => {
   const showToast = useUniqueToast();
@@ -80,10 +81,7 @@ const Products = () => {
           })
           .reverse();
       case "popular":
-        return items.sort(
-          (a, b) =>
-            (b.rating?.averageRating || 0) - (a.rating?.averageRating || 0)
-        );
+        return items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       default:
         return items;
     }
@@ -165,29 +163,28 @@ const Products = () => {
         <div className="text-center mt-5 flex flex-col items-center">
           {!loadMore ? (
             <div className="flex items-center gap-2">
-              {loading ? (
-                <button
-                  className="text-xs py-2 btn-outline-primary"
-                  id="loadMoreBtn"
-                >
-                  <div className="text-center mt-5 flex flex-col items-center">
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="animate-spin"
+              <button
+                className="text-xs py-2 btn-outline-primary flex items-center gap-2"
+                onClick={handleLoadMore}
+                disabled={isLoading || sortedEquips.length === 0}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loading
+                      size={"xs"}
+                      showText={false}
+                      width={"5em"}
+                      className="px-2"
                     />
-                    <p>Đang tải...</p>
-                  </div>
-                </button>
-              ) : (
-                <button
-                  className="text-xs py-2 btn-outline-primary flex items-center gap-2"
-                  onClick={handleLoadMore}
-                  disabled={isLoading || sortedEquips.length === 0}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                  Xem thêm sản phẩm
-                </button>
-              )}
+                    Xem sản phẩm
+                  </span>
+                ) : (
+                  <span className="">
+                    <FontAwesomeIcon icon={faPlus} />
+                    Xem thêm sản phẩm
+                  </span>
+                )}
+              </button>
             </div>
           ) : (
             <div className="w-2xl">

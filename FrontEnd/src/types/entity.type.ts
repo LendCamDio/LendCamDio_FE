@@ -147,6 +147,17 @@ export type GoogleAuthRequest = {
 // #endregion
 
 // #region Equipment Types
+export enum EquipmentCondition {
+  New,
+  Good,
+  Used,
+  Damaged,
+}
+export enum EquipmentStatus {
+  Active,
+  Inactive,
+}
+
 export type Equipment = {
   equipmentId: string;
   supplierId: string;
@@ -160,12 +171,12 @@ export type Equipment = {
   dailyPrice?: number;
   depositAmount: number;
   insuranceRequired: boolean;
-  condition: number;
+  condition: EquipmentCondition;
   availability: boolean;
-  status: string;
+  status: EquipmentStatus;
   imageId: string;
   imageUrl: string;
-  rating?: ReviewAverage;
+  rating?: number;
   createdAt: string;
   createdBy?: string;
   updatedAt?: string;

@@ -1,5 +1,5 @@
 import defPic from "@/assets/defaultPic1.jpg";
-import type { Equipment } from "@/types/entity.type";
+import { EquipmentCondition, type Equipment } from "@/types/entity.type";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ShieldCheck, Box, Store, Info } from "lucide-react";
@@ -38,10 +38,15 @@ export const StudioCard = ({
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="relative bg-white border border-gray-100 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+      className="
+        card-outstanding bg-white border 
+        border-gray-100 rounded-2xl shadow-md 
+        hover:shadow-xl transition-all duration-300 
+        overflow-hidden flex flex-col
+      "
     >
       {/* Image */}
-      <div className="relative w-full h-56 overflow-hidden">
+      <div className="card-outstanding-img-top relative ">
         {loadingImg ? (
           <div className="w-full h-full bg-gray-100 animate-pulse" />
         ) : (
@@ -65,11 +70,15 @@ export const StudioCard = ({
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-          {studio.name}
-        </h3>
-        <p className="text-sm text-gray-500 line-clamp-3">
+      <div
+        className="
+          card-outstanding-body flex flex-col flex-1 p-4 space-y-2
+        "
+      >
+        <div className="card-title">
+          <h5>{studio.name}</h5>
+        </div>
+        <p className="card-text">
           {studio.description || "Chưa có mô tả chi tiết."}
         </p>
 
@@ -80,9 +89,10 @@ export const StudioCard = ({
               <Info size={14} /> {studio.categoryName}
             </span>
           )}
-          {studio.condition && (
+          {studio.condition !== null && (
             <span className="flex items-center gap-1 bg-gray-50 text-gray-600 px-2 py-1 rounded-full">
-              <Box size={14} /> Tình trạng: {studio.condition}
+              <Box size={14} /> Tình trạng:{" "}
+              {EquipmentCondition[studio.condition as EquipmentCondition]}
             </span>
           )}
           {studio.insuranceRequired && (
@@ -99,10 +109,10 @@ export const StudioCard = ({
             {studio.supplierName || "Studio không xác định"}
           </div>
           <div className="text-right">
-            <p className="text-lg font-bold text-blue-600">
+            <p className="price">
               {studio.dailyPrice?.toLocaleString("vi-VN")}₫/ngày
             </p>
-            {studio.depositAmount && (
+            {studio.depositAmount !== null && (
               <p className="text-xs text-gray-500">
                 Cọc: {studio.depositAmount.toLocaleString("vi-VN")}₫
               </p>
@@ -116,7 +126,7 @@ export const StudioCard = ({
             setSelectedStudio(studio);
             setOpenBookingModal(true);
           }}
-          className="w-full mt-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:shadow-lg transition"
+          className="btn-primary book-btn"
         >
           Đặt lịch ngay
         </button>

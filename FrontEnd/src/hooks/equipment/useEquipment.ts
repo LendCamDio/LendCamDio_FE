@@ -20,7 +20,7 @@ const useEquipmentList = (
     serviceFn = () =>
       selectedCategory === "all"
         ? getEquipments(page, pageSize)
-        : getEquipmentsByCategory(selectedCategory || "", page, pageSize);
+        : getEquipmentsByCategory(selectedCategory!, page, pageSize);
   }
 
   return useQuery({

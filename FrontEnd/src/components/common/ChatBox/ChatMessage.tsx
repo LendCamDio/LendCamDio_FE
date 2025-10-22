@@ -31,13 +31,13 @@ const ChatMessage = ({ messages, isPendingChat, send }: ChatboxProps) => {
             Tôi có thể giúp gì cho bạn?
           </p>
           <div className="space-y-2 w-full max-w-xs">
-            {quickQuestions.map((q, i) => (
+            {quickQuestions.map((ques, index) => (
               <button
-                key={i}
-                onClick={() => send(q)}
+                key={index}
+                onClick={() => send(ques)}
                 className="w-full text-left px-3 py-2 text-sm bg-white hover:bg-blue-50 rounded-lg border border-gray-200 hover:border-blue-300 transition"
               >
-                💬 {q}
+                💬 {ques}
               </button>
             ))}
           </div>
@@ -51,7 +51,7 @@ const ChatMessage = ({ messages, isPendingChat, send }: ChatboxProps) => {
               animate={{ opacity: 1, y: 0 }}
               className={`chatbox-message custom-scrollbar ${
                 msg.sender === "user" ? "user" : "bot"
-              } max-w-[80%] break-words px-3 py-2 rounded-2xl`}
+              } `}
             >
               {msg.text}
             </motion.div>

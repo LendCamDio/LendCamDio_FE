@@ -3,7 +3,7 @@ import { getEquipmentById } from "@/services/equipmentService";
 import ErrorPage from "@/pages/Error";
 import type { Equipment } from "@/types/entity.type";
 import type { LoaderFunctionArgs } from "react-router-dom";
-// Lazy load the Home component
+// Lazy load the component
 const Home = lazyImport(() => import("@/pages/Home/Home"));
 const StudioBooking = lazyImport(() => import("@/pages/Studio/StudioBooking"));
 const StudioDetail = lazyImport(() => import("@/pages/Studio/StudioDetail"));

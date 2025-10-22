@@ -1,5 +1,6 @@
 import type { ApiResponse } from "@/types/entity.type";
 import { AxiosError } from "axios";
+// import type { ApiError } from "@/types/entity.type";
 
 export const handleApiError = <T>(error: unknown): ApiResponse<T> => {
   if (error instanceof AxiosError && error.response?.data) {
@@ -19,7 +20,7 @@ export const handleApiError = <T>(error: unknown): ApiResponse<T> => {
         success: false,
         error: {
           code: responseData.status,
-          message: errorMessages || responseData.title,
+          message: responseData.title || errorMessages,
         },
         timestamp: new Date().toISOString(),
       };

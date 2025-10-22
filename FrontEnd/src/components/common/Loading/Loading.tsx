@@ -1,4 +1,5 @@
 const sizeStyles: Record<string, string> = {
+  fit: "w-fit h-fit border-2",
   xs: "w-6 h-6 border-2",
   sm: "w-8 h-8 border-2",
   md: "w-12 h-12 border-4",
@@ -12,24 +13,28 @@ const colorStyles: Record<string, string> = {
   danger: "border-t-red-500",
 };
 
+type LoadingProps = {
+  size?: keyof typeof sizeStyles;
+  color?: keyof typeof colorStyles;
+  text?: string;
+  showText?: boolean;
+  width?: string;
+  height?: string;
+  className?: string;
+};
+
 const Loading = ({
   size = "md", // Default size: medium
   color = "primary", // Default color: primary
   text = "Loading...", // Default text
   showText = true, // Default: show text
+  width = "100%",
   height = "auto",
   className = "",
-}: {
-  size?: keyof typeof sizeStyles;
-  color?: keyof typeof colorStyles;
-  text?: string;
-  showText?: boolean;
-  height?: string;
-  className?: string;
-}) => {
+}: LoadingProps) => {
   return (
     <div
-      className={`w-full h-[${height}] 
+      className={`w-[${width}] h-[${height}] 
       flex flex-col items-center justify-center 
       animate-fade-in-up ${className}`}
     >

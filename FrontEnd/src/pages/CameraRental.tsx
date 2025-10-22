@@ -112,12 +112,15 @@ const CameraRental = () => {
           {!loadMore ? (
             <div className="flex items-center gap-2">
               {isLoading ? (
-                <button
-                  className="text-xs btn-outline-primary"
-                  id="loadMoreBtn"
-                >
-                  <Loading size="sm" height="10px" />
-                </button>
+                <span className="btn btn-outline-primary flex items-center gap-2">
+                  <Loading
+                    size={"xs"}
+                    showText={false}
+                    width={"5em"}
+                    className="px-2"
+                  />
+                  Xem sản phẩm
+                </span>
               ) : (
                 <button
                   className="text-xs py-2 btn-outline-primary flex items-center gap-2"
