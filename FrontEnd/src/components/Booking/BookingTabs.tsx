@@ -2,23 +2,21 @@ import { motion } from "framer-motion";
 import BookingFilter from "../common/Filter/BookingFilter";
 import SortDropdown from "../common/Dropdown/SortDropdown";
 
-enum RentalStatus {
-  PENDING = "Pending",
-  ACTIVE = "Active",
-  COMPLETED = "Completed",
-  CANCELLED = "Cancelled",
-}
-interface Tab {
+interface TabOption {
   id: string;
   label: string;
   count: number;
 }
+interface SortOption {
+  label: string;
+  value: string;
+}
 interface BookingTabsProps {
-  tabs: Tab[];
-  activeTab: RentalStatus | "all";
-  setActiveTab: (tab: string | "all") => void;
+  tabs: TabOption[];
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
   onSort: (sortBy: string) => void;
-  sortOptions: { label: string; value: string }[];
+  sortOptions: SortOption[];
 }
 
 const BookingTabs = ({

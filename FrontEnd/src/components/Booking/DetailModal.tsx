@@ -3,16 +3,27 @@ import defPic from "../../assets/defaultPic.jpg";
 import { useState } from "react";
 import { RentalStatusType, type RentalResponseDto } from "@/types/entity.type";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
-import { useEquipmentDetail } from "@/hooks/equipment/useEquipment";
+// import { useEquipmentDetail } from "@/hooks/equipment/useEquipment";
 import type { statusConfigType } from "@/types/ui/Booking/status.type";
+import { X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+interface StatusConfig {
+  [key: string]: {
+    label: string;
+    color: string;
+    icon: LucideIcon;
+    dotColor: string;
+  };
+}
 
 interface DetailModalProps {
   isDetailOpen: boolean;
-  setIsDetailOpen: (open: boolean) => void;
-  selectedBooking: RentalResponseDto;
-  formatDate: (dateStr: string) => string;
+  setIsDetailOpen: (isOpen: boolean) => void;
+  selectedBooking: RentalResponseDto | null;
+  formatDate: (date: string) => string;
   formatPrice: (price: number) => string;
-  statusConfig: statusConfigType;
+  statusConfig: StatusConfig;
   rentalStatus: number;
 }
 
@@ -23,31 +34,29 @@ const DetailModal = ({
   formatDate,
   formatPrice,
   statusConfig,
-  rentalStatus,
 }: DetailModalProps) => {
-  const [imageSrc, setImageSrc] = useState<string>(defPic);
+  const [imageSrc] = useState<string>(defPic);
+  if (!selectedBooking) return null;
+  const rentalStatus = selectedBooking.status;
+  console.log("img", imageSrc);
 
   const StatusIcon =
     statusConfig[RentalStatusType[rentalStatus] as keyof statusConfigType]
       ?.icon;
-  const status =
-    statusConfig[RentalStatusType[rentalStatus] as keyof statusConfigType];
 
   const { data: categoriesData } = useEquipCategoryList(1, 100);
-  const { data: equipmentDetail } = useEquipmentDetail(
-    selectedBooking?.equipmentId || "",
-    Boolean(selectedBooking?.equipmentId)
-  );
+  // const { data: equipmentDetail } = useEquipmentDetail(
+  //   selectedBooking?.equipmentId || "",
+  //   Boolean(selectedBooking?.equipmentId)
+  // );
 
   const categoriesMap: { [key: string]: string } = {};
   categoriesData?.data?.items.forEach((cat) => {
     categoriesMap[cat.categoryId] = cat.name;
   });
 
-  const handleImageError = () => {
-    console.log("Hình ảnh không tải được:", selectedBooking?.equipmentImageUrl);
-    setImageSrc(defPic);
-  };
+  if (!isDetailOpen || !selectedBooking) return null;
+
   return (
     <AnimatePresence>
       {isDetailOpen && selectedBooking && (
@@ -65,93 +74,136 @@ const DetailModal = ({
             onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] relative"
           >
-            <div className="p-6 border-b border-gray-200 min-w-2xl">
-              <h2 className="text-2xl font-bold text-[var(--text-dark)]">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Chi tiết đơn hàng
               </h2>
-              <p className="text-[var(--text-light)] mt-1">
-                {selectedBooking.notes}
-              </p>
+              <button
+                onClick={() => setIsDetailOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </button>
             </div>
 
-            <div className="p-6 custom-scrollbar overflow-y-auto max-h-[70vh]">
-              <img
-                src={imageSrc}
-                alt={selectedBooking.equipmentName}
-                onError={handleImageError}
-                className="w-full h-64 object-cover rounded-lg mb-6"
-              />
-
-              <h3 className="text-xl font-bold text-[var(--text-dark)] mb-4">
-                {selectedBooking.equipmentName}
-              </h3>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-[var(--bg-light)] rounded-lg">
-                  <span className="text-[var(--text-light)]">Trạng thái:</span>
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* Status */}
+              <div className="flex items-center gap-3">
+                {StatusIcon && <StatusIcon size={24} />}
+                <span
+                  className={`inline-flex items-center px-4 py-2 rounded-full text-base font-medium border ${
+                    statusConfig[selectedBooking.status]?.color || ""
+                  }`}
+                >
                   <span
-                    className={`px-4 py-2 rounded-lg font-semibold ${status?.color}`}
-                  >
-                    <span className="flex justify-center items-center gap-2 py-3">
-                      {StatusIcon && <StatusIcon size={16} />}
-                      {status.label}
+                    className={`w-2.5 h-2.5 rounded-full mr-2 ${
+                      statusConfig[selectedBooking.status]?.dotColor || ""
+                    }`}
+                  />
+                  {statusConfig[selectedBooking.status]?.label || "Unknown"}
+                </span>
+              </div>
+
+              {/* Equipment Info */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Thông tin thiết bị
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Mã đơn hàng</p>
+                    <p className="font-medium">{selectedBooking.rentalId}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Tên thiết bị</p>
+                    <p className="font-medium">
+                      {selectedBooking.equipmentName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Ngày bắt đầu</p>
+                    <p className="font-medium">
+                      {formatDate(selectedBooking.startDate)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Ngày kết thúc</p>
+                    <p className="font-medium">
+                      {formatDate(selectedBooking.endDate)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Thông tin thanh toán
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tổng tiền</span>
+                    <span className="font-semibold text-blue-600">
+                      {formatPrice(selectedBooking.totalPrice)}
                     </span>
-                  </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tiền cọc</span>
+                    <span className="font-medium">
+                      {formatPrice(selectedBooking.deposit)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Phí bảo hiểm</span>
+                    <span className="font-medium">
+                      {formatPrice(selectedBooking.insuranceFee)}
+                    </span>
+                  </div>
                 </div>
+              </div>
 
-                <div className="flex justify-between items-center p-4 bg-[var(--bg-light)] rounded-lg">
-                  <span className="text-[var(--text-light)]">Loại:</span>
-                  <span className="font-semibold text-[var(--text-dark)]">
-                    {equipmentDetail?.data?.items?.[0]?.categoryName || "Khác"}
-                  </span>
+              {/* Notes */}
+              {selectedBooking.notes && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Ghi chú
+                  </h3>
+                  <p className="text-gray-700 bg-gray-50 rounded-lg p-4">
+                    {selectedBooking.notes}
+                  </p>
                 </div>
+              )}
 
-                <div className="flex justify-between items-center p-4 bg-[var(--bg-light)] rounded-lg">
-                  <span className="text-[var(--text-light)]">Ngày đặt:</span>
-                  <span className="font-semibold text-[var(--text-dark)]">
-                    {formatDate(selectedBooking.createdAt)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-[var(--bg-light)] rounded-lg">
-                  <span className="text-[var(--text-light)]">Từ ngày:</span>
-                  <span className="font-semibold text-[var(--text-dark)]">
-                    {formatDate(selectedBooking.startDate)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-[var(--bg-light)] rounded-lg">
-                  <span className="text-[var(--text-light)]">Đến ngày:</span>
-                  <span className="font-semibold text-[var(--text-dark)]">
-                    {formatDate(selectedBooking.endDate)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-                  <span className="text-[var(--text-dark)] font-semibold">
-                    Tổng tiền:
-                  </span>
-                  <span className="font-bold text-xl text-[var(--primary-color)]">
-                    {formatPrice(selectedBooking.totalPrice)}
-                  </span>
+              {/* Customer Info */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Thông tin khách hàng
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Tên khách hàng</p>
+                    <p className="font-medium">
+                      {selectedBooking.customerName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Mã khách hàng</p>
+                    <p className="font-medium">{selectedBooking.customerId}</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 border-t border-gray-200 flex gap-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4">
+              <button
                 onClick={() => setIsDetailOpen(false)}
-                className="
-                flex-1 px-6 py-3 
-                bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] 
-                text-white rounded-lg 
-                hover:shadow-lg 
-                transition-all duration-300 font-semibold"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
                 Đóng
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         </motion.div>
