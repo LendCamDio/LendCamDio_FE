@@ -2505,7 +2505,7 @@
   }
 
   .login-form-container {
-    @apply w-full animate-fade-in-up;
+    @apply w-full;
   }
 
   /* Form Styling */
