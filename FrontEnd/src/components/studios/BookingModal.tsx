@@ -12,8 +12,8 @@ import {
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import type { CreateRentalRequestDto, Equipment } from "@/types/entity.type";
 import { useCreateRental } from "@/hooks/rental/useRental";
-import { useAuth } from "@/hooks/auth/useAuth";
 import { useCustomerByUserId } from "@/hooks/customer/useCustomer";
+import { useUser } from "@/hooks/user/useUser";
 
 interface BookingModalProps {
   open: boolean;
@@ -22,7 +22,7 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ open, onClose, studio }: BookingModalProps) {
-  const { user } = useAuth();
+  const { data: userData } = useUser();
   const showToast = useUniqueToast();
   const [form, setForm] = useState({
     bookingDate: "",
@@ -33,12 +33,23 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
 
   const [price, setPrice] = useState(0);
 
+  // Debug: Log userData
+  console.log("👤 User data:", userData);
+  console.log("🔑 User ID:", userData?.userId);
+
   const {
     data: customerData,
     isLoading,
-    isError: isErrorFetchCustomer,
-    error: errorFetchCustomer,
-  } = useCustomerByUserId(user?.id || "", Boolean(user?.id));
+    isError,
+    error,
+  } = useCustomerByUserId(userData?.userId || "", Boolean(userData?.userId));
+
+  // Debug: Log customer data
+  console.log("📦 Customer data:", customerData);
+  console.log("⏳ Is loading:", isLoading);
+  console.log("❌ Is error:", isError);
+  console.log("🚨 Error:", error);
+
   const { mutate: createRentalMutate, isPending: isSubmitting } =
     useCreateRental();
 
@@ -271,10 +282,10 @@ export function BookingModal({ open, onClose, studio }: BookingModalProps) {
                           <div className="space-y-4">
                             {isLoading ? (
                               <p>Đang tải thông tin khách hàng...</p>
-                            ) : isErrorFetchCustomer ? (
+                            ) : customerData?.error ? (
                               <p className="text-red-500">
                                 Lỗi:{" "}
-                                {errorFetchCustomer?.message ||
+                                {customerData.error.message ||
                                   "Không thể tải thông tin"}
                               </p>
                             ) : (

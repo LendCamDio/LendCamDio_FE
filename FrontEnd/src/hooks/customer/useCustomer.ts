@@ -77,11 +77,16 @@ const useCustomerDetail = (id: string, enabled: boolean = false) => {
 const useCustomerByUserId = (userId: string, enabled: boolean) => {
   return useQuery({
     queryKey: ["customerByUserId", userId],
-    queryFn: () => getCustomerByUserId(userId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: async () => {
+      console.log("🔍 Fetching customer data for userId:", userId);
+      const result = await getCustomerByUserId(userId);
+      console.log("✅ Customer data received:", result);
+      return result;
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
     retry: 3,
     refetchOnWindowFocus: false,
-    enabled: enabled,
+    enabled: enabled && !!userId,
   });
 };
 

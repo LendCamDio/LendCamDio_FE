@@ -4,7 +4,7 @@ import { lazy } from "react";
 // Lazy load
 const Profile = lazy(() => import("../pages/customer/Profile"));
 const Cart = lazy(() => import("../pages/customer/Cart"));
-const MyBooking = lazy(() => import("../pages/customer/MyBooking"));
+// const MyBooking = lazy(() => import("../pages/customer/MyBooking"));
 
 export const privateRoutes = [
   {
@@ -18,10 +18,10 @@ export const privateRoutes = [
             path: "profile",
             element: <Profile />,
           },
-          {
-            path: "booking-history",
-            element: <MyBooking />,
-          },
+          // {
+          //   path: "booking-history",
+          //   element: <MyBooking />,
+          // },
           { path: "cart", element: <Cart /> },
         ],
       },
