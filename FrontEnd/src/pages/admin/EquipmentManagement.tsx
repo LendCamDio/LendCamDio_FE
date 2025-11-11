@@ -14,7 +14,7 @@ import {
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import type { Equipment } from "@/types/entity.type";
-import { EquipmentStatus } from "@/types/entity.type";
+// import { EquipmentStatus } from "@/types/entity.type";
 import EquipmentFormModal, {
   type EquipmentFormData,
 } from "@/components/admin/EquipmentFormModal";
@@ -37,7 +37,7 @@ const EquipmentManagement = () => {
     null
   );
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
+  // const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
 
   // Confirm dialog state
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);

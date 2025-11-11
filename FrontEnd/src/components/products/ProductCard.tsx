@@ -2,7 +2,7 @@ import type { Equipment } from "@/types/entity.type";
 import { useNavigate } from "react-router-dom";
 import { Rating } from "../common/Rating";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import defPic from "@/assets/defaultPic1.jpg";
 import Loading from "../common/Loading/Loading";
@@ -51,10 +51,6 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
 
   const handleViewDetails = () => {
     navigate(`/products/product-detail/${equipment.equipmentId}`);
-  };
-  const handleAddToFavorites = () => {
-    // Add to favorites logic here
-    showToast("Chức năng đang phát triển", "info");
   };
 
   // 🏷️ Giá hiển thị hợp lý

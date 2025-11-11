@@ -77,6 +77,7 @@ const OrderSummary = ({
 
       // Create order
       const order = await orderService.createOrder(orderData);
+      console.log("Order created:", order);
 
       toast.success("Đơn hàng đã được tạo thành công!");
 
