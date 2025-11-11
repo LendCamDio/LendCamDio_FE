@@ -1,219 +1,227 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const AUTH_ENDPOINTS = {
   // Email/Password Authentication
-  LOGIN: "/auth/signin",
-  ADMIN_LOGIN: "/auth/admin/signin",
-  SUPPLIER_LOGIN: "/auth/supplier/signin",
+  LOGIN: "/api/auth/signin",
+  ADMIN_LOGIN: "/api/auth/admin/signin",
+  SUPPLIER_LOGIN: "/api/auth/supplier/signin",
   // Google Authentication
-  LOGIN_GOOGLE: "/auth/signin-google",
-  ADMIN_LOGIN_GOOGLE: "/auth/admin/signin-google",
-  SUPPLIER_LOGIN_GOOGLE: "/auth/supplier/signin-google",
+  LOGIN_GOOGLE: "/api/auth/signin-google",
+  ADMIN_LOGIN_GOOGLE: "/api/auth/admin/signin-google",
+  SUPPLIER_LOGIN_GOOGLE: "/api/auth/supplier/signin-google",
   // Registration
-  REGISTER: "/auth/register",
-  REGISTER_GOOGLE: "/auth/register-google",
+  REGISTER: "/api/auth/register",
+  REGISTER_GOOGLE: "/api/auth/register-google",
   // User Actions
-  LOGOUT: "/auth/logout",
-  CHANGE_PASSWORD: "/auth/change-password",
-  VERIFY_EMAIL: `/auth/verify-email`,
+  LOGOUT: "/api/auth/logout",
+  CHANGE_PASSWORD: "/api/auth/change-password",
+  VERIFY_EMAIL: `/api/auth/verify-email`,
 };
 
 export const AI_ENDPOINTS = {
-  CHAT: "/ai/chat",
+  CHAT: "/api/ai/chat",
   GENERATE_RECOMMENDATIONS: (customerId: string) =>
-    `/ai/generate-recommendations/${customerId}`,
+    `/api/ai/generate-recommendations/${customerId}`,
   GENERATE_RECOMMENDATIONS_BY_CATEGORY: (
     customerId: string,
     categoryName: string
-  ) => `/ai/generate-recommendations/${customerId}/category/${categoryName}`,
-  RATE_RECOMMENDATION: "/ai/rate-recommendation",
-  RECOMMEND: (customerId: string) => `/ai/recommend/${customerId}`,
+  ) =>
+    `/api/ai/generate-recommendations/${customerId}/category/${categoryName}`,
+  RATE_RECOMMENDATION: "/api/ai/rate-recommendation",
+  RECOMMEND: (customerId: string) => `/api/ai/recommend/${customerId}`,
 };
 
 export const USER_ENDPOINTS = {
   // GET /api/users
-  LIST: "/users",
+  LIST: "/api/users",
   // GET /api/users/detailed
-  DETAILED_LIST: "/users/detailed",
+  DETAILED_LIST: "/api/users/detailed",
   // GET /api/users/{id}
-  DETAILS: (id: string | number) => `/users/${id}`,
+  DETAILS: (id: string | number) => `/api/users/${id}`,
   // PUT /api/users/{id}
-  UPDATE: (id: string | number) => `/users/${id}`,
+  UPDATE: (id: string | number) => `/api/users/${id}`,
   // DELETE /api/users/{id}
-  DELETE: (id: string | number) => `/users/${id}`,
+  DELETE: (id: string | number) => `/api/users/${id}`,
   // GET /api/users/{id}/detailed
-  DETAILED_PROFILE_BY_ID: (id: string | number) => `/users/${id}/detailed`, // Renamed for clarity vs. PROFILE
+  DETAILED_PROFILE_BY_ID: (id: string | number) => `/api/users/${id}/detailed`,
   // GET /api/users/profile
-  PROFILE: "/users/profile",
+  PROFILE: "/api/users/profile",
   // GET /api/users/profile/detailed
-  PROFILE_DETAILED: "/users/profile/detailed",
+  PROFILE_DETAILED: "/api/users/profile/detailed",
   // GET /api/users/active
-  ACTIVE: "/users/active",
+  ACTIVE: "/api/users/active",
   // GET /api/users/search?email={email}
-  SEARCH: "/users/search",
+  SEARCH: "/api/users/search",
   // PATCH /api/users/{id}/avatar
-  UPDATE_AVATAR: (id: string | number) => `/users/${id}/avatar`,
+  UPDATE_AVATAR: (id: string | number) => `/api/users/${id}/avatar`,
   // PUT /api/users/{id}/status
-  UPDATE_STATUS: (id: string | number) => `/users/${id}/status`,
+  UPDATE_STATUS: (id: string | number) => `/api/users/${id}/status`,
   // GET /api/users/debug/claims
-  DEBUG_CLAIMS: "/users/debug/claims",
+  DEBUG_CLAIMS: "/api/users/debug/claims",
 };
 
 export const CUSTOMER_ENDPOINTS = {
   // GET /api/customers
-  LIST: "/customers",
+  LIST: "/api/customers",
   // GET /api/customers/active
-  ACTIVE_LIST: "/customers/active",
+  ACTIVE_LIST: "/api/customers/active",
   // GET /api/customers/{id}
-  DETAILS: (id: string) => `/customers/${id}`,
+  DETAILS: (id: string) => `/api/customers/${id}`,
   // GET /api/customers/user/{userId}
-  BY_USER_ID: (userId: string) => `/customers/user/${userId}`,
+  BY_USER_ID: (userId: string) => `/api/customers/user/${userId}`,
   // POST /api/customers
-  CREATE: "/customers",
+  CREATE: "/api/customers",
   // PUT /api/customers/{id}
-  UPDATE: (id: string) => `/customers/${id}`,
+  UPDATE: (id: string) => `/api/customers/${id}`,
   // DELETE /api/customers/{id}
-  DELETE: (id: string) => `/customers/${id}`,
+  DELETE: (id: string) => `/api/customers/${id}`,
   // PATCH /api/customers/{id}/membership-level
-  UPDATE_MEMBERSHIP_LEVEL: (id: string) => `/customers/${id}/membership-level`,
+  UPDATE_MEMBERSHIP_LEVEL: (id: string) =>
+    `/api/customers/${id}/membership-level`,
   // PATCH /api/customers/{id}/loyalty-points
-  UPDATE_LOYALTY_POINTS: (id: string) => `/customers/${id}/loyalty-points`,
+  UPDATE_LOYALTY_POINTS: (id: string) => `/api/customers/${id}/loyalty-points`,
   // GET /api/customers/{id}/loyalty-points
-  GET_LOYALTY_POINTS: (id: string) => `/customers/${id}/loyalty-points`,
+  GET_LOYALTY_POINTS: (id: string) => `/api/customers/${id}/loyalty-points`,
   // PATCH /api/customers/{id}/status
-  UPDATE_STATUS: (id: string) => `/customers/${id}/status`,
+  UPDATE_STATUS: (id: string) => `/api/customers/${id}/status`,
   // GET /api/customers/membership-level/{level}
   BY_MEMBERSHIP_LEVEL: (level: string) =>
-    `/customers/membership-level/${level}`,
+    `/api/customers/membership-level/${level}`,
   // GET /api/customers/status/{status}
-  BY_STATUS: (status: string) => `/customers/status/${status}`,
+  BY_STATUS: (status: string) => `/api/customers/status/${status}`,
 };
 
 export const EQUIPMENT_ENDPOINTS = {
-  LIST: "/equipments",
-  AVAILABLE: "/equipments/available",
-  DETAILS: (id: string) => `/equipments/${id}`,
-  CREATE: "/equipments",
-  UPDATE: (id: string) => `/equipments/${id}`,
-  DELETE: (id: string) => `/equipments/${id}`,
-  SEARCH: "/equipments/search",
-  CATEGORY: (category: string) => `/equipments/category/${category}`,
-  SUPPLIER: (supplierId: string) => `/equipments/supplier/${supplierId}`,
-  CONDITION: (condition: string) => `/equipments/condition/${condition}`,
-  PRICE_RANGE: "/equipments/price-range",
-  AVAILABILITY: (id: string) => `/equipments/${id}/availability`,
-  STOCK: (id: string) => `/equipments/${id}/stock`,
+  LIST: "/api/equipments",
+  AVAILABLE: "/api/equipments/available",
+  DETAILS: (id: string) => `/api/equipments/${id}`,
+  CREATE: "/api/equipments",
+  UPDATE: (id: string) => `/api/equipments/${id}`,
+  DELETE: (id: string) => `/api/equipments/${id}`,
+  SEARCH: "/api/equipments/search",
+  CATEGORY: (category: string) => `/api/equipments/category/${category}`,
+  SUPPLIER: (supplierId: string) => `/api/equipments/supplier/${supplierId}`,
+  CONDITION: (condition: string) => `/api/equipments/condition/${condition}`,
+  PRICE_RANGE: "/api/equipments/price-range",
+  AVAILABILITY: (id: string) => `/api/equipments/${id}/availability`,
+  STOCK: (id: string) => `/api/equipments/${id}/stock`,
 };
 
 export const EQUIPMENT_CATEGORY_ENDPOINTS = {
-  LIST: "/equipment-categories",
-  ACTIVE: "/equipment-categories/active",
-  DETAILS: (id: string) => `/equipment-categories/${id}`,
-  CREATE: "/equipment-categories",
-  UPDATE: (id: string) => `/equipment-categories/${id}`,
-  DELETE: (id: string) => `/equipment-categories/${id}`,
-  ROOT: "/equipment-categories/root",
-  CHILDREN: (parentId: string) => `/equipment-categories/${parentId}/children`,
-  HIERARCHY: (id: string) => `/equipment-categories/${id}/hierarchy`,
-  HAS_CHILDREN: (id: string) => `/equipment-categories/${id}/has-children`,
-  SEARCH: "/equipment-categories/search",
-  STATUS: (status: string) => `/equipment-categories/status/${status}`,
-  CAN_DELETE: (id: string) => `/equipment-categories/${id}/can-delete`,
+  LIST: "/api/equipment-categories",
+  ACTIVE: "/api/equipment-categories/active",
+  DETAILS: (id: string) => `/api/equipment-categories/${id}`,
+  CREATE: "/api/equipment-categories",
+  UPDATE: (id: string) => `/api/equipment-categories/${id}`,
+  DELETE: (id: string) => `/api/equipment-categories/${id}`,
+  ROOT: "/api/equipment-categories/root",
+  CHILDREN: (parentId: string) =>
+    `/api/equipment-categories/${parentId}/children`,
+  HIERARCHY: (id: string) => `/api/equipment-categories/${id}/hierarchy`,
+  HAS_CHILDREN: (id: string) => `/api/equipment-categories/${id}/has-children`,
+  SEARCH: "/api/equipment-categories/search",
+  STATUS: (status: string) => `/api/equipment-categories/status/${status}`,
+  CAN_DELETE: (id: string) => `/api/equipment-categories/${id}/can-delete`,
   VALIDATE_PARENT: (categoryId: string) =>
-    `/equipment-categories/${categoryId}/validate-parent`,
+    `/api/equipment-categories/${categoryId}/validate-parent`,
 };
 
 export const EQUIPMENT_IMAGE_ENDPOINTS = {
-  LIST: "/equipment-images",
-  DETAILS: (id: string) => `/equipment-images/${id}`,
-  CREATE: "/equipment-images",
-  UPDATE: (id: string) => `/equipment-images/${id}`,
-  DELETE: (id: string) => `/equipment-images/${id}`,
+  LIST: "/api/equipment-images",
+  DETAILS: (id: string) => `/api/equipment-images/${id}`,
+  CREATE: "/api/equipment-images",
+  UPDATE: (id: string) => `/api/equipment-images/${id}`,
+  DELETE: (id: string) => `/api/equipment-images/${id}`,
   BY_EQUIPMENT: (equipmentId: string) =>
-    `/equipment-images/equipment/${equipmentId}`,
+    `/api/equipment-images/equipment/${equipmentId}`,
   PRIMARY: (equipmentId: string) =>
-    `/equipment-images/equipment/${equipmentId}/primary`,
-  TYPE: (type: string) => `/equipment-images/type/${type}`,
-  SET_PRIMARY: (id: string) => `/equipment-images/${id}/set-primary`,
-  STATUS: (id: string) => `/equipment-images/${id}/status`,
+    `/api/equipment-images/equipment/${equipmentId}/primary`,
+  TYPE: (type: string) => `/api/equipment-images/type/${type}`,
+  SET_PRIMARY: (id: string) => `/api/equipment-images/${id}/set-primary`,
+  STATUS: (id: string) => `/api/equipment-images/${id}/status`,
   BELONGS_TO: (imageId: string, equipmentId: string) =>
-    `/equipment-images/${imageId}/belongs-to/${equipmentId}`,
-  UPLOAD: "/equipment-images/upload",
+    `/api/equipment-images/${imageId}/belongs-to/${equipmentId}`,
+  UPLOAD: "/api/equipment-images/upload",
 };
 
 export const REVIEW_ENDPOINTS = {
-  LIST: "/reviews",
+  LIST: "/api/reviews",
   COUNT_BY_EQUIPMENT: (equipmentId: string) =>
-    `/reviews/equipment/${equipmentId}/review-count`,
+    `/api/reviews/equipment/${equipmentId}/review-count`,
   AVERAGE_RATING_BY_EQUIPMENT: (equipmentId: string) =>
-    `/reviews/equipment/${equipmentId}/average-rating`,
+    `/api/reviews/equipment/${equipmentId}/average-rating`,
 };
 
 export const PAYMENT_ENDPOINTS = {
-  // Base route
-  ROOT: "/payments",
-  // GET all
-  LIST: "/payments",
-  // GET by ID
-  DETAILS: (id: string) => `/payments/${id}`,
-  // GET by rentalId
+  ROOT: "/api/payments",
+  LIST: "/api/payments",
+  DETAILS: (id: string) => `/api/payments/${id}`,
   BY_RENTAL: (rentalId: string, page = 1, pageSize = 10) =>
-    `/payments/rental/${rentalId}?page=${page}&pageSize=${pageSize}`,
-  // GET by customerId
+    `/api/payments/rental/${rentalId}?page=${page}&pageSize=${pageSize}`,
   BY_CUSTOMER: (customerId: string, page = 1, pageSize = 10) =>
-    `/payments/customer/${customerId}?page=${page}&pageSize=${pageSize}`,
-  // GET by status
+    `/api/payments/customer/${customerId}?page=${page}&pageSize=${pageSize}`,
   BY_STATUS: (status: string, page = 1, pageSize = 10) =>
-    `/payments/status/${status}?page=${page}&pageSize=${pageSize}`,
-  // GET by method
+    `/api/payments/status/${status}?page=${page}&pageSize=${pageSize}`,
   BY_METHOD: (method: string, page = 1, pageSize = 10) =>
-    `/payments/method/${method}?page=${page}&pageSize=${pageSize}`,
-  // GET by date range
+    `/api/payments/method/${method}?page=${page}&pageSize=${pageSize}`,
   BY_DATE_RANGE: (
     startDate: string,
     endDate: string,
     page = 1,
     pageSize = 10
   ) =>
-    `/payments/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${pageSize}`,
-  // POST create
-  CREATE: "/payments",
-  // PUT update
-  UPDATE: (id: string) => `/payments/${id}`,
-  // DELETE
-  DELETE: (id: string) => `/payments/${id}`,
-  // PATCH refund
-  REFUND: (id: string) => `/payments/${id}/refund`,
-  // GET total for period
+    `/api/payments/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${pageSize}`,
+  CREATE: "/api/payments",
+  UPDATE: (id: string) => `/api/payments/${id}`,
+  DELETE: (id: string) => `/api/payments/${id}`,
+  REFUND: (id: string) => `/api/payments/${id}/refund`,
   TOTAL_FOR_PERIOD: (startDate: string, endDate: string) =>
-    `/payments/total-for-period?startDate=${startDate}&endDate=${endDate}`,
-  // (Optional future) PATCH process, confirm, etc.
-  // PROCESS: (id: string) => `/payments/${id}/process`,
-  // CONFIRM: (id: string) => `/payments/${id}/confirm`,
-  // PAYOS_CALLBACK: "/payments/payos/callback",
+    `/api/payments/total-for-period?startDate=${startDate}&endDate=${endDate}`,
 };
 
 export const RENTAL_ENDPOINTS = {
-  // 📜 CRUD
-  GET_ALL: "/rentals",
-  GET_BY_ID: (id: string) => `/rentals/${id}`,
-  CREATE: "/rentals",
-  UPDATE: (id: string) => `/rentals/${id}`,
-  DELETE: (id: string) => `/rentals/${id}`,
-
-  // 🧾 Filters / Queries
-  GET_ACTIVE: "/rentals/active",
-  GET_BY_CUSTOMER: (customerId: string) => `/rentals/customer/${customerId}`,
+  GET_ALL: "/api/rentals",
+  GET_BY_ID: (id: string) => `/api/rentals/${id}`,
+  CREATE: "/api/rentals",
+  UPDATE: (id: string) => `/api/rentals/${id}`,
+  DELETE: (id: string) => `/api/rentals/${id}`,
+  GET_ACTIVE: "/api/rentals/active",
+  GET_BY_CUSTOMER: (customerId: string) =>
+    `/api/rentals/customer/${customerId}`,
   GET_BY_EQUIPMENT: (equipmentId: string) =>
-    `/rentals/equipment/${equipmentId}`,
-  GET_BY_STATUS: (status: string) => `/rentals/status/${status}`,
-  GET_BY_DATE_RANGE: "/rentals/date-range",
-  CHECK_AVAILABILITY: "/rentals/check-availability",
+    `/api/rentals/equipment/${equipmentId}`,
+  GET_BY_STATUS: (status: string) => `/api/rentals/status/${status}`,
+  GET_BY_DATE_RANGE: "/api/rentals/date-range",
+  CHECK_AVAILABILITY: "/api/rentals/check-availability",
+  APPROVE: (id: string) => `/api/rentals/${id}/approve`,
+  CANCEL: (id: string) => `/api/rentals/${id}/cancel`,
+  COMPLETE: (id: string) => `/api/rentals/${id}/complete`,
+};
 
-  // ⚙️ Actions
-  APPROVE: (id: string) => `/rentals/${id}/approve`,
-  CANCEL: (id: string) => `/rentals/${id}/cancel`,
-  COMPLETE: (id: string) => `/rentals/${id}/complete`,
+export const CART_ENDPOINTS = {
+  GET: "/api/cart",
+  GET_BY_ID: (cartId: string) => `/api/cart/${cartId}`,
+  ADD_ITEM: "/api/cart/items",
+  UPDATE_ITEM: (cartItemId: string) => `/api/cart/items/${cartItemId}`,
+  REMOVE_ITEM: (cartItemId: string) => `/api/cart/items/${cartItemId}`,
+  CLEAR: "/api/cart/clear",
+};
+
+export const ORDER_ENDPOINTS = {
+  CREATE: "/api/orders",
+  GET_BY_ID: (orderId: string) => `/api/orders/${orderId}`,
+  GET_BY_NUMBER: (orderNumber: string) => `/api/orders/number/${orderNumber}`,
+  MY_ORDERS: "/api/orders/my-orders",
+  CANCEL: (orderId: string) => `/api/orders/${orderId}/cancel`,
+};
+
+export const SUPPLIER_ENDPOINTS = {
+  LIST: "/api/suppliers",
+  DETAILS: (id: string) => `/api/suppliers/${id}`,
+  CREATE: "/api/suppliers",
+  UPDATE: (id: string) => `/api/suppliers/${id}`,
+  DELETE: (id: string) => `/api/suppliers/${id}`,
+  BY_STATUS: (status: string) => `/api/suppliers/status/${status}`,
 };

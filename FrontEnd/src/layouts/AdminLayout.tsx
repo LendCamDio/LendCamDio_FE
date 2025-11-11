@@ -20,13 +20,13 @@ import { useAuth } from "@/hooks/auth/useAuth";
 
 // Menu items cho sidebar (có thể mở rộng)
 const menuItems = [
-  { icon: Home, label: "Tổng quan", path: "/admin/dashboard" },
-  { icon: Users, label: "Người dùng", path: "/admin/users" },
-  { icon: ShoppingCart, label: "Đơn hàng", path: "/admin/orders" },
-  { icon: Package, label: "Sản phẩm", path: "/admin/products" },
-  { icon: BarChart3, label: "Thống kê", path: "/admin/stats" },
-  { icon: FileText, label: "Báo cáo", path: "/admin/reports" },
-  { icon: Settings, label: "Cài đặt", path: "/admin/settings" },
+  { icon: Home, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: Package, label: "Equipment", path: "/admin/equipments" },
+  { icon: Users, label: "Users", path: "/admin/users" },
+  { icon: ShoppingCart, label: "Rentals", path: "/admin/rentals" },
+  { icon: BarChart3, label: "Statistics", path: "/admin/stats" },
+  { icon: FileText, label: "Reports", path: "/admin/reports" },
+  { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];
 
 export default function AdminLayout() {

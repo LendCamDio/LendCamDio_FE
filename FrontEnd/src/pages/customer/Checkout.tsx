@@ -13,7 +13,16 @@ import {
   CheckCircle2,
   ArrowLeft,
   Shield,
+  Package,
+  Truck,
+  MapPin,
+  Phone,
+  Mail,
+  User,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 // Validation schema
 const checkoutSchema = z.object({
@@ -146,7 +155,7 @@ const Checkout = () => {
 
   return (
     <PageWrapper>
-      <div className="min-page-height bg-gray-50 py-8">
+      <div className="min-page-height bg-gradient-to-br from-gray-50 to-gray-100 py-8">
         <div className="container mx-auto px-4 max-w-7xl">
           {/* Header */}
           <motion.div
@@ -156,12 +165,22 @@ const Checkout = () => {
           >
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 mb-4 transition-colors group"
             >
-              <ArrowLeft className="w-5 h-5" />
-              Quay lại
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Quay lại giỏ hàng</span>
             </button>
-            <h1 className="text-3xl md:text-4xl font-bold">Thanh toán</h1>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <Package className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                  Thanh toán
+                </h1>
+                <p className="text-gray-600 mt-1">Hoàn tất đơn hàng của bạn</p>
+              </div>
+            </div>
           </motion.div>
 
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -172,94 +191,126 @@ const Checkout = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-lg shadow-md p-6"
                 >
-                  <h2 className="text-xl font-semibold mb-4">
-                    Thông tin giao hàng
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Họ và tên *
-                      </label>
-                      <input
-                        type="text"
-                        {...register("fullName")}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Nhập họ và tên"
-                      />
-                      {errors.fullName && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.fullName.message}
-                        </p>
-                      )}
-                    </div>
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <CardTitle className="flex items-center gap-3 text-xl">
+                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                          <Truck className="w-4 h-4 text-white" />
+                        </div>
+                        Thông tin giao hàng
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                      <div className="space-y-5">
+                        <div className="relative">
+                          <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700">
+                            <User className="w-4 h-4" />
+                            Họ và tên *
+                          </label>
+                          <input
+                            type="text"
+                            {...register("fullName")}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="Nhập họ và tên đầy đủ"
+                          />
+                          {errors.fullName && (
+                            <motion.p
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                            >
+                              <span>⚠</span>
+                              {errors.fullName.message}
+                            </motion.p>
+                          )}
+                        </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2">
-                          Số điện thoại *
-                        </label>
-                        <input
-                          type="tel"
-                          {...register("phone")}
-                          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                          placeholder="0123456789"
-                        />
-                        {errors.phone && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.phone.message}
-                          </p>
-                        )}
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="relative">
+                            <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700">
+                              <Phone className="w-4 h-4" />
+                              Số điện thoại *
+                            </label>
+                            <input
+                              type="tel"
+                              {...register("phone")}
+                              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                              placeholder="0123456789"
+                            />
+                            {errors.phone && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                              >
+                                <span>⚠</span>
+                                {errors.phone.message}
+                              </motion.p>
+                            )}
+                          </div>
+
+                          <div className="relative">
+                            <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700">
+                              <Mail className="w-4 h-4" />
+                              Email *
+                            </label>
+                            <input
+                              type="email"
+                              {...register("email")}
+                              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                              placeholder="email@example.com"
+                            />
+                            {errors.email && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                              >
+                                <span>⚠</span>
+                                {errors.email.message}
+                              </motion.p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          <label className="flex items-center gap-2 text-sm font-medium mb-2 text-gray-700">
+                            <MapPin className="w-4 h-4" />
+                            Địa chỉ giao hàng *
+                          </label>
+                          <input
+                            type="text"
+                            {...register("address")}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="Số nhà, đường, phường, quận, thành phố"
+                          />
+                          {errors.address && (
+                            <motion.p
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="text-red-500 text-sm mt-1 flex items-center gap-1"
+                            >
+                              <span>⚠</span>
+                              {errors.address.message}
+                            </motion.p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-2 text-gray-700">
+                            Ghi chú đơn hàng (không bắt buộc)
+                          </label>
+                          <textarea
+                            {...register("note")}
+                            rows={3}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                            placeholder="Ví dụ: Giao hàng trong giờ hành chính..."
+                          />
+                        </div>
                       </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-2">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          {...register("email")}
-                          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                          placeholder="email@example.com"
-                        />
-                        {errors.email && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.email.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Địa chỉ *
-                      </label>
-                      <input
-                        type="text"
-                        {...register("address")}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Số nhà, đường, phường, quận, thành phố"
-                      />
-                      {errors.address && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.address.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Ghi chú (tùy chọn)
-                      </label>
-                      <textarea
-                        {...register("note")}
-                        rows={3}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Ghi chú về đơn hàng..."
-                      />
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </motion.div>
 
                 {/* Payment Method */}
@@ -267,42 +318,69 @@ const Checkout = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="bg-white rounded-lg shadow-md p-6"
                 >
-                  <h2 className="text-xl font-semibold mb-4">
-                    Phương thức thanh toán
-                  </h2>
-                  <div className="space-y-3">
-                    {paymentMethods.map((method) => (
-                      <label
-                        key={method.id}
-                        className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          selectedPayment === method.id
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          value={method.id}
-                          {...register("paymentMethod")}
-                          checked={selectedPayment === method.id}
-                          onChange={(e) => setSelectedPayment(e.target.value)}
-                          className="w-4 h-4"
-                        />
-                        <div className="text-blue-600">{method.icon}</div>
-                        <div className="flex-1">
-                          <p className="font-semibold">{method.name}</p>
-                          <p className="text-sm text-gray-500">
-                            {method.description}
-                          </p>
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">
+                      <CardTitle className="flex items-center gap-3 text-xl">
+                        <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                          <CreditCard className="w-4 h-4 text-white" />
                         </div>
-                        {selectedPayment === method.id && (
-                          <CheckCircle2 className="w-6 h-6 text-blue-600" />
-                        )}
-                      </label>
-                    ))}
-                  </div>
+                        Phương thức thanh toán
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                      <div className="space-y-3">
+                        {paymentMethods.map((method) => (
+                          <label
+                            key={method.id}
+                            className={`relative flex items-center gap-4 p-5 border-2 rounded-xl cursor-pointer transition-all group hover:shadow-md ${
+                              selectedPayment === method.id
+                                ? "border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md"
+                                : "border-gray-200 hover:border-blue-200 bg-white"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              value={method.id}
+                              {...register("paymentMethod")}
+                              checked={selectedPayment === method.id}
+                              onChange={(e) =>
+                                setSelectedPayment(e.target.value)
+                              }
+                              className="w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                            />
+                            <div
+                              className={`text-blue-600 group-hover:scale-110 transition-transform ${
+                                selectedPayment === method.id ? "scale-110" : ""
+                              }`}
+                            >
+                              {method.icon}
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold text-gray-900">
+                                {method.name}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {method.description}
+                              </p>
+                            </div>
+                            {selectedPayment === method.id && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="absolute -top-2 -right-2"
+                              >
+                                <Badge variant="success" className="shadow-md">
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                  Đã chọn
+                                </Badge>
+                              </motion.div>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               </div>
 
@@ -313,74 +391,154 @@ const Checkout = () => {
                 transition={{ delay: 0.2 }}
                 className="lg:col-span-1"
               >
-                <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-                  <h2 className="text-xl font-semibold mb-4">
-                    Đơn hàng của bạn
-                  </h2>
-
-                  {/* Order Items */}
-                  <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
-                    {cartItems.map((item: any, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 pb-3 border-b"
-                      >
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 rounded object-cover"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{item.name}</p>
-                          <p className="text-sm text-gray-500">
-                            x{item.quantity}
-                          </p>
+                <div className="sticky top-4 space-y-4">
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader className="border-b bg-gradient-to-r from-purple-50 to-pink-50">
+                      <CardTitle className="flex items-center gap-3 text-xl">
+                        <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                          <Package className="w-4 h-4 text-white" />
                         </div>
-                        <p className="font-semibold">
-                          {formatCurrency(item.price * item.quantity)}
-                        </p>
+                        Đơn hàng của bạn
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                      {/* Order Items */}
+                      <div className="space-y-3 mb-4 max-h-64 overflow-y-auto custom-scrollbar">
+                        {cartItems.map((item: any, index: number) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-16 h-16 rounded-lg object-cover shadow-sm"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm text-gray-900 truncate">
+                                {item.name}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-xs">
+                                  x{item.quantity}
+                                </Badge>
+                              </div>
+                            </div>
+                            <p className="font-bold text-blue-600">
+                              {formatCurrency(item.price * item.quantity)}
+                            </p>
+                          </motion.div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
 
-                  {/* Price Breakdown */}
-                  <div className="space-y-2 mb-4 pt-4 border-t">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Tạm tính:</span>
-                      <span>{formatCurrency(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-600">
-                      <span>Phí dịch vụ:</span>
-                      <span>{formatCurrency(serviceFee)}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Giảm giá:</span>
-                        <span>-{formatCurrency(discount)}</span>
+                      <Separator className="my-4" />
+
+                      {/* Price Breakdown */}
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-gray-600">
+                          <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                            Tạm tính
+                          </span>
+                          <span className="font-medium">
+                            {formatCurrency(subtotal)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                          <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                            Phí dịch vụ
+                          </span>
+                          <span className="font-medium">
+                            {formatCurrency(serviceFee)}
+                          </span>
+                        </div>
+                        {discount > 0 && (
+                          <div className="flex justify-between text-green-600">
+                            <span className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                              Giảm giá
+                            </span>
+                            <span className="font-medium">
+                              -{formatCurrency(discount)}
+                            </span>
+                          </div>
+                        )}
+
+                        <Separator className="my-2" />
+
+                        <motion.div
+                          initial={{ scale: 0.95 }}
+                          animate={{ scale: 1 }}
+                          className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg"
+                        >
+                          <span className="text-lg font-bold text-gray-900">
+                            Tổng thanh toán
+                          </span>
+                          <span className="text-2xl font-bold text-blue-600">
+                            {formatCurrency(total)}
+                          </span>
+                        </motion.div>
                       </div>
-                    )}
-                    <div className="flex justify-between text-lg font-bold pt-2 border-t">
-                      <span>Tổng cộng:</span>
-                      <span className="text-blue-600">
-                        {formatCurrency(total)}
+
+                      {/* Submit Button */}
+                      <button
+                        type="submit"
+                        disabled={isProcessing}
+                        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                      >
+                        {isProcessing ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Đang xử lý...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-5 h-5" />
+                            Xác nhận đặt hàng
+                          </>
+                        )}
+                      </button>
+
+                      {/* Security Badge */}
+                      <div className="flex items-center justify-center gap-2 mt-4 p-3 bg-green-50 rounded-lg">
+                        <Shield className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-800 font-medium">
+                          Thanh toán an toàn & bảo mật 100%
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Trust Badges */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="grid grid-cols-3 gap-3"
+                  >
+                    <div className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm">
+                      <Shield className="w-6 h-6 text-blue-600 mb-1" />
+                      <span className="text-xs text-gray-600 text-center">
+                        Bảo mật
                       </span>
                     </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isProcessing ? "Đang xử lý..." : "Xác nhận đặt hàng"}
-                  </button>
-
-                  {/* Security Badge */}
-                  <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
-                    <Shield className="w-4 h-4" />
-                    <span>Thanh toán an toàn & bảo mật</span>
-                  </div>
+                    <div className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm">
+                      <Truck className="w-6 h-6 text-green-600 mb-1" />
+                      <span className="text-xs text-gray-600 text-center">
+                        Giao nhanh
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center p-3 bg-white rounded-lg shadow-sm">
+                      <CheckCircle2 className="w-6 h-6 text-purple-600 mb-1" />
+                      <span className="text-xs text-gray-600 text-center">
+                        Uy tín
+                      </span>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             </div>

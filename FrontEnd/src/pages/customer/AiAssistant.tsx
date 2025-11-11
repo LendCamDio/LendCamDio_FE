@@ -13,7 +13,8 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import { toast } from "sonner";
-import { sendMessage } from "@/services/aiService";
+import aiService from "@/services/api/aiService";
+import { useUser } from "@/hooks/user/useUser";
 
 interface Message {
   id: string;
@@ -23,7 +24,16 @@ interface Message {
   rating?: number;
 }
 
+interface RateLimitStatus {
+  isAllowed: boolean;
+  remainingRequests: number;
+  resetTime: string;
+  limitType: string;
+}
+
 const AiAssistant = () => {
+  const { data: user } = useUser();
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -36,19 +46,39 @@ const AiAssistant = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimitStatus, setRateLimitStatus] =
+    useState<RateLimitStatus | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll to bottom
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  // Check rate limit on mount
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (user?.userId) {
+      checkRateLimit();
+    }
+  }, [user]);
 
+  const checkRateLimit = async () => {
+    if (!user?.userId) return;
+
+    try {
+      const status = await aiService.checkChatRateLimit(user.userId, 0);
+      setRateLimitStatus(status);
+    } catch (error) {
+      console.error("Failed to check rate limit:", error);
+    }
+  };
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+
+    // Check rate limit before sending
+    if (rateLimitStatus && !rateLimitStatus.isAllowed) {
+      toast.error(
+        `Bạn đã hết lượt chat. Vui lòng thử lại sau: ${new Date(
+          rateLimitStatus.resetTime
+        ).toLocaleTimeString()}`
+      );
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -65,27 +95,26 @@ const AiAssistant = () => {
 
     try {
       // Call API to chat with AI
-      const response = await sendMessage(currentInput);
+      const response = await aiService.chat(currentInput);
 
-      if (response.success && response.data) {
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content:
-            response.data.response ||
-            "Xin lỗi, tôi không thể trả lời câu hỏi này.",
-          role: "assistant",
-          timestamp: new Date(),
-        };
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content:
+          response.response || "Xin lỗi, tôi không thể trả lời câu hỏi này.",
+        role: "assistant",
+        timestamp: new Date(),
+      };
 
-        setMessages((prev) => [...prev, assistantMessage]);
-        toast.success("Đã nhận được phản hồi từ AI");
-      } else {
-        throw new Error(
-          response.error?.message || "Không thể nhận phản hồi từ AI"
-        );
-      }
+      setMessages((prev) => [...prev, assistantMessage]);
+      toast.success("Đã nhận được phản hồi từ AI");
+
+      // Update rate limit status
+      await checkRateLimit();
     } catch (error: any) {
-      const errorMessage = error.message || "Có lỗi xảy ra. Vui lòng thử lại!";
+      const errorMessage =
+        error.response?.data?.error?.message ||
+        error.message ||
+        "Có lỗi xảy ra. Vui lòng thử lại!";
       setError(errorMessage);
       toast.error(errorMessage);
       console.error("Chat error:", error);

@@ -1,4 +1,8 @@
-import type { Equipment, EquipmentResponse } from "@/types/entity.type";
+import type {
+  Equipment,
+  EquipmentResponse,
+  SingleEquipmentResponse,
+} from "@/types/entity.type";
 import api from "./api";
 import { EQUIPMENT_ENDPOINTS, REVIEW_ENDPOINTS } from "@/constants/endpoints";
 
@@ -42,7 +46,9 @@ export async function getEquipmentBySearchName(
     timestamp: res.data.timestamp,
   };
 }
-export async function getEquipmentById(id: string): Promise<EquipmentResponse> {
+export async function getEquipmentById(
+  id: string
+): Promise<SingleEquipmentResponse> {
   const res = await api.get(EQUIPMENT_ENDPOINTS.DETAILS(id));
 
   const resRate = await api.get(

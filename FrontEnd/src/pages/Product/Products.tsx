@@ -103,10 +103,14 @@ const Products = () => {
   return (
     <PageWrapper animation="fade">
       <section className="hero">
-        <div className="container">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center">
-            <h1>Sản phẩm & Dịch vụ</h1>
-            <p>Khám phá tất cả studio và thiết bị chụp ảnh chuyên nghiệp</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl">
+              Sản phẩm & Dịch vụ
+            </h1>
+            <p className="text-sm sm:text-base lg:text-lg mt-2">
+              Khám phá tất cả studio và thiết bị chụp ảnh chuyên nghiệp
+            </p>
           </div>
           <div className="search-bar mt-4">
             <div className="search-container">
@@ -125,8 +129,8 @@ const Products = () => {
 
       {/* Filter Section */}
       <section className="filter-section animate-fadeInUp">
-        <div className="container">
-          <div className="filter-controls">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="filter-controls flex-col sm:flex-row">
             <CategoryFilter
               isLoading={isLoadingCat}
               setSelectedCategory={(cat) => {
@@ -135,8 +139,8 @@ const Products = () => {
               }}
               listFilteredCategories={categories}
             />
-            <div className="filter-group">
-              <h5>Sắp xếp</h5>
+            <div className="filter-group w-full sm:w-auto">
+              <h5 className="text-sm sm:text-base">Sắp xếp</h5>
               <SortDropdown
                 options={sortOptions}
                 onSort={(sortOpt) => {
@@ -151,7 +155,7 @@ const Products = () => {
 
       {/* Products Grid */}
       <section className="products-section">
-        <div className="ms-64 me-64 mb-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           {/* Render your product items here */}
           <ProductsGrid
             products={sortedEquips}
@@ -160,11 +164,11 @@ const Products = () => {
           />
         </div>
         {/* Load More Button */}
-        <div className="text-center mt-5 flex flex-col items-center">
+        <div className="text-center mt-8 flex flex-col items-center px-4">
           {!loadMore ? (
             <div className="flex items-center gap-2">
               <button
-                className="text-xs py-2 btn-outline-primary flex items-center gap-2"
+                className="text-xs sm:text-sm py-2 px-4 sm:px-6 btn-outline-primary flex items-center gap-2"
                 onClick={handleLoadMore}
                 disabled={isLoading || sortedEquips.length === 0}
               >
@@ -181,13 +185,13 @@ const Products = () => {
                 ) : (
                   <span className="">
                     <FontAwesomeIcon icon={faPlus} />
-                    Xem thêm sản phẩm
+                    <span className="ml-2">Xem thêm sản phẩm</span>
                   </span>
                 )}
               </button>
             </div>
           ) : (
-            <div className="w-2xl">
+            <div className="w-full max-w-2xl">
               <Pagination
                 pageSize={pageSize}
                 currentPage={page}

@@ -74,7 +74,7 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
 
   return (
     <div
-      className="product-card"
+      className="product-card w-full"
       data-category={equipment.categoryName}
       data-name={equipment.name}
       data-price={equipment.dailyPrice}
@@ -151,29 +151,31 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+      <div className="p-3 sm:p-4 space-y-2">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 min-h-[3rem]">
           {equipment.name}
         </h3>
-        <p className="text-sm text-gray-500 line-clamp-2">
+        <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 min-h-[2.5rem]">
           {equipment.description || "Chưa có mô tả chi tiết."}
         </p>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <Rating value={equipment.rating || 0} />
           {equipment.availability ? (
-            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full whitespace-nowrap">
               Còn hàng
             </span>
           ) : (
-            <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">
+            <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full whitespace-nowrap">
               Hết hàng
             </span>
           )}
         </div>
 
         <div className="flex items-center justify-between mt-2">
-          <p className="text-blue-600 font-bold text-lg">{displayPrice}</p>
+          <p className="text-blue-600 font-bold text-base sm:text-lg">
+            {displayPrice}
+          </p>
         </div>
         <motion.button
           onClick={() => {
@@ -190,7 +192,7 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
           className="
             btn
             btn-primary
-            w-full mt-2 py-2 
+            w-full mt-2 py-2 text-sm sm:text-base
             bg-gradient-to-r from-blue-600 to-indigo-600 
             text-white font-semibold rounded-lg shadow hover:shadow-lg transition"
         >

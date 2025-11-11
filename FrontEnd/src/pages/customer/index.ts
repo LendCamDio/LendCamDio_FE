@@ -8,3 +8,5 @@ export { default as Wishlist } from "./Wishlist";
 export { default as Settings } from "./Settings";
 export { default as DashboardSection } from "./DashboardSection";
 export { default as AiAssistant } from "./AiAssistant";
+export { default as Reviews } from "./Reviews";
+export { default as Recommendations } from "./Recommendations";

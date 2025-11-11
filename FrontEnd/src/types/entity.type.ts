@@ -199,6 +199,7 @@ export type EquipmentImage = {
 };
 
 export type EquipmentResponse = ApiResponse<PaginatedData<Equipment>>;
+export type SingleEquipmentResponse = ApiResponse<Equipment>;
 // #endregion
 
 // #region Equipment Category Types
