@@ -8,6 +8,7 @@ const EquipmentManagement = lazy(
 );
 const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
 const RentalManagement = lazy(() => import("@/pages/admin/RentalManagement"));
+const Analytics = lazy(() => import("@/pages/admin/Analytics"));
 
 export const adminRoutes = [
   {
@@ -33,6 +34,10 @@ export const adminRoutes = [
       {
         path: "rentals",
         element: <RentalManagement />,
+      },
+      {
+        path: "analytics",
+        element: <Analytics />,
       },
     ],
     ErrorElement: <div>AdminLayoutError</div>,

@@ -138,15 +138,6 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
           >
             <FontAwesomeIcon icon={faEye} />
           </motion.button>
-          <motion.button
-            className="action-btn"
-            title="Yêu thích"
-            onClick={handleAddToFavorites}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FontAwesomeIcon icon={faHeart} />
-          </motion.button>
         </motion.div>
       </div>
 

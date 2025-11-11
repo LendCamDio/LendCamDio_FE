@@ -19,7 +19,7 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: false, // Disable source maps to prevent warnings
+    sourcemap: true, // Enable source maps for debugging
   },
   optimizeDeps: {
     exclude: ["lucide-react"],

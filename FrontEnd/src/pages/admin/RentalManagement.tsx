@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Eye, CheckCircle, XCircle } from "lucide-react";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 import api from "@/services/api";
 import { RENTAL_ENDPOINTS } from "@/constants/endpoints";
 
@@ -15,12 +17,23 @@ interface Rental {
 }
 
 const RentalManagement = () => {
+  const showToast = useUniqueToast();
   const [rentals, setRentals] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Dialog states
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [selectedRentalId, setSelectedRentalId] = useState<string | null>(null);
+  const [actionDialogOpen, setActionDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState<"approve" | "complete" | null>(
+    null
+  );
+
   const pageSize = 10;
 
   useEffect(() => {
@@ -50,38 +63,74 @@ const RentalManagement = () => {
     }
   };
 
-  const handleApprove = async (id: string) => {
+  const handleApproveClick = (id: string) => {
+    setSelectedRentalId(id);
+    setActionType("approve");
+    setActionDialogOpen(true);
+  };
+
+  const handleCompleteClick = (id: string) => {
+    setSelectedRentalId(id);
+    setActionType("complete");
+    setActionDialogOpen(true);
+  };
+
+  const handleCancelClick = (id: string) => {
+    setSelectedRentalId(id);
+    setCancelReason("");
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedRentalId || !actionType) return;
+
     try {
-      await api.patch(RENTAL_ENDPOINTS.APPROVE(id));
+      if (actionType === "approve") {
+        await api.patch(RENTAL_ENDPOINTS.APPROVE(selectedRentalId));
+        showToast("Rental approved successfully!", "success");
+      } else if (actionType === "complete") {
+        await api.patch(RENTAL_ENDPOINTS.COMPLETE(selectedRentalId));
+        showToast("Rental completed successfully!", "success");
+      }
       fetchRentals();
-    } catch (error) {
-      console.error("Error approving rental:", error);
-      alert("Failed to approve rental");
+    } catch (error: any) {
+      console.error(`Error ${actionType}ing rental:`, error);
+      const errorMessage =
+        error.response?.data?.message ||
+        `Failed to ${actionType} rental. Please try again.`;
+      showToast(errorMessage, "error");
+    } finally {
+      setSelectedRentalId(null);
+      setActionType(null);
     }
   };
 
-  const handleCancel = async (id: string) => {
-    const reason = prompt("Enter cancellation reason:");
-    if (!reason) return;
+  const handleConfirmCancel = async () => {
+    if (!selectedRentalId || !cancelReason.trim()) {
+      showToast("Please provide a cancellation reason", "error");
+      return;
+    }
 
     try {
-      await api.patch(RENTAL_ENDPOINTS.CANCEL(id), JSON.stringify(reason), {
-        headers: { "Content-Type": "application/json" },
-      });
+      await api.patch(
+        RENTAL_ENDPOINTS.CANCEL(selectedRentalId),
+        JSON.stringify(cancelReason),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      showToast("Rental cancelled successfully!", "success");
       fetchRentals();
-    } catch (error) {
+      setCancelDialogOpen(false);
+    } catch (error: any) {
       console.error("Error cancelling rental:", error);
-      alert("Failed to cancel rental");
-    }
-  };
-
-  const handleComplete = async (id: string) => {
-    try {
-      await api.patch(RENTAL_ENDPOINTS.COMPLETE(id));
-      fetchRentals();
-    } catch (error) {
-      console.error("Error completing rental:", error);
-      alert("Failed to complete rental");
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to cancel rental. Please try again.";
+      showToast(errorMessage, "error");
+    } finally {
+      setSelectedRentalId(null);
+      setCancelReason("");
     }
   };
 
@@ -91,20 +140,52 @@ const RentalManagement = () => {
       rental.equipmentName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusColor = (status: string | number) => {
+    // Convert to string if it's a number (enum value)
+    const statusStr = typeof status === "number" ? status.toString() : status;
+
+    switch (statusStr.toLowerCase()) {
       case "pending":
+      case "0":
         return "bg-yellow-100 text-yellow-800";
       case "approved":
+      case "1":
         return "bg-blue-100 text-blue-800";
       case "active":
+      case "2":
         return "bg-green-100 text-green-800";
       case "completed":
+      case "3":
         return "bg-gray-100 text-gray-800";
       case "cancelled":
+      case "4":
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusName = (status: string | number) => {
+    const statusStr = typeof status === "number" ? status.toString() : status;
+
+    switch (statusStr.toLowerCase()) {
+      case "pending":
+      case "0":
+        return "Pending";
+      case "approved":
+      case "1":
+        return "Approved";
+      case "active":
+      case "2":
+        return "Active";
+      case "completed":
+      case "3":
+        return "Completed";
+      case "cancelled":
+      case "4":
+        return "Cancelled";
+      default:
+        return "Unknown";
     }
   };
 
@@ -196,7 +277,10 @@ const RentalManagement = () => {
                     {new Date(rental.endDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${rental.totalAmount?.toFixed(2) || "0.00"}
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(rental.totalAmount || 0)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -204,7 +288,7 @@ const RentalManagement = () => {
                         rental.status
                       )}`}
                     >
-                      {rental.status}
+                      {getStatusName(rental.status)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -214,8 +298,9 @@ const RentalManagement = () => {
                       </button>
                       {rental.status === "Pending" && (
                         <button
-                          onClick={() => handleApprove(rental.rentalId)}
+                          onClick={() => handleApproveClick(rental.rentalId)}
                           className="text-green-600 hover:text-green-900"
+                          title="Approve rental"
                         >
                           <CheckCircle className="w-5 h-5" />
                         </button>
@@ -223,16 +308,18 @@ const RentalManagement = () => {
                       {(rental.status === "Pending" ||
                         rental.status === "Approved") && (
                         <button
-                          onClick={() => handleCancel(rental.rentalId)}
+                          onClick={() => handleCancelClick(rental.rentalId)}
                           className="text-red-600 hover:text-red-900"
+                          title="Cancel rental"
                         >
                           <XCircle className="w-5 h-5" />
                         </button>
                       )}
                       {rental.status === "Active" && (
                         <button
-                          onClick={() => handleComplete(rental.rentalId)}
+                          onClick={() => handleCompleteClick(rental.rentalId)}
                           className="text-green-600 hover:text-green-900"
+                          title="Complete rental"
                         >
                           <CheckCircle className="w-5 h-5" />
                         </button>
@@ -273,6 +360,70 @@ const RentalManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Approve/Complete Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={actionDialogOpen}
+        onClose={() => {
+          setActionDialogOpen(false);
+          setSelectedRentalId(null);
+          setActionType(null);
+        }}
+        onConfirm={handleConfirmAction}
+        title={actionType === "approve" ? "Approve Rental" : "Complete Rental"}
+        message={
+          actionType === "approve"
+            ? "Are you sure you want to approve this rental?"
+            : "Are you sure you want to mark this rental as completed?"
+        }
+        confirmText={actionType === "approve" ? "Approve" : "Complete"}
+        cancelText="Cancel"
+        type={actionType === "approve" ? "info" : "success"}
+      />
+
+      {/* Cancel Dialog with Reason Input */}
+      {cancelDialogOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Cancel Rental
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Please provide a reason for cancelling this rental:
+            </p>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Enter cancellation reason..."
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+              rows={4}
+              autoFocus
+            />
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setCancelDialogOpen(false);
+                  setSelectedRentalId(null);
+                  setCancelReason("");
+                }}
+                className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                disabled={!cancelReason.trim()}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

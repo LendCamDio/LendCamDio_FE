@@ -10,7 +10,9 @@ import {
   faShoppingCart,
   faGear,
   faShoppingBag,
-  faHeart,
+  faShieldAlt,
+  faChartLine,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
@@ -32,7 +34,8 @@ const NAV_ITEMS = [
 ];
 
 export default function Navbar() {
-  const { token } = useAuth();
+  const { token, role } = useAuth();
+  const isAdmin = role?.toLowerCase() === "admin";
 
   return (
     <nav className="bg-white shadow-md animate-fade-in-down">
@@ -60,17 +63,60 @@ export default function Navbar() {
           ))}
           {token ? (
             <UserDropdown
-              items={[
-                { label: "My Profile", to: "/customer/profile", icon: faUser },
-                { label: "Settings", to: "/customer/settings", icon: faGear },
-                {
-                  label: "Orders",
-                  to: "/customer/orders",
-                  icon: faShoppingBag,
-                },
-                { label: "Cart", to: "/customer/cart", icon: faShoppingCart },
-                { label: "Wishlist", to: "/customer/wishlist", icon: faHeart },
-              ]}
+              items={
+                isAdmin
+                  ? [
+                      // Admin dropdown items
+                      {
+                        label: "Admin Dashboard",
+                        to: "/admin/dashboard",
+                        icon: faShieldAlt,
+                      },
+                      {
+                        label: "Manage Users",
+                        to: "/admin/users",
+                        icon: faUsers,
+                      },
+                      {
+                        label: "Analytics",
+                        to: "/admin/analytics",
+                        icon: faChartLine,
+                      },
+                      {
+                        label: "Customer Profile",
+                        to: "/customer/profile",
+                        icon: faUser,
+                      },
+                      {
+                        label: "Settings",
+                        to: "/customer/settings",
+                        icon: faGear,
+                      },
+                    ]
+                  : [
+                      // Customer/Supplier dropdown items
+                      {
+                        label: "My Profile",
+                        to: "/customer/profile",
+                        icon: faUser,
+                      },
+                      {
+                        label: "Settings",
+                        to: "/customer/settings",
+                        icon: faGear,
+                      },
+                      {
+                        label: "Orders",
+                        to: "/customer/orders",
+                        icon: faShoppingBag,
+                      },
+                      {
+                        label: "Cart",
+                        to: "/customer/cart",
+                        icon: faShoppingCart,
+                      },
+                    ]
+              }
             />
           ) : (
             <NavLink

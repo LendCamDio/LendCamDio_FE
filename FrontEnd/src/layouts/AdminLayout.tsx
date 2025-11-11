@@ -1,6 +1,6 @@
 // src/layouts/AdminLayout.tsx
-import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Home,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion"; // Sử dụng framer-motion cho animation mượt mà
 import { useAuth } from "@/hooks/auth/useAuth";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 
 // Menu items cho sidebar (có thể mở rộng)
 const menuItems = [
@@ -24,15 +25,42 @@ const menuItems = [
   { icon: Package, label: "Equipment", path: "/admin/equipments" },
   { icon: Users, label: "Users", path: "/admin/users" },
   { icon: ShoppingCart, label: "Rentals", path: "/admin/rentals" },
-  { icon: BarChart3, label: "Statistics", path: "/admin/stats" },
+  { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
   { icon: FileText, label: "Reports", path: "/admin/reports" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];
 
 export default function AdminLayout() {
-  const { logout } = useAuth();
+  const { logout, role, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const showToast = useUniqueToast();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
+
+  // Kiểm tra quyền truy cập admin
+  useEffect(() => {
+    if (!isLoading && role?.toLowerCase() !== "admin") {
+      showToast("Bạn không có quyền truy cập trang quản trị", "error");
+      navigate("/", { replace: true });
+    }
+  }, [role, isLoading, navigate, showToast]);
+
+  // Hiển thị loading trong khi kiểm tra quyền
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Chỉ render nếu là admin
+  if (role?.toLowerCase() !== "admin") {
+    return null;
+  }
 
   // Animation variants cho sidebar collapse
   const sidebarVariants = {

@@ -200,6 +200,45 @@ export type EquipmentImage = {
 
 export type EquipmentResponse = ApiResponse<PaginatedData<Equipment>>;
 export type SingleEquipmentResponse = ApiResponse<Equipment>;
+
+export type CreateEquipmentRequestDto = {
+  name: string;
+  description: string;
+  categoryId: string;
+  supplierId?: string | null;
+  stockQuantity: number;
+  dailyPrice?: number | null;
+  price?: number | null;
+  depositAmount: number;
+  insuranceRequired: boolean;
+  condition: EquipmentCondition;
+  availability?: boolean;
+};
+
+export type UpdateEquipmentRequestDto = {
+  name: string;
+  description: string;
+  categoryId: string;
+  supplierId?: string | null;
+  stockQuantity: number;
+  dailyPrice?: number | null;
+  price?: number | null;
+  depositAmount: number;
+  insuranceRequired: boolean;
+  condition: EquipmentCondition;
+  availability?: boolean;
+};
+
+export type CreateEquipmentResponse = ApiResponse<{
+  supplierId: string;
+  categoryId: string;
+  name: string;
+}>;
+
+export type UpdateEquipmentResponse = ApiResponse<{
+  equipmentId: string;
+  message: string;
+}>;
 // #endregion
 
 // #region Equipment Category Types

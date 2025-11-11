@@ -72,7 +72,14 @@ export default function UserDropdown({ items }: { items: DropdownItem[] }) {
             <p className="text-sm font-medium text-white truncate">
               {user?.email}
             </p>
-            <p className="text-xs text-white/80">Quyền: {user?.role}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-xs text-white/80">Quyền: {user?.role}</p>
+              {user?.role?.toLowerCase() === "admin" && (
+                <span className="px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-gray-900 rounded-full">
+                  Admin
+                </span>
+              )}
+            </div>
           </div>
           <div className="py-1">
             {items.map((item) => (

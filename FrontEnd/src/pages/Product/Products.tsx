@@ -1,7 +1,6 @@
 import SortDropdown from "@/components/common/Dropdown/SortDropdown";
 import Pagination from "@/components/common/Pagination/Pagination";
 import ProductsGrid from "@/components/products/ProductsGrid";
-import { useEquipmentList } from "@/hooks/equipment/useEquipment";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +9,7 @@ import CategoryFilter from "../../components/common/Filter/CategoryFilter";
 import { useEquipCategoryList } from "@/hooks/equipment/useEquipCategory";
 import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
 import Loading from "@/components/common/Loading/Loading";
+import { useEquipmentList } from "@/hooks/equipment/useEquipmentUser";
 
 const Products = () => {
   const showToast = useUniqueToast();

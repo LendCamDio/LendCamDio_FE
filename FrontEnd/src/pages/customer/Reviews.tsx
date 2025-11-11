@@ -17,6 +17,7 @@ import reviewService, {
 } from "@/services/api/reviewService";
 import { useUser } from "@/hooks/user/useUser";
 import { useCustomerByUserId } from "@/hooks/customer/useCustomer";
+import { ConfirmDialog } from "@/components/ui/Dialog";
 
 const Reviews = () => {
   const navigate = useNavigate();
@@ -34,6 +35,8 @@ const Reviews = () => {
   const [sortBy, setSortBy] = useState<
     "newest" | "oldest" | "highest" | "lowest"
   >("newest");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (customer?.data?.customerId) {
@@ -104,15 +107,23 @@ const Reviews = () => {
     }
   };
 
-  const handleDeleteReview = async (reviewId: string) => {
-    if (!window.confirm("Bạn có chắc muốn xóa đánh giá này?")) return;
+  const handleDeleteClick = (reviewId: string) => {
+    setReviewToDelete(reviewId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!reviewToDelete) return;
 
     try {
-      await reviewService.deleteReview(reviewId);
+      await reviewService.deleteReview(reviewToDelete);
       toast.success("Đã xóa đánh giá");
       loadReviews();
     } catch (error) {
       toast.error("Không thể xóa đánh giá");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setReviewToDelete(null);
     }
   };
 
@@ -250,7 +261,7 @@ const Reviews = () => {
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteReview(review.reviewId)}
+                        onClick={() => handleDeleteClick(review.reviewId)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
                         title="Xóa"
                       >
@@ -291,6 +302,18 @@ const Reviews = () => {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setReviewToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Xóa đánh giá"
+        message="Bạn có chắc muốn xóa đánh giá này? Hành động này không thể hoàn tác."
+        type="danger"
+      />
     </PageWrapper>
   );
 };

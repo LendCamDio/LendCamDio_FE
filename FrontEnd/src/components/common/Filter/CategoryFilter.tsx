@@ -21,7 +21,7 @@ const CategoryFilter = ({
 
   const handleClick = (category: string) => {
     setActiveCategory(category);
-    setSelectedCategory(category);
+    setSelectedCategory(category === "all" ? "all" : category);
   };
 
   return (

@@ -13,7 +13,9 @@ import {
   EQUIPMENT_ENDPOINTS,
   RENTAL_ENDPOINTS,
 } from "@/constants/endpoints";
+import { formatCurrency } from "@/utils/currencyFormatter";
 
+//#region DashboardStats
 interface DashboardStats {
   totalUsers: number;
   totalEquipment: number;
@@ -22,6 +24,7 @@ interface DashboardStats {
   activeRentals: number;
   pendingOrders: number;
 }
+//#endregion
 
 const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
@@ -82,32 +85,32 @@ const Dashboard = () => {
       value: stats.totalUsers,
       icon: Users,
       color: "bg-blue-500",
-      trend: "+12%",
+      trend: "+20%",
     },
     {
       title: "Equipment",
       value: stats.totalEquipment,
       icon: Package,
       color: "bg-green-500",
-      trend: "+5%",
+      trend: "+20%",
     },
     {
       title: "Active Rentals",
       value: stats.activeRentals,
       icon: Calendar,
       color: "bg-yellow-500",
-      trend: "+8%",
+      trend: "+20%",
     },
     {
       title: "Total Rentals",
       value: stats.totalRentals,
       icon: ShoppingCart,
       color: "bg-purple-500",
-      trend: "+15%",
+      trend: "+20%",
     },
     {
       title: "Total Revenue",
-      value: `$${stats.totalRevenue.toLocaleString()}`,
+      value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
       color: "bg-red-500",
       trend: "+20%",
@@ -117,7 +120,7 @@ const Dashboard = () => {
       value: stats.pendingOrders,
       icon: TrendingUp,
       color: "bg-indigo-500",
-      trend: "-3%",
+      trend: "+20%",
     },
   ];
 

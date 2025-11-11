@@ -3,11 +3,16 @@ import { Search, Edit, Ban, CheckCircle } from "lucide-react";
 import api from "@/services/api";
 import { USER_ENDPOINTS } from "@/constants/endpoints";
 import type { UserInfo } from "@/types/entity.type";
+import UserFormModal, {
+  type UserFormData,
+} from "@/components/admin/UserFormModal";
 
 const UserManagement = () => {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -35,6 +40,24 @@ const UserManagement = () => {
       setUsers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenEdit = (user: UserInfo) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (data: UserFormData) => {
+    try {
+      if (selectedUser) {
+        await api.put(USER_ENDPOINTS.UPDATE(selectedUser.userId), data);
+      }
+      fetchUsers();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error saving user:", error);
+      throw error;
     }
   };
 
@@ -135,7 +158,10 @@ const UserManagement = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button
+                        onClick={() => handleOpenEdit(user)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button className="text-green-600 hover:text-green-900">
@@ -152,6 +178,15 @@ const UserManagement = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal */}
+      <UserFormModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+        user={selectedUser}
+        mode="edit"
+      />
     </div>
   );
 };

@@ -6,13 +6,13 @@ import {
   faMinus,
   faPlus,
   faShoppingCart,
-  faHeart,
   faShare,
   faCalendarAlt,
   faChevronUp,
   faChevronDown,
   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { Rating } from "@/components/common/Rating";
 import type { Equipment } from "@/types/entity.type";
 import { motion } from "framer-motion";
@@ -24,9 +24,9 @@ interface ProductInfoProps {
 }
 
 export const ProductInfo = ({ product }: ProductInfoProps) => {
+  const showToast = useUniqueToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedDays, setSelectedDays] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [isSupplierInfoExpanded, setIsSupplierInfoExpanded] = useState(false);
 
   const toggleSupplierInfo = () => setIsSupplierInfoExpanded((prev) => !prev);
@@ -36,7 +36,10 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
     : 0;
 
   const handleAddToCart = () => {
-    alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng ✅`);
+    showToast(
+      `Added ${quantity} ${quantity > 1 ? "items" : "item"} to cart ✅`,
+      "success"
+    );
   };
 
   return (
@@ -203,17 +206,6 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
             <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
             Thêm vào giỏ hàng
           </motion.button>
-
-          <button
-            onClick={() => setIsWishlisted(!isWishlisted)}
-            className={`w-11 h-11 flex items-center justify-center rounded-lg border transition ${
-              isWishlisted
-                ? "bg-red-500 text-white"
-                : "border-gray-300 text-gray-600 hover:bg-gray-50"
-            }`}
-          >
-            <FontAwesomeIcon icon={faHeart} />
-          </button>
 
           <button className="w-11 h-11 flex items-center justify-center border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
             <FontAwesomeIcon icon={faShare} />

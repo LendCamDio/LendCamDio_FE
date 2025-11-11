@@ -12,7 +12,14 @@ export function RoleBasedRoute({ allowedRoles }: Props) {
   const showToast = useUniqueToast();
 
   if (isLoading) {
-    return <div>Loading...</div>; // Hoặc một spinner/loading component
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!token) {
@@ -21,15 +28,22 @@ export function RoleBasedRoute({ allowedRoles }: Props) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // Kiểm tra role có trong allowedRoles không
-  const flag: boolean = role
-    ? allowedRoles.some((r) => r.toLowerCase() === role.toLowerCase())
-    : false;
+  // Admin có quyền truy cập TẤT CẢ các trang
+  const isAdmin = role?.toLowerCase() === "admin";
 
-  if (!flag) {
-    showToast("Bạn không có quyền truy cập trang này", "info", {
-      duration: 1000,
+  // Kiểm tra role có trong allowedRoles không (so sánh không phân biệt chữ hoa/thường)
+  // Admin luôn được phép truy cập
+  const hasAccess: boolean =
+    isAdmin ||
+    (role
+      ? allowedRoles.some((r) => r.toLowerCase() === role.toLowerCase())
+      : false);
+
+  if (!hasAccess) {
+    showToast("Bạn không có quyền truy cập trang này", "error", {
+      duration: 2000,
     });
+    // Redirect về trang chủ thay vì trang trước đó
     return <Navigate to="/" replace />;
   }
 
