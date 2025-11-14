@@ -4,7 +4,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 // Lazy load admin pages
 const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
 const EquipmentManagement = lazy(
-  () => import("@/pages/admin/EquipmentManagement")
+  () => import("@/pages/admin/equipments/EquipmentManagement")
 );
 const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
 const RentalManagement = lazy(() => import("@/pages/admin/RentalManagement"));

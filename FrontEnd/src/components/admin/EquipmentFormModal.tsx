@@ -10,17 +10,20 @@ import {
   EQUIPMENT_ENDPOINTS,
   EQUIPMENT_IMAGE_ENDPOINTS,
 } from "@/constants/endpoints";
+import {
+  useCreateEquipment,
+  useUpdateEquipment,
+} from "@/hooks/equipment/useEquipmentAdmin";
 
-interface EquipmentFormModalProps {
+type EquipmentFormModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: EquipmentFormData) => Promise<void>;
   equipment?: Equipment | null;
   mode: "create" | "edit";
   onSuccess?: () => void; // Add callback for successful create/update
-}
+};
 
-export interface EquipmentFormData {
+export type EquipmentFormData = {
   name: string;
   description: string;
   categoryId: string;
@@ -34,20 +37,20 @@ export interface EquipmentFormData {
   availability?: boolean;
   imageFile?: File | null;
   equipmentId?: string; // Store created equipment ID
-}
+  status?: number;
+};
 
-interface Supplier {
+type Supplier = {
   supplierId: string;
   companyName: string;
   fullName?: string;
   email?: string;
   status?: number;
-}
+};
 
 const EquipmentFormModal = ({
   isOpen,
   onClose,
-  onSubmit,
   equipment,
   mode,
   onSuccess,
@@ -55,6 +58,9 @@ const EquipmentFormModal = ({
   const showToast = useUniqueToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [createdEquipmentId, setCreatedEquipmentId] = useState<string | null>(
+    null
+  );
+  const [updatedEquipmentId, setUpdatedEquipmentId] = useState<string | null>(
     null
   );
   const [formData, setFormData] = useState<EquipmentFormData>({
@@ -70,10 +76,14 @@ const EquipmentFormModal = ({
     condition: 0,
     availability: true,
     imageFile: null,
+    status: 0,
   });
   const [loading, setLoading] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  const createMutation = useCreateEquipment();
+  const updateMutation = useUpdateEquipment();
 
   // Steps: Create mode chỉ có 2 steps (backend không trả equipmentId)
   // Edit mode có đủ 3 steps
@@ -152,10 +162,11 @@ const EquipmentFormModal = ({
         condition: equipment.condition || 0,
         availability: equipment.availability ?? true,
         imageFile: null,
+        status: equipment.status,
       });
       setImagePreview(equipment.imageUrl || "");
       setCurrentStep(1);
-      setCreatedEquipmentId(equipment.equipmentId);
+      setUpdatedEquipmentId(equipment.equipmentId);
     } else if (mode === "create") {
       setFormData({
         name: "",
@@ -207,11 +218,14 @@ const EquipmentFormModal = ({
 
   const handleNext = async () => {
     if (currentStep === 2 && mode === "create" && !createdEquipmentId) {
-      // At end of step 2, create equipment directly (no step 3 for create mode)
-      // Backend không trả về equipmentId nên không thể upload image riêng
       await handleCreateEquipment();
     } else if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
+    }
+  };
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -280,11 +294,6 @@ const EquipmentFormModal = ({
       if (response.data?.success) {
         console.log("✅ Equipment created successfully:", response.data);
 
-        // Backend không trả về equipmentId trong response
-        // Có 2 options:
-        // Option 1: Fetch lại equipment list để lấy ID mới nhất
-        // Option 2: Skip image upload và reload page luôn
-
         showToast("Equipment created successfully!", "success");
 
         // Nếu có image, cần notify user
@@ -307,35 +316,51 @@ const EquipmentFormModal = ({
         }, 1000);
       }
     } catch (error: any) {
-      console.error("❌ Error creating equipment:", error);
-
-      // Xử lý validation errors từ backend (ASP.NET format)
-      if (error.response?.data?.errors) {
-        const errors = error.response.data.errors;
-        const errorMessages = Object.entries(errors)
-          .map(([field, messages]) => {
-            const msgArray = messages as string[];
-            return `${field}: ${msgArray.join(", ")}`;
-          })
-          .join("\n");
-
-        showToast(`Validation Error:\n${errorMessages}`, "error", {
-          duration: 5000,
-        });
-      } else if (error.response?.data?.message) {
-        showToast(error.response.data.message, "error", { duration: 4000 });
-      } else if (error.response?.data?.title) {
-        showToast(error.response.data.title, "error", { duration: 4000 });
-      } else {
-        showToast(
-          "Failed to create equipment. Please check your inputs and try again.",
-          "error"
-        );
-      }
+      console.error("Error creating equipment:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to create equipment";
+      showToast(errorMessage, "error", { duration: 3000 });
     } finally {
       setLoading(false);
     }
   };
+  const handleUpdateEquipment = async () => {
+    try {
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        categoryId: formData.categoryId,
+        supplierId: formData.supplierId || null,
+        stockQuantity: formData.stockQuantity,
+        dailyPrice: formData.dailyPrice || null,
+        price: formData.price || null,
+        depositAmount: formData.depositAmount,
+        insuranceRequired: formData.insuranceRequired,
+        condition:
+          typeof formData.condition === "string"
+            ? parseInt(formData.condition)
+            : formData.condition,
+        availability: formData.availability ?? true,
+        status: formData.status,
+      };
+
+      console.log("📤 Updating equipment with payload:", payload);
+
+      const response = await updateMutation.mutateAsync({
+        id: String(equipment?.equipmentId),
+        data: payload,
+      });
+
+      if (response.success) {
+        showToast("Equipment updated successfully!", "success");
+        // Call success callback to refresh list
+        if (onSuccess) {
+          onSuccess();
+        }
+      }
+    } catch (error: any) {}
+  };
+
   const handleUploadImage = async () => {
     if (!formData.imageFile) {
       // No image to upload, just close
@@ -350,10 +375,10 @@ const EquipmentFormModal = ({
       return;
     }
 
-    const equipmentId = createdEquipmentId || formData.equipmentId;
+    const equipmentId = updatedEquipmentId || formData.equipmentId;
 
     console.log("📤 Upload Image Debug:", {
-      createdEquipmentId,
+      updatedEquipmentId,
       formDataEquipmentId: formData.equipmentId,
       finalEquipmentId: equipmentId,
       hasImageFile: !!formData.imageFile,
@@ -395,15 +420,6 @@ const EquipmentFormModal = ({
 
       if (response.data?.success) {
         showToast("Image uploaded successfully!", "success");
-
-        // Call success callback to refresh list
-        if (onSuccess) {
-          onSuccess();
-        }
-
-        setTimeout(() => {
-          onClose();
-        }, 500);
       }
     } catch (error: any) {
       console.error("Error uploading image:", error);
@@ -425,29 +441,20 @@ const EquipmentFormModal = ({
     }
   };
 
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // If on step 3, upload image
     if (currentStep === 3) {
       await handleUploadImage();
+      await handleUpdateEquipment();
     } else {
       // This shouldn't happen with new flow, but keep as fallback
       setLoading(true);
-      try {
-        await onSubmit(formData);
-        onClose();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-      } finally {
-        setLoading(false);
-      }
+
+      await handleCreateEquipment();
+      onClose();
+      setLoading(false);
     }
   };
 
@@ -674,6 +681,34 @@ const EquipmentFormModal = ({
                     </select>
                   </div>
                 </div>
+                {/* Status */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Equipment Status <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    disabled={mode === "create"}
+                    required
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg 
+              focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+              transition-all"
+                  >
+                    <option value={0}>Active (Đang kinh doanh)</option>
+                    <option value={1}>Inactive (Ngừng kinh doanh)</option>
+                  </select>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nếu chọn "Ngừng kinh doanh", thiết bị sẽ không hiển thị cho
+                    khách hàng.
+                  </p>
+                </div>
 
                 {/* Insurance Required */}
                 <div className="flex items-center p-4 bg-gray-50 rounded-lg">
@@ -880,7 +915,7 @@ const EquipmentFormModal = ({
 
           {/* Footer */}
           <div className="flex gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-            {currentStep > 1 && currentStep < maxSteps && (
+            {currentStep > 1 && (
               <button
                 type="button"
                 onClick={handlePrevious}
@@ -892,7 +927,12 @@ const EquipmentFormModal = ({
               </button>
             )}
 
-            {currentStep < maxSteps ? (
+            {/* Điều kiện mới: 
+              1. (currentStep < maxSteps) -> Dùng cho các bước trung gian (Next)
+              2. (currentStep === maxSteps && mode === "create") -> Dùng cho bước cuối của Create (hiển thị nút "Create Equipment")
+            */}
+            {currentStep < maxSteps ||
+            (currentStep === maxSteps && mode === "create") ? (
               <button
                 type="button"
                 onClick={handleNext}
@@ -917,11 +957,8 @@ const EquipmentFormModal = ({
                   </>
                 )}
               </button>
-            ) : mode === "create" ? (
-              // Không bao giờ đến đây với create mode (chỉ có 2 steps)
-              <></>
             ) : (
-              // Edit mode - normal submit
+              // Edit mode - normal submit (Logic này chỉ chạy khi mode='edit' và currentStep=maxSteps)
               <>
                 <button
                   type="button"

@@ -1,49 +1,47 @@
+// ChatInput.tsx
 import { useState } from "react";
 import { Send } from "lucide-react";
 
-interface ChatInputProps {
-  onSendMessage: (message: string) => void;
-  isLoading: boolean;
-}
+export default function ChatInput({
+  onSendMessage,
+  isLoading,
+}: {
+  onSendMessage: (text: string) => void;
+  isLoading?: boolean;
+}) {
+  const [text, setText] = useState("");
 
-const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
-  const [inputText, setInputText] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputText.trim()) return;
-
-    onSendMessage(inputText.trim());
-    setInputText("");
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!text.trim()) return;
+    onSendMessage(text);
+    setText("");
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      id="chatbox-input-row"
-      className="flex border-t border-gray-200 bg-white"
-    >
+    <form onSubmit={handleSubmit} className="flex gap-2 items-center">
       <input
-        id="chatbox-input"
-        type="text"
-        placeholder="Nhập câu hỏi..."
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        className="flex-1 p-3 text-base outline-none bg-transparent text-[var(--text-dark)] placeholder-[var(--text-light)]"
+        aria-label="Nhập tin nhắn"
+        placeholder="Nhập tin nhắn..."
+        className="flex-1 px-4 py-2 border border-gray-200 rounded-full outline-none focus:ring-2 focus:ring-blue-100"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        disabled={isLoading}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
       />
       <button
         type="submit"
-        id="chatbox-send"
-        disabled={isLoading}
-        className="rounded-r-lg bg-[var(--primary-color)] text-white px-5 
-        flex items-center justify-center transition-colors 
-        hover:bg-[var(--secondary-color)] disabled:opacity-70
-        focus:ring-2"
+        disabled={isLoading || !text.trim()}
+        className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700"
+        aria-label="Gửi"
       >
-        <Send size={18} />
+        <Send size={16} />
       </button>
     </form>
   );
-};
-
-export default ChatInput;
+}

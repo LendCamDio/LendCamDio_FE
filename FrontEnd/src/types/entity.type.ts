@@ -154,8 +154,8 @@ export enum EquipmentCondition {
   Damaged,
 }
 export enum EquipmentStatus {
-  Active,
-  Inactive,
+  Active = 0,
+  Inactive = 1,
 }
 
 export type Equipment = {
@@ -281,19 +281,18 @@ export type ReviewResponse = ApiResponse<PaginatedData<Review>>;
 
 // #region AI Types
 export interface AIMessage {
+  success?: boolean;
+  data?: AIMessageData;
   response: string;
-  Recommendations?: RecommendationResponse[];
-  Explanation?: string;
-  Warning?: string;
+  customerId?: string;
+  savedToDatabase?: boolean;
+  message?: string;
+  timestamp?: string;
 }
-
-export interface EquipmentRecommendation {
-  Recommendations: RecommendationResponse[];
-  Explanation: string;
-  Warning: string;
-  //  public List<RecommendationResponseDto> Recommendations { get; set; } = new();
-  //  public string Explanation { get; set; } = string.Empty;
-  //  public string Warning { get; set; } = string.Empty;
+export interface AIMessageData {
+  explanation?: string;
+  recommendations?: RecommendationResponse[];
+  warning?: string;
 }
 
 export type AIResponse = ApiResponse<AIMessage>;

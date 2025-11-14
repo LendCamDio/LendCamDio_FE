@@ -4,8 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faUser,
-  faStore,
   faEnvelope,
   faLock,
   faEye,
@@ -26,7 +24,7 @@ export default function LoginPage() {
   const { login, logout, user } = useAuth();
   const showToast = useUniqueToast();
   const navigate = useNavigate();
-  const [userType, setUserType] = useState<"Customer" | "Supplier">("Customer");
+  const [userType] = useState<"Customer" | "Supplier">("Customer"); // Tạm thời chỉ đăng nhập Customer
   const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -58,6 +56,8 @@ export default function LoginPage() {
       );
 
       if (result.success && result.data) {
+        // TODO: Delete this console log
+        console.log("Google login success Token:", result.data.token);
         const decoded = jwtDecode<JwtPayload>(result.data.token);
         if (
           decoded[
@@ -101,9 +101,9 @@ export default function LoginPage() {
     }));
   };
 
-  const selectUserType = (type: "Customer" | "Supplier") => {
-    setUserType(type);
-  };
+  // const selectUserType = (type: "Customer" | "Supplier") => {
+  //   setUserType(type);
+  // };
 
   // Cuộn đến form đăng nhập khi trang được load
   useEffect(() => {
@@ -130,7 +130,8 @@ export default function LoginPage() {
 
   return (
     <div className="m-4">
-      <div className="user-type-selection mb-4">
+      {/* Tạm thời chỉ đăng nhập Customer */}
+      {/* <div className="user-type-selection mb-4">
         <div className="text-center mb-3">
           <h3>Chọn loại tài khoản</h3>
           <p style={{ color: "#666", fontSize: "0.9rem" }}>
@@ -163,11 +164,12 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Login Form */}
       <div className="auth-form" id="login-form">
-        <div className="auth-header">
+        {/* Tạm thời chỉ đăng nhập Customer */}
+        {/* <div className="auth-header">
           <h2
             key={userType} // giúp React hiểu có 2 trạng thái khác nhau
             className="animate-fade-in-up"
@@ -180,6 +182,13 @@ export default function LoginPage() {
             {userType === "Customer"
               ? "Đăng nhập để đặt lịch studio và thuê thiết bị"
               : "Đăng nhập để quản lý studio của bạn"}
+          </p>
+        </div> */}
+
+        <div className="auth-header">
+          <h2 className="animate-fade-in-up ">Đăng nhập khách hàng</h2>
+          <p className="animate-fade-in-up">
+            Đăng nhập để đặt lịch studio và thuê thiết bị
           </p>
         </div>
 

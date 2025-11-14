@@ -4,11 +4,8 @@ import {
   getPaymentById,
   getPaymentsByCustomerId,
   getPaymentsByRentalId,
-  getPaymentsByStatus,
-  getPaymentsByMethod,
   getPaymentsByDateRange,
 } from "@/services/paymentService";
-import type { PaymentMethod, PaymentStatus } from "@/types/index.type";
 
 /**
  * 🧾 Fetch all payments (Admin, Supplier)
@@ -78,40 +75,40 @@ export const usePaymentsByRental = (
 /**
  * 💳 Fetch payments by method
  */
-export const usePaymentsByMethod = (
-  method: PaymentMethod,
-  page: number,
-  pageSize: number,
-  enabled: boolean = false
-) => {
-  return useQuery({
-    queryKey: ["payments-method", method, page, pageSize],
-    queryFn: () => getPaymentsByMethod(method, page, pageSize),
-    enabled,
-    staleTime: 1000 * 60 * 5,
-    retry: 3,
-    refetchOnWindowFocus: false,
-  });
-};
+// export const usePaymentsByMethod = (
+//   method: PaymentMethod,
+//   page: number,
+//   pageSize: number,
+//   enabled: boolean = false
+// ) => {
+//   return useQuery({
+//     queryKey: ["payments-method", method, page, pageSize],
+//     queryFn: () => getPaymentsByMethod(method, page, pageSize),
+//     enabled,
+//     staleTime: 1000 * 60 * 5,
+//     retry: 3,
+//     refetchOnWindowFocus: false,
+//   });
+// };
 
 /**
  * 🏷️ Fetch payments by status
- */
-export const usePaymentsByStatus = (
-  status: PaymentStatus,
-  page: number,
-  pageSize: number,
-  enabled: boolean = false
-) => {
-  return useQuery({
-    queryKey: ["payments-status", status, page, pageSize],
-    queryFn: () => getPaymentsByStatus(status, page, pageSize),
-    enabled,
-    staleTime: 1000 * 60 * 5,
-    retry: 3,
-    refetchOnWindowFocus: false,
-  });
-};
+//  */
+// export const usePaymentsByStatus = (
+//   status: PaymentStatus,
+//   page: number,
+//   pageSize: number,
+//   enabled: boolean = false
+// ) => {
+//   return useQuery({
+//     queryKey: ["payments-status", status, page, pageSize],
+//     queryFn: () => getPaymentsByStatus(status, page, pageSize),
+//     enabled,
+//     staleTime: 1000 * 60 * 5,
+//     retry: 3,
+//     refetchOnWindowFocus: false,
+//   });
+// };
 
 /**
  * 📅 Fetch payments by date range

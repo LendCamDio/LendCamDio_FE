@@ -1053,20 +1053,26 @@
 }
 
 @layer components {
-  /* Login Section */
+  /* Login Section - Điều chỉnh kích thước tổng thể */
   .login-section {
-    @apply min-h-screen flex items-center justify-center py-16 px-4;
-    /* @apply bg-gradient-to-tr from-[#667eea] to-[#764ba2]; */
+    @apply flex items-center justify-center py-4 px-4;
+    min-height: calc(100vh - 64px); /* Trừ đi chiều cao navbar */
   }
 
   .login-container {
-    @apply bg-white rounded-2xl overflow-hidden mt-20;
+    @apply bg-white rounded-2xl overflow-hidden;
+    /* Giảm max-width xuống 950px để vừa màn hình */
+    max-width: 950px;
+    width: 100%;
+    margin-top: 80px; /* Khoảng cách từ navbar */
+    margin-bottom: 20px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   }
 
-  /* Left side (image) */
+  /* Left side (image) - Giảm chiều cao tối thiểu */
   .login-image {
-    @apply relative min-h-[500px];
+    @apply relative;
+    min-height: 420px; /* Giảm từ 450px xuống 420px */
     padding-inline-start: 0 !important;
   }
 
@@ -1079,76 +1085,64 @@
   }
 
   .login-image-overlay {
-    @apply absolute inset-0 flex flex-col justify-center items-center text-center text-white p-8 bg-gradient-to-tr from-blue-500/80 to-purple-600/80;
+    @apply absolute inset-0 flex flex-col justify-center items-center text-center text-white bg-gradient-to-tr from-blue-500/80 to-purple-600/80;
+    padding: 1.5rem; /* Giảm padding */
   }
 
   .login-image-overlay h3 {
-    @apply text-2xl font-bold mb-4;
+    @apply text-xl font-bold mb-2; /* Giảm size và margin */
   }
 
   .login-image-overlay p {
-    @apply text-lg mb-8 opacity-90;
+    @apply text-sm mb-4 opacity-90; /* Giảm size và margin */
   }
 
   .login-features {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-2.5; /* Giảm gap */
   }
 
   .feature-item {
-    @apply flex items-center gap-4;
+    @apply flex items-center gap-2.5; /* Giảm gap */
+    @apply bg-white/10 backdrop-blur-sm rounded-lg p-2.5 hover:bg-white/20 transition-all duration-300; /* Giảm padding và border-radius */
   }
 
-  .feature-item i {
-    @apply w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-xs;
+  .feature-item .w-12 {
+    @apply w-9 h-9; /* Giảm icon size */
   }
 
-  /* Right side (form) */
+  .feature-item span {
+    @apply text-sm; /* Giảm text size */
+  }
+
+  /* Right side (form) - Giảm padding */
   .login-form-section {
-    @apply flex items-center p-8;
+    @apply flex items-center p-5; /* Giảm padding */
   }
 
   .login-form-container {
-    @apply w-full max-w-md mx-auto;
+    @apply w-full max-w-sm mx-auto; /* Giảm max-width */
   }
 
   .auth-form {
     @apply w-full;
   }
 
-  /* Header */
+  /* Header - Giảm khoảng cách */
   .auth-header {
-    @apply text-center mb-8;
+    @apply text-center mb-5; /* Giảm margin */
   }
 
   .auth-header h2 {
-    @apply text-2xl font-bold text-[var(--text-dark)] mb-2;
+    @apply text-2xl font-bold text-[var(--text-dark)] mb-1.5; /* Giảm size và margin */
   }
 
   .auth-header p {
-    @apply text-[var(--text-light)] text-base;
+    @apply text-[var(--text-light)] text-xs; /* Giảm text-size */
   }
 
-  /* User Type Buttons */
-  .user-type-btn {
-    @apply flex items-center justify-center justify-items-center gap-2 border-2;
-    @apply text-2xl w-full px-2 py-3 rounded-lg font-semibold border-2 transition-all duration-300 border-[var(--text-light)] text-[var(--text-light)];
-  }
-
-  .user-type-btn svg {
-    @apply text-xl;
-  }
-
-  .user-type-btn:hover {
-    @apply border-[var(--secondary-color)] text-[var(--secondary-color)] bg-[rgba(123,158,255,0.1)];
-  }
-
-  .user-type-btn.active {
-    @apply border-[var(--primary-color)] text-[var(--primary-color)] bg-[var(--primary-color)]/10 shadow-blue-400;
-  }
-
-  /* Form Groups */
+  /* Form Groups - Giảm khoảng cách */
   .form-group {
-    @apply mb-6;
+    @apply mb-3.5; /* Giảm margin */
   }
 
   .input-group {
@@ -1164,28 +1158,28 @@
   }
 
   .input-group svg {
-    @apply px-4 text-[var(--text-light)] text-base;
+    @apply px-3 text-[var(--text-light)] text-sm; /* Giảm padding và icon size */
   }
 
   .input-group input {
-    @apply rounded-r-md flex-1 px-4 py-3 bg-transparent border-none outline-none text-[var(--text-dark)] text-base;
+    @apply rounded-r-md flex-1 px-3 py-2.5 bg-transparent border-none outline-none text-[var(--text-dark)] text-sm; /* Giảm padding và text-size */
   }
 
   .input-group input::placeholder {
-    @apply text-[var(--text-light)];
+    @apply text-[var(--text-light)] text-sm;
   }
 
   .password-toggle {
-    @apply bg-transparent border-none text-[var(--text-light)] cursor-pointer px-4 transition-colors;
+    @apply bg-transparent border-none text-[var(--text-light)] cursor-pointer px-3 transition-colors;
   }
 
   .password-toggle:hover {
     @apply text-[var(--primary-color)];
   }
 
-  /* Form Options */
+  /* Form Options - Giảm margin */
   .form-options {
-    @apply flex justify-between items-center mb-6;
+    @apply flex justify-between items-center mb-5; /* Giảm từ mb-6 xuống mb-5 */
   }
 
   .checkbox-group {
@@ -1208,14 +1202,14 @@
     @apply text-[var(--secondary-color)];
   }
 
-  /* Buttons */
+  /* Buttons - Giảm padding */
   .auth-btn {
-    @apply w-full py-4 text-base font-semibold;
+    @apply w-full py-3 text-sm font-semibold; /* Giảm padding và text-size */
   }
 
-  /* Divider */
+  /* Divider - Giảm margin */
   .auth-divider {
-    @apply relative text-center my-5;
+    @apply relative text-center my-4; /* Giảm từ my-5 xuống my-4 */
   }
 
   .auth-divider::before {
@@ -1226,26 +1220,14 @@
     @apply relative bg-white px-4 text-[var(--text-light)] text-sm;
   }
 
-  /* Social Login */
+  /* Social Login - Giảm margin */
   .social-login {
-    @apply flex flex-col gap-4 mb-6;
+    @apply flex flex-col gap-3 mb-5; /* Giảm gap và margin */
   }
 
-  .social-btn {
-    @apply w-full py-3 rounded-lg font-medium border-2 border-gray-200 bg-white text-[var(--text-dark)] cursor-pointer transition flex items-center justify-center gap-2;
-  }
-
-  .google-btn:hover {
-    @apply border-[#db4437] bg-[#db4437] text-white;
-  }
-
-  .facebook-btn:hover {
-    @apply border-[#4267B2] bg-[#4267B2] text-white;
-  }
-
-  /* Footer */
+  /* Footer - Giảm text-size */
   .auth-footer {
-    @apply text-center text-[var(--text-light)];
+    @apply text-center text-[var(--text-light)] text-sm;
   }
 
   .auth-footer a {
@@ -1254,6 +1236,73 @@
 
   .auth-footer a:hover {
     @apply text-[var(--secondary-color)];
+  }
+
+  /* Responsive - Mobile */
+  @media (max-width: 768px) {
+    .login-container {
+      @apply m-2 mt-12;
+      max-width: 100%;
+    }
+
+    .login-image {
+      min-height: 200px;
+    }
+
+    .login-image-overlay h3 {
+      @apply text-lg;
+    }
+
+    .login-features {
+      @apply hidden;
+    }
+
+    .login-form-section {
+      @apply p-4;
+    }
+
+    .auth-header h2 {
+      @apply text-lg;
+    }
+  }
+
+  /* Responsive - Tablet */
+  @media (min-width: 769px) and (max-width: 991px) {
+    .login-container {
+      max-width: 900px;
+    }
+
+    .login-image {
+      min-height: 400px;
+    }
+
+    .login-form-section {
+      @apply p-5;
+    }
+  }
+
+  /* Responsive - Desktop lớn */
+  @media (min-width: 1200px) {
+    .login-container {
+      max-width: 1050px; /* Giới hạn tối đa trên màn hình lớn */
+    }
+  }
+}
+
+/* Điều chỉnh AuthLayout container */
+.login-section .login-container {
+  @apply mx-auto;
+}
+
+/* Điều chỉnh grid layout để cân đối hơn */
+.login-section .grid {
+  display: grid;
+  grid-template-columns: 45% 55%; /* Tỷ lệ 45-55 thay vì 50-50 */
+}
+
+@media (max-width: 1024px) {
+  .login-section .grid {
+    grid-template-columns: 1fr; /* Full width trên tablet/mobile */
   }
 }
 

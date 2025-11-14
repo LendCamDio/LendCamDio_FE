@@ -1,44 +1,64 @@
 import api from "./api";
 import { AI_ENDPOINTS } from "../constants/endpoints";
-import type { AIMessage, AIResponse } from "@/types/index.type";
 import { handleApiError } from "./apiErrorHandler";
+import type { AIResponse } from "@/types/entity.type";
 
 /**
- * Gửi tin nhắn đến AI và nhận phản hồi
- * @param message Tin nhắn người dùng
- * @returns Phản hồi từ AI dưới dạng ApiResponse>AIResponse
+ * 1) Chat AI Realtime
  */
 export async function sendMessage(message: string): Promise<AIResponse> {
   try {
     const response = await api.post(AI_ENDPOINTS.CHAT, message);
     return response.data;
   } catch (error) {
-    return handleApiError<AIMessage>(error);
+    return handleApiError(error);
   }
 }
 
 /**
- * Yêu cầu AI tạo đề xuất cho khách hàng
- * @param customerId ID khách hàng
- * @returns Đề xuất từ AI dưới dạng ApiResponse>AIResponse
+ * 2) Generate Recommendation chung (full profile)
  */
 export async function generateRecommendations(
-  customerId: string
+  customerId: string,
+  userQuery?: string
 ): Promise<AIResponse> {
   try {
     const response = await api.post(
-      `${AI_ENDPOINTS.GENERATE_RECOMMENDATIONS}/${customerId}`
+      AI_ENDPOINTS.GENERATE_RECOMMENDATIONS(customerId),
+      null,
+      { params: { userQuery } }
     );
     return response.data;
   } catch (error) {
-    return handleApiError<AIMessage>(error);
+    return handleApiError(error);
   }
 }
 
 /**
- * Đánh giá một đề xuất từ AI bởi người dùng
- * @param payload Dữ liệu đánh giá bao gồm recommendationId, rating và feedback tùy chọn
- * @returns Kết quả đánh giá dưới dạng ApiResponse>AIResponse
+ * 3) Generate Recommendation theo Category
+ */
+export async function generateCategoryRecommendations(
+  customerId: string,
+  categoryName: string,
+  userQuery?: string
+): Promise<AIResponse> {
+  try {
+    const response = await api.post(
+      AI_ENDPOINTS.GENERATE_RECOMMENDATIONS_BY_CATEGORY(
+        customerId,
+        categoryName
+      ),
+      null,
+      { params: { userQuery } }
+    );
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+/**
+ * 4) Rating Recommendation
  */
 export async function rateRecommendation(payload: {
   recommendationId: string;
@@ -49,42 +69,20 @@ export async function rateRecommendation(payload: {
     const response = await api.post(AI_ENDPOINTS.RATE_RECOMMENDATION, payload);
     return response.data;
   } catch (error) {
-    return handleApiError<AIMessage>(error);
+    return handleApiError(error);
   }
 }
 
 /**
- * Yêu cầu AI đề xuất sản phẩm cho khách hàng
- * @param customerId ID khách hàng
- * @param categoryName Tên danh mục sản phẩm
- * @returns Đề xuất sản phẩm dưới dạng ApiResponse>AIResponse
+ * 5) Get recommendations list
  */
-export async function generateCategoryRecommendations(
-  customerId: string,
-  categoryName: string
+export async function getRecommendations(
+  customerId: string
 ): Promise<AIResponse> {
   try {
-    const response = await api.post(
-      `${AI_ENDPOINTS.GENERATE_RECOMMENDATIONS}/${customerId}/category/${categoryName}`
-    );
+    const response = await api.get(AI_ENDPOINTS.RECOMMEND(customerId));
     return response.data;
   } catch (error) {
-    return handleApiError<AIMessage>(error);
+    return handleApiError(error);
   }
 }
-
-/**
- * Lấy danh sách đề xuất sản phẩm cho khách hàng
- * @param customerId ID khách hàng
- * @returns Danh sách đề xuất sản phẩm dưới dạng ApiResponse>AIResponse
- */
-export const getRecommendations = async (
-  customerId: string
-): Promise<AIResponse> => {
-  try {
-    const response = await api.get(`${AI_ENDPOINTS.RECOMMEND}/${customerId}`);
-    return response.data;
-  } catch (error) {
-    return handleApiError<AIMessage>(error);
-  }
-};

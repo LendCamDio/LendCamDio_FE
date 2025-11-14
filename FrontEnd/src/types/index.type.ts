@@ -33,5 +33,3 @@ export type PaginationProps = {
   pageSize: number;
   onPageChange: (event: { selected: number }) => void;
 };
-
-export * from "./entity.type";
