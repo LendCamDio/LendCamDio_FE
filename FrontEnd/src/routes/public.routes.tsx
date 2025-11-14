@@ -1,7 +1,7 @@
 import { lazy as lazyImport } from "react";
 import { getEquipmentById } from "@/services/equipmentService";
 import ErrorPage from "@/pages/Error";
-import type { Equipment } from "@/types/entity.type";
+import type { Equipment } from "@/types/entity.type"; 
 import type { LoaderFunctionArgs } from "react-router-dom";
 // Lazy load the component
 const Home = lazyImport(() => import("@/pages/Home/Home"));

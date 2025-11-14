@@ -5,14 +5,25 @@ import { lazy } from "react";
 // Lazy load customer pages
 const Dashboard = lazy(() => import("../pages/customer/Dashboard"));
 const Profile = lazy(() => import("../pages/customer/Profile"));
-const Cart = lazy(() => import("../pages/customer/Cart"));
-const Checkout = lazy(() => import("../pages/customer/Checkout"));
 const MyBooking = lazy(() => import("../pages/customer/MyBooking"));
 const OrderTracking = lazy(() => import("../pages/customer/OrderTracking"));
 const Settings = lazy(() => import("../pages/customer/Settings"));
 const AiAssistant = lazy(() => import("../pages/customer/AiAssistant"));
 const Reviews = lazy(() => import("../pages/customer/Reviews"));
 const Recommendations = lazy(() => import("../pages/customer/Recommendations"));
+const BookingListPage = lazy(() => import("../pages/customer/BookingListPage"));
+const MyRentalsPage = lazy(() => import("../pages/customer/MyRentalsPage"));
+const RentalPaymentPage = lazy(() => import("../pages/customer/RentalPaymentPage"));
+const PaymentSuccessPage = lazy(() => import("../pages/customer/PaymentSuccessPage"));
+const PaymentFailedPage = lazy(() => import("../pages/customer/PaymentFailedPage"));
+const PaymentPage = lazy(() => import("../pages/PaymentPage"));
+const PaymentTestPage = lazy(() => import("../pages/PaymentTestPage"));
+
+// New shopping flow pages
+const CartPage = lazy(() => import("../pages/Cart"));
+const CheckoutPage = lazy(() => import("../pages/Checkout"));
+const OrdersPage = lazy(() => import("../pages/Orders"));
+const OrderDetailPage = lazy(() => import("../pages/OrderDetail"));
 
 export const privateRoutes = [
   {
@@ -38,20 +49,12 @@ export const privateRoutes = [
             element: <MyBooking />,
           },
           {
-            path: "cart",
-            element: <Cart />,
-          },
-          {
-            path: "checkout",
-            element: <Checkout />,
-          },
-          {
             path: "order-tracking",
             element: <OrderTracking />,
           },
           {
             path: "orders",
-            element: <OrderTracking />,
+            element: <OrdersPage />,
           },
           {
             path: "settings",
@@ -69,9 +72,51 @@ export const privateRoutes = [
             path: "recommendations",
             element: <Recommendations />,
           },
+          { path: "rentals", element: <MyRentalsPage /> },
+          { path: "rentals/:rentalId/payment", element: <RentalPaymentPage /> },
         ],
       },
     ],
+  },
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
+  {
+    path: "/checkout",
+    element: <CheckoutPage />,
+  },
+  {
+    path: "/orders",
+    element: <OrdersPage />,
+  },
+  {
+    path: "/order/:orderId",
+    element: <OrderDetailPage />,
+  },
+  {
+    path: "/bookings",
+    element: <BookingListPage />,
+  },
+  {
+    path: "/payment/success",
+    element: <PaymentSuccessPage />,
+  },
+  {
+    path: "/payment/failed",
+    element: <PaymentFailedPage />,
+  },
+  {
+    path: "/payment/cancel",
+    element: <PaymentFailedPage />,
+  },
+  {
+    path: "/payment/test",
+    element: <PaymentTestPage />,
+  },
+  {
+    path: "/payment/:paymentId",
+    element: <PaymentPage />,
   },
   {
     path: "/suppliers",

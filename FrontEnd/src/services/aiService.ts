@@ -74,15 +74,17 @@ export async function rateRecommendation(payload: {
 }
 
 /**
- * 5) Get recommendations list
+ * Lấy danh sách đề xuất sản phẩm cho khách hàng
+ * @param customerId ID khách hàng
+ * @returns Danh sách đề xuất sản phẩm dưới dạng ApiResponse>AIResponse
  */
-export async function getRecommendations(
+export const getRecommendations = async (
   customerId: string
-): Promise<AIResponse> {
+): Promise<AIResponse> => {
   try {
     const response = await api.get(AI_ENDPOINTS.RECOMMEND(customerId));
     return response.data;
   } catch (error) {
     return handleApiError(error);
   }
-}
+};

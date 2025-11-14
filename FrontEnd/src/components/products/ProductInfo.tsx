@@ -13,6 +13,7 @@ import {
   faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
+import { useAddToCart } from "@/hooks/cart/useCart";
 import { Rating } from "@/components/common/Rating";
 import type { Equipment } from "@/types/entity.type";
 import { motion } from "framer-motion";
@@ -25,6 +26,7 @@ interface ProductInfoProps {
 
 export const ProductInfo = ({ product }: ProductInfoProps) => {
   const showToast = useUniqueToast();
+  const addToCart = useAddToCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedDays, setSelectedDays] = useState(1);
   const [isSupplierInfoExpanded, setIsSupplierInfoExpanded] = useState(false);
@@ -35,11 +37,39 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
     ? quantity * selectedDays * product.dailyPrice
     : 0;
 
-  const handleAddToCart = () => {
-    showToast(
-      `Added ${quantity} ${quantity > 1 ? "items" : "item"} to cart ✅`,
-      "success"
-    );
+  const handleAddToCart = async () => {
+    console.log("Add to cart clicked - Product type:", product.type, "Product:", product);
+    
+    // Only FOR SALE items (type === 1 or "1") can be added to cart
+    // Use == to allow both number and string comparison
+    if (product.type != 1) {
+      console.log("Product type is not FOR SALE (type != 1)");
+      showToast("Chỉ có thể mua các sản phẩm BÁN", "error");
+      return;
+    }
+
+    try {
+      console.log("Calling addToCart API with:", {
+        equipmentId: product.equipmentId,
+        quantity: quantity,
+      });
+      await addToCart.mutateAsync({
+        equipmentId: product.equipmentId,
+        quantity: quantity,
+      });
+      console.log("Add to cart successful");
+      showToast(
+        `Đã thêm ${quantity} ${quantity > 1 ? "sản phẩm" : "sản phẩm"} vào giỏ hàng ✅`,
+        "success"
+      );
+      setQuantity(1);
+    } catch (error: any) {
+      console.error("Add to cart failed:", error);
+      showToast(
+        `Lỗi: ${error?.message || "Không thể thêm vào giỏ hàng"}`,
+        "error"
+      );
+    }
   };
 
   return (
@@ -200,11 +230,11 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={handleAddToCart}
-            disabled={!product.availability}
+            disabled={!product.availability || addToCart.isPending || product.type != 1}
             className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
           >
             <FontAwesomeIcon icon={faShoppingCart} className="mr-2" />
-            Thêm vào giỏ hàng
+            {addToCart.isPending ? "Đang thêm..." : "Thêm vào giỏ hàng"}
           </motion.button>
 
           <button className="w-11 h-11 flex items-center justify-center border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">

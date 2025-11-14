@@ -1,13 +1,11 @@
 import {
   Link,
-  useLoaderData,
   useLocation,
   useMatches,
   useParams,
 } from "react-router-dom";
 import { useMemo } from "react";
 import type { RouteHandle, BreadcrumbItem } from "@/types/rout.type";
-import type { Equipment } from "@/types/entity.type";
 
 //Regex pattern
 const GUID_PATTERN =
@@ -31,7 +29,6 @@ export const Breadcrumbs = ({ className = "" }: { className?: string }) => {
   const matches = useMatches();
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
-  const equipment = useLoaderData() as Equipment | undefined;
 
   const pathnames = useMemo(
     () => location.pathname.split("/").filter((x) => x),
@@ -90,14 +87,13 @@ export const Breadcrumbs = ({ className = "" }: { className?: string }) => {
         </span>
       );
     }
-    // Last item with valid ID
-    if (isLast && hasValidId && equipment) {
+
+    // Last item - show as active text (not a link)
+    if (isLast) {
       return (
         <span key={crumb.path} className="flex items-center">
           <span className={STYLES.separator}>/</span>
-          <Link to={crumb.path.replace(":id", "")} className={STYLES.link}>
-            {crumb.breadcrumb}
-          </Link>
+          <span className={STYLES.active}>{crumb.breadcrumb}</span>
         </span>
       );
     }
@@ -107,11 +103,7 @@ export const Breadcrumbs = ({ className = "" }: { className?: string }) => {
       <span key={crumb.path} className="flex items-center">
         <span className={STYLES.separator}>/</span>
         <Link to={crumb.path} className={STYLES.link}>
-          {isLast ? (
-            crumb.breadcrumb
-          ) : (
-            <Link to={crumb.path}>{crumb.breadcrumb}</Link>
-          )}
+          {crumb.breadcrumb}
         </Link>
       </span>
     );
