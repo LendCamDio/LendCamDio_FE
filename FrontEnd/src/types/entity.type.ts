@@ -147,6 +147,11 @@ export type GoogleAuthRequest = {
 // #endregion
 
 // #region Equipment Types
+export enum EquipmentType {
+  ForRent = 0,
+  ForSale = 1,
+}
+
 export enum EquipmentCondition {
   New,
   Good,
@@ -166,9 +171,10 @@ export type Equipment = {
   categoryName: string;
   name: string;
   description: string;
+  type: EquipmentType; // ForRent or ForSale
   stockQuantity: number;
-  price?: number;
-  dailyPrice?: number;
+  price?: number; // Only for ForSale
+  dailyPrice?: number; // Only for ForRent
   depositAmount: number;
   insuranceRequired: boolean;
   condition: EquipmentCondition;
@@ -331,12 +337,19 @@ export interface Payment {
   updatedAt?: string | null;
   updatedBy?: string | null;
 
+  // PayOS-specific fields
+  payOsOrderCode?: number | null;
+  payOsPaymentLinkId?: string | null;
+
   // Navigation property
   rental?: Rental;
 }
 
 // Response DTO with additional computed fields
 export interface PaymentResponseDto extends Payment {
+  // PayOS checkout URL (if payment link was created)
+  payOsCheckoutUrl?: string | null;
+  
   // Additional info from joins/computed fields
   rentalStatusText: string;
   customerName: string;
@@ -357,18 +370,49 @@ export interface UpdatePaymentRequestDto {
   paidAt?: string | null;
 }
 
-export type PaymentMethod = "VNPay" | "Cash" | "PayOS";
+export interface CreatePayOSPaymentRequestDto {
+  paymentId: string; // Guid
+}
 
-export type PaymentStatus =
-  | "Pending"
-  | "Paid"
-  | "Failed"
-  | "Refunded"
-  | "Deleted";
+export interface PayOSPaymentLinkResponseDto {
+  paymentId: string;
+  checkoutUrl: string;
+  orderCode: number;
+  paymentLinkId: string;
+  amount: number;
+  message: string;
+}
+
+export interface PayOSPaymentInfoResponseDto {
+  orderCode: number;
+  amount: number;
+  status: string;
+  paymentLinkId: string;
+  checkoutUrl: string;
+  qrCode?: string;
+  createdAt: string;
+  paidAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+}
+
+// Backend expects enum values: VNPay=0, Cash=1, PayOS=2
+export enum PaymentMethod {
+  VNPay = 0,
+  Cash = 1,
+  PayOS = 2,
+}
+
+// Backend expects enum values: Pending=0, Paid=1, Failed=2, Refunded=3, Deleted=4
+export enum PaymentStatus {
+  Pending = 0,
+  Paid = 1,
+  Failed = 2,
+  Refunded = 3,
+  Deleted = 4,
+}
 
 export type PaymentResponse = ApiResponse<PaginatedData<PaymentResponseDto>>;
-// export type PaymentUpdateResponse = ApiResponse<PaymentResponseDto>;
-// export type PaymentCreateResponse = ApiResponse<PaymentResponseDto>;
 
 // export type RentalStatus = "Pending" | "Active" | "Completed" | "Cancelled";
 export enum RentalStatus {

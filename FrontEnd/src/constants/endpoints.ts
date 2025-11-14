@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.lendcamdio.io.vn";
 
 export const AUTH_ENDPOINTS = {
   // Email/Password Authentication
@@ -179,6 +178,24 @@ export const PAYMENT_ENDPOINTS = {
   REFUND: (id: string) => `/api/payments/${id}/refund`,
   TOTAL_FOR_PERIOD: (startDate: string, endDate: string) =>
     `/api/payments/total-for-period?startDate=${startDate}&endDate=${endDate}`,
+  CONFIRM: (id: string) => `/api/payments/${id}/confirm`,
+  
+  CREATE_PAYOS: "/api/payments/create-payos",
+  PAYOS_WEBHOOK: "/api/payments/payos/webhook",
+  PAYOS_INFO: (orderCode: number) => `/api/payments/payos/${orderCode}`,
+  PAYOS_ORDER: (orderCode: number) => `/api/payments/payos/order/${orderCode}`,
+  PAYOS_CANCEL: (orderCode: number) => `/api/payments/payos/${orderCode}/cancel`,
+
+  CREATE_ORDER_PAYMENT: "/api/payments/orders",
+  COMPLETE_ORDER_PAYMENT: (orderPaymentId: string) =>
+    `/api/payments/orders/${orderPaymentId}/complete`,
+  CREATE_PAYOS_FOR_ORDER: (orderPaymentId: string) =>
+    `/api/payments/orders/${orderPaymentId}/payos`,
+  PAYOS_WEBHOOK_FOR_ORDER: "/api/payments/orders/payos/webhook",
+  PAYOS_INFO_FOR_ORDER: (orderCode: number) =>
+    `/api/payments/orders/payos/${orderCode}`,
+  PAYOS_CANCEL_FOR_ORDER: (orderCode: number) =>
+    `/api/payments/orders/payos/${orderCode}/cancel`,
 };
 
 export const RENTAL_ENDPOINTS = {
@@ -188,12 +205,14 @@ export const RENTAL_ENDPOINTS = {
   UPDATE: (id: string) => `/api/rentals/${id}`,
   DELETE: (id: string) => `/api/rentals/${id}`,
   GET_ACTIVE: "/api/rentals/active",
-  GET_BY_CUSTOMER: (customerId: string) =>
-    `/api/rentals/customer/${customerId}`,
-  GET_BY_EQUIPMENT: (equipmentId: string) =>
-    `/api/rentals/equipment/${equipmentId}`,
-  GET_BY_STATUS: (status: string) => `/api/rentals/status/${status}`,
-  GET_BY_DATE_RANGE: "/api/rentals/date-range",
+  GET_BY_CUSTOMER: (customerId: string, page = 1, pageSize = 10) =>
+    `/api/rentals/customer/${customerId}?page=${page}&pageSize=${pageSize}`,
+  GET_BY_EQUIPMENT: (equipmentId: string, page = 1, pageSize = 10) =>
+    `/api/rentals/equipment/${equipmentId}?page=${page}&pageSize=${pageSize}`,
+  GET_BY_STATUS: (status: string, page = 1, pageSize = 10) =>
+    `/api/rentals/status/${status}?page=${page}&pageSize=${pageSize}`,
+  GET_BY_DATE_RANGE: (startDate: string, endDate: string, page = 1, pageSize = 10) =>
+    `/api/rentals/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${pageSize}`,
   CHECK_AVAILABILITY: "/api/rentals/check-availability",
   APPROVE: (id: string) => `/api/rentals/${id}/approve`,
   CANCEL: (id: string) => `/api/rentals/${id}/cancel`,
@@ -211,9 +230,11 @@ export const CART_ENDPOINTS = {
 
 export const ORDER_ENDPOINTS = {
   CREATE: "/api/orders",
+  GET_ALL: "/api/orders",
   GET_BY_ID: (orderId: string) => `/api/orders/${orderId}`,
   GET_BY_NUMBER: (orderNumber: string) => `/api/orders/number/${orderNumber}`,
   MY_ORDERS: "/api/orders/my-orders",
+  UPDATE_STATUS: (orderId: string) => `/api/orders/${orderId}/status`,
   CANCEL: (orderId: string) => `/api/orders/${orderId}/cancel`,
 };
 

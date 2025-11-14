@@ -82,7 +82,7 @@ export const getRecommendations = async (
   customerId: string
 ): Promise<AIResponse> => {
   try {
-    const response = await api.get(`${AI_ENDPOINTS.RECOMMEND}/${customerId}`);
+    const response = await api.get(AI_ENDPOINTS.RECOMMEND(customerId));
     return response.data;
   } catch (error) {
     return handleApiError<AIMessage>(error);

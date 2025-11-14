@@ -8,11 +8,15 @@ import defPic from "@/assets/defaultPic1.jpg";
 import Loading from "../common/Loading/Loading";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAddToCart } from "@/hooks/cart/useCart";
+import { useBooking } from "@/contexts/BookingContext";
 // import { motion } from "framer-motion";
 
 const ProductCard = ({ equipment }: { equipment: Equipment }) => {
   const navigate = useNavigate();
   const showToast = useUniqueToast();
+  const addToCartMutation = useAddToCart();
+  const { addBooking } = useBooking();
   const [loadingImg, setLoadingImg] = useState(true);
   const [imageSrc, setImageSrc] = useState<string>(defPic);
 
@@ -51,6 +55,49 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
 
   const handleViewDetails = () => {
     navigate(`/products/product-detail/${equipment.equipmentId}`);
+  };
+
+  const handleAddToCart = async () => {
+    if (!equipment.availability) {
+      showToast("Sản phẩm tạm hết hàng", "warning");
+      return;
+    }
+    
+    // Only FOR SALE items can be added to cart
+    if (equipment.type != 1) {
+      showToast("Sản phẩm này chỉ có thể thuê, không bán", "error");
+      return;
+    }
+
+    try {
+      await addToCartMutation.mutateAsync({
+        equipmentId: equipment.equipmentId,
+        quantity: 1,
+      });
+      showToast("Đã thêm vào giỏ hàng!", "success");
+      // Don't navigate immediately, let user continue shopping
+    } catch (error: any) {
+      showToast(`Lỗi: ${error?.message || "Không thể thêm vào giỏ hàng"}`, "error");
+    }
+  };
+
+  const handleBookNow = () => {
+    if (!equipment.availability) {
+      showToast("Thiết bị không khả dụng", "warning");
+      return;
+    }
+    
+    // Tạo ngày mặc định: hôm nay đến ngày mai
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const startDateStr = today.toISOString().split('T')[0];
+    const endDateStr = tomorrow.toISOString().split('T')[0];
+    
+    addBooking(equipment, startDateStr, endDateStr, "Đặt từ trang sản phẩm");
+    showToast("Đã thêm vào lịch đặt thuê!", "success");
+    navigate("/bookings");
   };
 
   // 🏷️ Giá hiển thị hợp lý
@@ -166,12 +213,13 @@ const ProductCard = ({ equipment }: { equipment: Equipment }) => {
         </div>
         <motion.button
           onClick={() => {
-            if (equipment.dailyPrice && equipment.dailyPrice > 0)
-              navigate("/studios");
-            else
-              showToast("Tính năng đang phát triển", "info", {
-                allowSpam: true,
-              });
+            if (equipment.dailyPrice && equipment.dailyPrice > 0) {
+              handleBookNow();
+            } else if (equipment.price && equipment.price > 0) {
+              handleAddToCart();
+            } else {
+              showToast("Vui lòng liên hệ để biết thêm thông tin", "info");
+            }
           }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

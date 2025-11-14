@@ -107,9 +107,7 @@ export const getRentalsByDateRange = async (
   pageSize: number
 ): Promise<RentalResponse> => {
   try {
-    const res = await api.get(RENTAL_ENDPOINTS.GET_BY_DATE_RANGE, {
-      params: { startDate, endDate, page, pageSize },
-    });
+    const res = await api.get(RENTAL_ENDPOINTS.GET_BY_DATE_RANGE(startDate, endDate, page, pageSize));
     return res.data;
   } catch (error) {
     throw handleApiError(error);

@@ -5,6 +5,10 @@ import type {
   PaymentResponse,
   CreatePaymentRequestDto,
   UpdatePaymentRequestDto,
+  CreatePayOSPaymentRequestDto,
+  PayOSPaymentLinkResponseDto,
+  PayOSPaymentInfoResponseDto,
+  PaymentResponseDto,
 } from "@/types/entity.type";
 import { handleApiError } from "./apiErrorHandler";
 
@@ -24,12 +28,12 @@ export const getAllPayments = async (
 };
 
 // 🔍 Get payment by ID
-export const getPaymentById = async (id: string): Promise<PaymentResponse> => {
+export const getPaymentById = async (id: string): Promise<ApiResponse<PaymentResponseDto>> => {
   try {
-    const res = await api.get<PaymentResponse>(PAYMENT_ENDPOINTS.DETAILS(id));
+    const res = await api.get<ApiResponse<PaymentResponseDto>>(PAYMENT_ENDPOINTS.DETAILS(id));
     return res.data;
   } catch (error) {
-    return handleApiError<PaymentResponse>(error) as PaymentResponse;
+    return handleApiError<PaymentResponseDto>(error);
   }
 };
 
@@ -186,6 +190,82 @@ export const getTotalPaymentsForPeriod = async (
   try {
     const res = await api.get<ApiResponse<object>>(
       PAYMENT_ENDPOINTS.TOTAL_FOR_PERIOD(startDate, endDate)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<object>(error);
+  }
+};
+
+// ✅ Confirm manual payment (Admin)
+export const confirmPayment = async (
+  id: string
+): Promise<ApiResponse<object>> => {
+  try {
+    const res = await api.patch<ApiResponse<object>>(
+      PAYMENT_ENDPOINTS.CONFIRM(id)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<object>(error);
+  }
+};
+
+// 🏦 PayOS: Create payment link
+export const createPayOSPayment = async (
+  dto: CreatePayOSPaymentRequestDto
+): Promise<ApiResponse<PayOSPaymentLinkResponseDto>> => {
+  try {
+    const res = await api.post<ApiResponse<PayOSPaymentLinkResponseDto>>(
+      PAYMENT_ENDPOINTS.CREATE_PAYOS,
+      dto
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<PayOSPaymentLinkResponseDto>(error);
+  }
+};
+
+// 🏦 PayOS: Get payment info from PayOS gateway
+export const getPayOSPaymentInfo = async (
+  orderCode: number
+): Promise<ApiResponse<PayOSPaymentInfoResponseDto>> => {
+  try {
+    const res = await api.get<ApiResponse<PayOSPaymentInfoResponseDto>>(
+      PAYMENT_ENDPOINTS.PAYOS_INFO(orderCode)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<PayOSPaymentInfoResponseDto>(error);
+  }
+};
+
+// 🏦 PayOS: Get payment by order code from database
+export const getPaymentByOrderCode = async (
+  orderCode: number
+): Promise<ApiResponse<PaymentResponseDto>> => {
+  try {
+    const res = await api.get<ApiResponse<PaymentResponseDto>>(
+      PAYMENT_ENDPOINTS.PAYOS_ORDER(orderCode)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<PaymentResponseDto>(error);
+  }
+};
+
+// 🏦 PayOS: Cancel payment link
+export const cancelPayOSPayment = async (
+  orderCode: number,
+  reason?: string
+): Promise<ApiResponse<object>> => {
+  try {
+    const res = await api.post<ApiResponse<object>>(
+      PAYMENT_ENDPOINTS.PAYOS_CANCEL(orderCode),
+      reason || "Cancelled by user",
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
     return res.data;
   } catch (error) {

@@ -215,7 +215,7 @@ const DashboardSection = () => {
                   <FontAwesomeIcon icon={faTruck} /> Đơn hàng gần đây
                 </h4>
                 <button
-                  onClick={() => navigate("/customer/cart")}
+                  onClick={() => navigate("/orders")}
                   className="btn btn-outline-primary"
                 >
                   Theo dõi

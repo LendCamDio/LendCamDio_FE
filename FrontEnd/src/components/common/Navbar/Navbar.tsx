@@ -30,7 +30,7 @@ const NAV_ITEMS = [
     icon: faCalendarCheck,
   },
   { name: "Liên hệ", to: "/contact", icon: faEnvelope },
-  { name: "Giỏ hàng", to: "/customer/cart", icon: faShoppingCart },
+  { name: "Giỏ hàng", to: "/cart", icon: faShoppingCart },
 ];
 
 export default function Navbar() {
@@ -112,7 +112,7 @@ export default function Navbar() {
                       },
                       {
                         label: "Cart",
-                        to: "/customer/cart",
+                        to: "/cart",
                         icon: faShoppingCart,
                       },
                     ]
