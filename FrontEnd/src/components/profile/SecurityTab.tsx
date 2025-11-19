@@ -10,11 +10,7 @@ interface SecurityTabProps {
   errors: FieldErrors<PasswordSchema>;
 }
 
-export const SecurityTab = ({
-  onSubmit,
-  register,
-  errors,
-}: SecurityTabProps) => {
+const SecurityTab = ({ onSubmit, register, errors }: SecurityTabProps) => {
   return (
     <div>
       <div className="mb-8 pb-6 border-b-2 border-gray-100">
@@ -92,3 +88,5 @@ export const SecurityTab = ({
     </div>
   );
 };
+
+export default SecurityTab;

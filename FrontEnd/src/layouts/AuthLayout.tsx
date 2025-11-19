@@ -1,6 +1,4 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/common/Navbar/Navbar";
-import Footer from "../components/common/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
@@ -8,6 +6,10 @@ import {
   faGift,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
+import { lazy } from "react";
+
+const Navbar = lazy(() => import("@/components/common/Navbar/Navbar"));
+const Footer = lazy(() => import("@/components/common/Footer/Footer"));
 
 export default function AuthLayout() {
   return (

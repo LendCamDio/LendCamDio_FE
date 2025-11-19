@@ -16,7 +16,7 @@ interface ProfileSidebarProps {
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const ProfileSidebar = ({
+const ProfileSidebar = ({
   user,
   activeTab,
   setActiveTab,
@@ -102,3 +102,5 @@ export const ProfileSidebar = ({
     </motion.div>
   );
 };
+
+export default ProfileSidebar;

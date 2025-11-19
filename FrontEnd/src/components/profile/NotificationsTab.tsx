@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Package, Bell, Mail, Camera } from "lucide-react";
 
-export const NotificationsTab = () => {
+const NotificationsTab = () => {
   const notificationSettings = [
     {
       title: "Thông báo đơn hàng",
@@ -72,3 +72,5 @@ export const NotificationsTab = () => {
     </div>
   );
 };
+
+export default NotificationsTab;

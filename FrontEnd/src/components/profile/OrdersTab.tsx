@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Package } from "lucide-react";
 
-export const OrdersTab = () => {
+const OrdersTab = () => {
   return (
     <div>
       <div className="mb-8 pb-6 border-b-2 border-gray-100">
@@ -60,3 +60,5 @@ export const OrdersTab = () => {
     </div>
   );
 };
+
+export default OrdersTab;

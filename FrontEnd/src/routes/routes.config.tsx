@@ -1,8 +1,5 @@
-import MainLayout from "@/layouts/MainLayout";
-import AuthLayout from "@/layouts/AuthLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { RoleBasedRoute } from "./RoleBasedRoute";
-
 import { publicRoutes } from "./public.routes";
 import { privateRoutes } from "./private.routes";
 import { adminRoutes } from "./admin.routes";
@@ -11,6 +8,10 @@ import RegisterPage from "@/pages/Register";
 import ForgotPasswordPage from "@/pages/Forgot-password";
 import ErrorPage from "@/pages/Error";
 import AdminLoginPage from "@/pages/admin/AdminLoginPage";
+import { lazy } from "react";
+
+const MainLayout = lazy(() => import("@/layouts/MainLayout"));
+const AuthLayout = lazy(() => import("@/layouts/AuthLayout"));
 
 export const routesConfig = [
   {

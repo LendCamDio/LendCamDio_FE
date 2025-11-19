@@ -22,7 +22,7 @@ interface ProfileInfoTabProps {
   errors: FieldErrors<ProfileSchema>;
 }
 
-export const ProfileInfoTab = ({
+const ProfileInfoTab = ({
   isEditing,
   setIsEditing,
   onSubmit,
@@ -173,3 +173,5 @@ export const ProfileInfoTab = ({
     </div>
   );
 };
+
+export default ProfileInfoTab;

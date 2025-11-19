@@ -1,7 +1,7 @@
 import { lazy } from "react";
-import AdminLayout from "@/layouts/AdminLayout";
 
 // Lazy load admin pages
+const AdminLayout = lazy(() => import("@/layouts/AdminLayout"));
 const Dashboard = lazy(() => import("@/pages/admin/Dashboard"));
 const EquipmentManagement = lazy(
   () => import("@/pages/admin/equipments/EquipmentManagement")

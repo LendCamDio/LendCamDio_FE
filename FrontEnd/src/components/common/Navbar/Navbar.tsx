@@ -17,7 +17,11 @@ import {
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
 import { useAuth } from "@/hooks/auth/useAuth";
-import UserDropdown from "./UserDropdown";
+import { lazy } from "react";
+
+const UserDropdown = lazy(
+  () => import("@/components/common/Navbar/UserDropdown")
+);
 
 const NAV_ITEMS = [
   { name: "Trang chủ", to: "/", icon: faHome },

@@ -5,7 +5,7 @@ import ChatWindow from "./ChatWindow";
 import SuggestionList from "./SuggestionList";
 import { useAuth } from "@/hooks/auth/useAuth";
 
-export const ChatBox = () => {
+const ChatBox = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [expand, setExpand] = useState(false);
@@ -108,3 +108,5 @@ export const ChatBox = () => {
     </div>
   );
 };
+
+export default ChatBox;

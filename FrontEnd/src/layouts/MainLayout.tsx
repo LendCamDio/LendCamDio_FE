@@ -1,8 +1,9 @@
-import Navbar from "../components/common/Navbar/Navbar";
-import Footer from "../components/common/Footer/Footer";
 import { Outlet, useLocation } from "react-router-dom";
-import { ChatBox } from "@/components/common/ChatBox";
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
+
+const Navbar = lazy(() => import("@/components/common/Navbar/Navbar"));
+const Footer = lazy(() => import("@/components/common/Footer/Footer"));
+const ChatBox = lazy(() => import("@/components/common/ChatBox/ChatBox"));
 
 const MainLayout = () => {
   const location = useLocation();

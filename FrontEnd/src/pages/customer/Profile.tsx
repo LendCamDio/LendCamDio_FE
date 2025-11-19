@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import PageWrapper from "@/components/common/PageTransaction/PageWrapper";
-import {
-  ProfileSidebar,
-  ProfileInfoTab,
-  SecurityTab,
-  OrdersTab,
-  NotificationsTab,
-} from "@/components/profile/index";
+
+const ProfileSidebar = lazy(
+  () => import("@/components/profile/ProfileSidebar")
+);
+const ProfileInfoTab = lazy(
+  () => import("@/components/profile/ProfileInfoTab")
+);
+const SecurityTab = lazy(() => import("@/components/profile/SecurityTab"));
+const OrdersTab = lazy(() => import("@/components/profile/OrdersTab"));
+const NotificationsTab = lazy(
+  () => import("@/components/profile/NotificationsTab")
+);
 
 import {
   passwordSchema,
