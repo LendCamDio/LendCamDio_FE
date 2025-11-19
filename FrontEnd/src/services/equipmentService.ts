@@ -11,6 +11,7 @@ import type {
 } from "@/types/entity.type";
 import api from "./api";
 import { EQUIPMENT_ENDPOINTS, REVIEW_ENDPOINTS } from "@/constants/endpoints";
+import { handleApiError } from "./apiErrorHandler";
 
 /**
  * Helper function to filter only available equipment
@@ -53,23 +54,36 @@ export async function getAvailableEquipments(
   page: number,
   pageSize: number
 ): Promise<EquipmentResponse> {
-  const params = { page, pageSize };
-  console.log("📥 GET /api/equipments/available with params:", params);
-  const res = await api.get(EQUIPMENT_ENDPOINTS.AVAILABLE, { params });
+  try {
+    const params = { page, pageSize };
+    console.log("📥 GET /api/equipments/available with params:", params);
+    const res = await api.get(EQUIPMENT_ENDPOINTS.AVAILABLE, { params });
 
-  if (!res.data?.data?.items) {
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log(
+      "✅ Fetched",
+      res.data.data.items.length,
+      "available equipments"
+    );
     return {
       success: res.data.success,
       data: res.data.data,
       timestamp: res.data.timestamp,
     };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
   }
-  await fetchRatingsForEquipment(res.data.data.items);
-  console.log("✅ Fetched", res.data.data.items.length, "available equipments");
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -81,26 +95,40 @@ export async function getEquipments(
   page: number,
   pageSize: number
 ): Promise<EquipmentResponse> {
-  const params = { page, pageSize };
-  console.log("📥 GET /api/equipments/available with params:", params);
+  try {
+    const params = { page, pageSize };
+    console.log("📥 GET /api/equipments/available with params:", params);
 
-  const res = await api.get(EQUIPMENT_ENDPOINTS.AVAILABLE, { params });
+    const res = await api.get(EQUIPMENT_ENDPOINTS.LIST, { params });
 
-  if (!res.data?.data?.items) {
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log(
+      "✅ Fetched",
+      res.data.data.items.length,
+      "available equipments"
+    );
+
     return {
       success: res.data.success,
       data: res.data.data,
       timestamp: res.data.timestamp,
     };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
   }
 
-  await fetchRatingsForEquipment(res.data.data.items);
-  console.log("✅ Fetched", res.data.data.items.length, "available equipments");
-
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -114,26 +142,75 @@ export async function getEquipmentBySearchName(
   page: number,
   pageSize: number
 ): Promise<EquipmentResponse> {
-  const params = { name, page, pageSize };
-  console.log("🔎 GET /api/equipments/search with params:", params);
+  try {
+    const params = { name, page, pageSize };
+    console.log("🔎 GET /api/equipments/search with params:", params);
 
-  const res = await api.get(EQUIPMENT_ENDPOINTS.SEARCH, { params });
+    const res = await api.get(EQUIPMENT_ENDPOINTS.SEARCH, { params });
 
-  if (!res.data?.data?.items) {
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log("✅ Found", res.data.data.items.length, "equipments by search");
+
     return {
       success: res.data.success,
       data: res.data.data,
       timestamp: res.data.timestamp,
     };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
   }
-
-  await fetchRatingsForEquipment(res.data.data.items);
-  console.log("✅ Found", res.data.data.items.length, "equipments by search");
-
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Search all equipments name (regardless of availability/status)
+ */
+export async function getAllEquipmentBySearchName(
+  name: string,
+  page: number,
+  pageSize: number
+): Promise<EquipmentResponse> {
+  try {
+    const params = { name, page, pageSize };
+    console.log("🔎 GET /api/equipments/search-all/ :", params);
+
+    const res = await api.get(EQUIPMENT_ENDPOINTS.SEARCH_ALL, { params });
+
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log("✅ Found", res.data.data.items.length, "equipments by search");
+
+    return {
+      success: res.data.success,
+      data: res.data.data,
+      timestamp: res.data.timestamp,
+    };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
+  }
+  return {
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -144,24 +221,33 @@ export async function getEquipmentBySearchName(
 export async function getEquipmentById(
   id: string
 ): Promise<SingleEquipmentResponse> {
-  console.log("📥 GET /api/equipments/" + id);
-
-  const res = await api.get(EQUIPMENT_ENDPOINTS.DETAILS(id));
-
   try {
-    const resRate = await api.get(
-      REVIEW_ENDPOINTS.AVERAGE_RATING_BY_EQUIPMENT(res.data.data.equipmentId)
-    );
-    res.data.data.rating = resRate.data.data.averageRating || 0;
-  } catch (error) {
-    console.error("Error fetching rating:", error);
-    res.data.data.rating = 0;
-  }
+    console.log("📥 GET /api/equipments/" + id);
 
+    const res = await api.get(EQUIPMENT_ENDPOINTS.DETAILS(id));
+
+    try {
+      const resRate = await api.get(
+        REVIEW_ENDPOINTS.AVERAGE_RATING_BY_EQUIPMENT(res.data.data.equipmentId)
+      );
+      res.data.data.rating = resRate.data.data.averageRating || 0;
+    } catch (error) {
+      console.error("Error fetching rating:", error);
+      res.data.data.rating = 0;
+    }
+
+    return {
+      success: res.data.success,
+      data: res.data.data,
+      timestamp: res.data.timestamp,
+    };
+  } catch (error) {
+    handleApiError<Equipment>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as Equipment,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -176,36 +262,45 @@ export async function getEquipmentsByCategory(
   page: number,
   pageSize: number
 ): Promise<EquipmentResponse> {
-  const params = { page, pageSize };
-  console.log(
-    `🏷️ GET /api/equipments/category/${category} with params:`,
-    params
-  );
+  try {
+    const params = { page, pageSize };
+    console.log(
+      `🏷️ GET /api/equipments/category/${category} with params:`,
+      params
+    );
 
-  const res = await api.get(EQUIPMENT_ENDPOINTS.CATEGORY(category), {
-    params,
-  });
+    const res = await api.get(EQUIPMENT_ENDPOINTS.CATEGORY(category), {
+      params,
+    });
 
-  // If no items, return early
-  if (!res.data?.data?.items) {
+    // If no items, return early
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log(
+      "✅ Fetched",
+      res.data.data.items.length,
+      "equipments in category"
+    );
+
     return {
       success: res.data.success,
       data: res.data.data,
       timestamp: res.data.timestamp,
     };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
   }
-
-  await fetchRatingsForEquipment(res.data.data.items);
-  console.log(
-    "✅ Fetched",
-    res.data.data.items.length,
-    "equipments in category"
-  );
-
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -214,16 +309,25 @@ export async function getAvailableEquipmentsByCategory(
   page: number,
   pageSize: number
 ): Promise<EquipmentResponse> {
-  const res = await getEquipmentsByCategory(category, page, pageSize);
-  const availableItems = filterAvailableEquipment(res.data?.items || []);
-  const newData = {
-    ...res.data,
-    items: availableItems,
-  };
+  try {
+    const res = await getEquipmentsByCategory(category, page, pageSize);
+    const availableItems = filterAvailableEquipment(res.data?.items || []);
+    const newData = {
+      ...res.data,
+      items: availableItems,
+    };
+    return {
+      success: res.success,
+      data: newData as PaginatedData<Equipment>,
+      timestamp: res.timestamp,
+    };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
+  }
   return {
-    success: res.success,
-    data: newData as PaginatedData<Equipment>,
-    timestamp: res.timestamp,
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -235,19 +339,29 @@ export async function getAvailableEquipmentsByCategory(
 export async function createEquipment(
   data: CreateEquipmentRequestDto
 ): Promise<CreateEquipmentResponse> {
-  console.log("📤 POST /api/equipments with data:", data);
+  try {
+    console.log("📤 POST /api/equipments with data:", data);
 
-  const res = await api.post(EQUIPMENT_ENDPOINTS.CREATE, data);
+    const res = await api.post(EQUIPMENT_ENDPOINTS.CREATE, data);
 
-  console.log(
-    "✅ Equipment created:",
-    res.data.success ? "Successfully" : "Failed"
-  );
-
+    console.log(
+      "✅ Equipment created:",
+      res.data.success ? "Successfully" : "Failed"
+    );
+    if (res.data.success) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    } else throw new Error("Creation failed");
+  } catch (error) {
+    handleApiError<CreateEquipmentResponse>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as Equipment,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -260,19 +374,29 @@ export async function updateEquipment(
   id: string,
   data: UpdateEquipmentRequestDto
 ): Promise<UpdateEquipmentResponse> {
-  console.log(`📤 PUT /api/equipments/${id} with data:`, data);
+  try {
+    console.log(`📤 PUT /api/equipments/${id} with data:`, data);
 
-  const res = await api.put(EQUIPMENT_ENDPOINTS.UPDATE(id), data);
+    const res = await api.put(EQUIPMENT_ENDPOINTS.UPDATE(id), data);
 
-  console.log(
-    "✅ Equipment updated:",
-    res.data.success ? "Successfully" : "Failed"
-  );
-
+    console.log(
+      "✅ Equipment updated:",
+      res.data.success ? "Successfully" : "Failed"
+    );
+    if (res.data.success) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    } else throw new Error("Update failed");
+  } catch (error) {
+    handleApiError<UpdateEquipmentResponse>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as { equipmentId: string; message: string },
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -284,19 +408,30 @@ export async function updateEquipment(
 export async function deleteEquipment(
   id: string
 ): Promise<ApiResponse<{ equipmentId: string; message: string }>> {
-  console.log(`🗑️ DELETE /api/equipments/${id}`);
+  try {
+    console.log(`🗑️ DELETE /api/equipments/${id}`);
 
-  const res = await api.delete(EQUIPMENT_ENDPOINTS.DELETE(id));
+    const res = await api.delete(EQUIPMENT_ENDPOINTS.DELETE(id));
 
-  console.log(
-    "✅ Equipment deleted:",
-    res.data.success ? "Successfully" : "Failed"
-  );
+    console.log(
+      "✅ Equipment deleted:",
+      res.data.success ? "Successfully" : "Failed"
+    );
 
+    if (res.data.success) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    } else throw new Error("Deletion failed");
+  } catch (error) {
+    handleApiError<{ equipmentId: string; message: string }>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: undefined,
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -311,24 +446,39 @@ export async function updateEquipmentAvailability(
 ): Promise<
   ApiResponse<{ equipmentId: string; availability: boolean; message: string }>
 > {
-  console.log(
-    `🔄 PATCH /api/equipments/${id}/availability - Set to: ${availability}`
-  );
+  try {
+    console.log(
+      `🔄 PATCH /api/equipments/${id}/availability - Set to: ${availability}`
+    );
 
-  const res = await api.patch(
-    EQUIPMENT_ENDPOINTS.AVAILABILITY(id),
-    availability
-  );
+    const res = await api.patch(
+      EQUIPMENT_ENDPOINTS.AVAILABILITY(id),
+      availability
+    );
 
-  console.log(
-    "✅ Availability updated:",
-    res.data.success ? "Successfully" : "Failed"
-  );
+    console.log(
+      "✅ Availability updated:",
+      res.data.success ? "Successfully" : "Failed"
+    );
 
+    if (res.data.success) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    } else throw new Error("Update failed");
+  } catch (error) {
+    handleApiError<{
+      equipmentId: string;
+      availability: boolean;
+      message: string;
+    }>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as { equipmentId: string; availability: boolean; message: string },
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -343,20 +493,33 @@ export async function updateEquipmentStock(
 ): Promise<
   ApiResponse<{ equipmentId: string; stockQuantity: number; message: string }>
 > {
-  console.log(
-    `📦 PATCH /api/equipments/${id}/stock - Set quantity to: ${quantity}`
-  );
+  try {
+    console.log(
+      `📦 PATCH /api/equipments/${id}/stock - Set quantity to: ${quantity}`
+    );
 
-  const res = await api.patch(EQUIPMENT_ENDPOINTS.STOCK(id), quantity);
+    const res = await api.patch(EQUIPMENT_ENDPOINTS.STOCK(id), quantity);
 
-  console.log(
-    "✅ Stock updated:",
-    res.data.success ? "Successfully" : "Failed"
-  );
+    console.log(
+      "✅ Stock updated:",
+      res.data.success ? "Successfully" : "Failed"
+    );
 
+    return {
+      success: res.data.success,
+      data: res.data.data,
+      timestamp: res.data.timestamp,
+    };
+  } catch (error) {
+    handleApiError<{
+      equipmentId: string;
+      stockQuantity: number;
+      message: string;
+    }>(error);
+  }
   return {
-    success: res.data.success,
-    data: res.data.data,
-    timestamp: res.data.timestamp,
+    success: false,
+    data: {} as { equipmentId: string; stockQuantity: number; message: string },
+    timestamp: new Date().toISOString(),
   };
 }

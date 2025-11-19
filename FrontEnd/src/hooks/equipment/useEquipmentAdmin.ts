@@ -6,6 +6,8 @@ import {
   deleteEquipment,
   updateEquipmentAvailability,
   updateEquipmentStock,
+  getEquipmentsByCategory,
+  getAllEquipmentBySearchName,
 } from "@/services/equipmentService";
 import type {
   CreateEquipmentRequestDto,
@@ -17,10 +19,25 @@ import type {
  * Shows all equipments regardless of availability, status, or stock
  * Used for admin management purposes
  */
-const useAllEquipmentList = (page: number, pageSize: number) => {
+const useAllEquipmentList = (
+  page: number,
+  pageSize: number,
+  selectedCategory?: string,
+  searchName?: string
+) => {
+  let serviceFn = () => getEquipments(page, pageSize);
+  if (searchName) {
+    serviceFn = () => getAllEquipmentBySearchName(searchName, page, pageSize);
+  } else {
+    serviceFn = () =>
+      selectedCategory === "all"
+        ? getEquipments(page, pageSize)
+        : getEquipmentsByCategory(selectedCategory!, page, pageSize);
+  }
+
   return useQuery({
-    queryKey: ["all-equipments", page, pageSize],
-    queryFn: () => getEquipments(page, pageSize),
+    queryKey: ["all-equipments", page, pageSize, selectedCategory, searchName],
+    queryFn: serviceFn,
     staleTime: 1000 * 60 * 10, // keep data fresh for 10 minutes
     retry: 3, // Retry failed requests up to 3 times
     refetchOnWindowFocus: false, // Disable refetch on window focus
@@ -67,6 +84,12 @@ const useUpdateEquipment = () => {
     },
   });
 };
+
+/*
+ * Hook for ADMIN - Upload equipment image
+ * Automatically invalidates equipment queries after success
+ */
+const useUploadEquipmentImage = () => {};
 
 /**
  * Hook for ADMIN - Delete equipment (soft delete)

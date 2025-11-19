@@ -207,6 +207,19 @@ export type EquipmentImage = {
 export type EquipmentResponse = ApiResponse<PaginatedData<Equipment>>;
 export type SingleEquipmentResponse = ApiResponse<Equipment>;
 
+export type UploadEquipmentImageRequest = {
+  equipmentId: string;
+  imageFile: File;
+  type: number;
+  isPrimary: boolean;
+};
+
+export type UploadEquipmentImageResponse = ApiResponse<{
+  imageId: string;
+  equipmentId: string;
+  imageUrl: string;
+}>;
+
 export type CreateEquipmentRequestDto = {
   name: string;
   description: string;
@@ -348,7 +361,7 @@ export interface Payment {
 export interface PaymentResponseDto extends Payment {
   // PayOS checkout URL (if payment link was created)
   payOsCheckoutUrl?: string | null;
-  
+
   // Additional info from joins/computed fields
   rentalStatusText: string;
   customerName: string;

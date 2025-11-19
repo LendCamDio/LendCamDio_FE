@@ -229,33 +229,39 @@ const EquipmentFormModal = ({
     }
   };
 
+  const isValidated = () => {
+    // Validate required fields
+    if (!formData.name || !formData.categoryId) {
+      showToast(
+        "Please fill in all required fields (Name and Category)",
+        "error"
+      );
+      setLoading(false);
+      return false;
+    }
+
+    // Validate pricing - Backend yêu cầu: Either Price or DailyPrice must be provided
+    const hasPrice = formData.price && formData.price > 0;
+    const hasDailyPrice = formData.dailyPrice && formData.dailyPrice > 0;
+
+    if (!hasPrice && !hasDailyPrice) {
+      showToast(
+        "Please provide at least one valid price: Either Purchase Price or Daily Price must be greater than 0",
+        "error",
+        { duration: 3000 }
+      );
+      setLoading(false);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleCreateEquipment = async () => {
     try {
       setLoading(true);
 
-      // Validate required fields
-      if (!formData.name || !formData.categoryId) {
-        showToast(
-          "Please fill in all required fields (Name and Category)",
-          "error"
-        );
-        setLoading(false);
-        return;
-      }
-
-      // Validate pricing - Backend yêu cầu: Either Price or DailyPrice must be provided
-      const hasPrice = formData.price && formData.price > 0;
-      const hasDailyPrice = formData.dailyPrice && formData.dailyPrice > 0;
-
-      if (!hasPrice && !hasDailyPrice) {
-        showToast(
-          "Please provide at least one valid price: Either Purchase Price or Daily Price must be greater than 0",
-          "error",
-          { duration: 3000 }
-        );
-        setLoading(false);
-        return;
-      }
+      if (isValidated() == false) return;
 
       // Prepare payload theo đúng DTO của backend
       const payload: any = {
@@ -270,17 +276,9 @@ const EquipmentFormModal = ({
             ? parseInt(formData.condition)
             : formData.condition,
         availability: formData.availability ?? true,
+        dailyPrice: formData.dailyPrice || null,
+        price: formData.price || null,
       };
-
-      // Chỉ gửi price nếu có giá trị hợp lệ
-      if (hasPrice) {
-        payload.price = formData.price;
-      }
-
-      // Chỉ gửi dailyPrice nếu có giá trị hợp lệ
-      if (hasDailyPrice) {
-        payload.dailyPrice = formData.dailyPrice;
-      }
 
       // SupplierId là optional - chỉ gửi nếu có
       if (formData.supplierId) {
@@ -289,13 +287,12 @@ const EquipmentFormModal = ({
 
       console.log("📤 Creating equipment with payload:", payload);
 
-      const response = await api.post(EQUIPMENT_ENDPOINTS.CREATE, payload);
+      // const response = await api.post(EQUIPMENT_ENDPOINTS.CREATE, payload);
+      const response = await createMutation.mutateAsync(payload);
 
-      if (response.data?.success) {
+      if (response.success) {
         console.log("✅ Equipment created successfully:", response.data);
-
         showToast("Equipment created successfully!", "success");
-
         // Nếu có image, cần notify user
         if (formData.imageFile) {
           showToast(
@@ -304,7 +301,6 @@ const EquipmentFormModal = ({
             { duration: 4000 }
           );
         }
-
         // Call success callback to refresh list
         if (onSuccess) {
           onSuccess();
@@ -314,6 +310,13 @@ const EquipmentFormModal = ({
         setTimeout(() => {
           onClose();
         }, 1000);
+      }
+      if (response.error) {
+        showToast(
+          `Failed to create equipment: ${response.error.message}`,
+          "error",
+          { duration: 4000 }
+        );
       }
     } catch (error: any) {
       console.error("Error creating equipment:", error);
@@ -326,6 +329,10 @@ const EquipmentFormModal = ({
   };
   const handleUpdateEquipment = async () => {
     try {
+      setLoading(true);
+
+      if (isValidated() == false) return;
+
       const payload = {
         name: formData.name,
         description: formData.description,
@@ -358,7 +365,21 @@ const EquipmentFormModal = ({
           onSuccess();
         }
       }
-    } catch (error: any) {}
+      if (response.error) {
+        showToast(
+          `Failed to update equipment: ${response.error.message}`,
+          "error",
+          { duration: 4000 }
+        );
+      }
+    } catch (error: any) {
+      console.error("Error updating equipment:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to update equipment";
+      showToast(errorMessage, "error", { duration: 3000 });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUploadImage = async () => {
@@ -420,12 +441,16 @@ const EquipmentFormModal = ({
 
       if (response.data?.success) {
         showToast("Image uploaded successfully!", "success");
+      } else {
+        showToast("Failed to upload image", "error");
       }
     } catch (error: any) {
       console.error("Error uploading image:", error);
       const errorMessage =
         error.response?.data?.message ||
-        "Equipment created but failed to upload image. You can upload it later by editing the equipment.";
+        "Equipment " +
+          (mode === "create" ? "created" : "updated") +
+          " but failed to upload image. You can upload it later by editing the equipment.";
       showToast(errorMessage, "warning", { duration: 4000 });
 
       // Still refresh list and close

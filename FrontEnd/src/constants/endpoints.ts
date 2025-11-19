@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.lendcamdio.io.vn";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "https://api.lendcamdio.io.vn";
 
 export const AUTH_ENDPOINTS = {
   // Email/Password Authentication
@@ -100,6 +101,7 @@ export const EQUIPMENT_ENDPOINTS = {
   UPDATE: (id: string) => `/api/equipments/${id}`,
   DELETE: (id: string) => `/api/equipments/${id}`,
   SEARCH: "/api/equipments/search",
+  SEARCH_ALL: "/api/equipments/search-all",
   CATEGORY: (category: string) => `/api/equipments/category/${category}`,
   SUPPLIER: (supplierId: string) => `/api/equipments/supplier/${supplierId}`,
   CONDITION: (condition: string) => `/api/equipments/condition/${condition}`,
@@ -179,12 +181,13 @@ export const PAYMENT_ENDPOINTS = {
   TOTAL_FOR_PERIOD: (startDate: string, endDate: string) =>
     `/api/payments/total-for-period?startDate=${startDate}&endDate=${endDate}`,
   CONFIRM: (id: string) => `/api/payments/${id}/confirm`,
-  
+
   CREATE_PAYOS: "/api/payments/create-payos",
   PAYOS_WEBHOOK: "/api/payments/payos/webhook",
   PAYOS_INFO: (orderCode: number) => `/api/payments/payos/${orderCode}`,
   PAYOS_ORDER: (orderCode: number) => `/api/payments/payos/order/${orderCode}`,
-  PAYOS_CANCEL: (orderCode: number) => `/api/payments/payos/${orderCode}/cancel`,
+  PAYOS_CANCEL: (orderCode: number) =>
+    `/api/payments/payos/${orderCode}/cancel`,
 
   CREATE_ORDER_PAYMENT: "/api/payments/orders",
   COMPLETE_ORDER_PAYMENT: (orderPaymentId: string) =>
@@ -211,7 +214,12 @@ export const RENTAL_ENDPOINTS = {
     `/api/rentals/equipment/${equipmentId}?page=${page}&pageSize=${pageSize}`,
   GET_BY_STATUS: (status: string, page = 1, pageSize = 10) =>
     `/api/rentals/status/${status}?page=${page}&pageSize=${pageSize}`,
-  GET_BY_DATE_RANGE: (startDate: string, endDate: string, page = 1, pageSize = 10) =>
+  GET_BY_DATE_RANGE: (
+    startDate: string,
+    endDate: string,
+    page = 1,
+    pageSize = 10
+  ) =>
     `/api/rentals/date-range?startDate=${startDate}&endDate=${endDate}&page=${page}&pageSize=${pageSize}`,
   CHECK_AVAILABILITY: "/api/rentals/check-availability",
   APPROVE: (id: string) => `/api/rentals/${id}/approve`,

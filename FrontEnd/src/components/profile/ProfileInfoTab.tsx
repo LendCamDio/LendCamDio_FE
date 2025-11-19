@@ -30,6 +30,7 @@ export const ProfileInfoTab = ({
   register,
   errors,
 }: ProfileInfoTabProps) => {
+  console.log("Rendering ProfileInfoTab: ", { errors });
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b-2 border-gray-100">

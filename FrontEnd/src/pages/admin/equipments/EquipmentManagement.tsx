@@ -5,7 +5,6 @@ import type { Equipment } from "@/types/entity.type";
 import {
   useAllEquipmentList,
   useDeleteEquipment,
-  useUpdateEquipment,
 } from "@/hooks/equipment/useEquipmentAdmin";
 
 const EquipmentFilters = lazy(() => import("../equipments/EquipmentFilters"));
@@ -48,7 +47,7 @@ const EquipmentManagement = () => {
     data: equipmentData,
     isLoading: loading,
     error,
-  } = useAllEquipmentList(currentPage, pageSize);
+  } = useAllEquipmentList(currentPage, pageSize, filterCategory, searchTerm);
 
   const equipments = equipmentData?.data?.items || [];
   const totalPages = equipmentData?.data?.pages || 1;
@@ -130,21 +129,6 @@ const EquipmentManagement = () => {
     );
   };
 
-  const filteredEquipments = equipments.filter((equipment) => {
-    // UnComment nếu cần lọc bỏ thiết bị đã xóa (trạng thái Inactive)
-    // // Filter out deleted (Inactive status) equipment
-    // if (equipment.status === EquipmentStatus.Inactive) {
-    //   return false;
-    // }
-
-    const matchesSearch = equipment.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      filterCategory === "all" || equipment.categoryId === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
-
   if (loading) {
     return <Loading />;
   }
@@ -174,7 +158,7 @@ const EquipmentManagement = () => {
       />
 
       {/* Equipment Grid */}
-      {filteredEquipments.length === 0 ? (
+      {equipments.length === 0 ? (
         <EquipmentEmptyState
           searchTerm={searchTerm}
           filterCategory={filterCategory}
@@ -182,7 +166,7 @@ const EquipmentManagement = () => {
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredEquipments.map((equipment) => (
+          {equipments.map((equipment) => (
             <EquipmentCard
               key={equipment.equipmentId}
               equipment={equipment}
@@ -197,7 +181,7 @@ const EquipmentManagement = () => {
       <EquipmentPagination
         searchTerm={searchTerm}
         filterCategory={filterCategory}
-        equipments={filteredEquipments}
+        equipments={equipments}
         currentPage={currentPage}
         totalPages={totalPages}
         pageSize={pageSize}

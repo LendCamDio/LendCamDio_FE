@@ -7,7 +7,7 @@ type Props = {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   filterCategory: string;
-  setFilterCategory: (category: string) => void;
+  setFilterCategory: (categoryName: string) => void;
   pageSize: number;
   setPageSize: (size: number) => void;
   setCurrentPage: (page: number) => void;
@@ -54,7 +54,7 @@ const EquipmentFilters = ({
             >
               <option value="all">All Categories</option>
               {categories.map((category: any) => (
-                <option key={category.categoryId} value={category.categoryId}>
+                <option key={category.categoryId} value={category.name}>
                   {category.name}
                 </option>
               ))}

@@ -7,12 +7,10 @@ import {
   Users,
   ShoppingCart,
   BarChart3,
-  Settings,
   LogOut,
   Menu,
   X,
   Package,
-  FileText,
   Bell,
 } from "lucide-react";
 import { motion } from "framer-motion"; // Sử dụng framer-motion cho animation mượt mà
@@ -26,8 +24,6 @@ const menuItems = [
   { icon: Users, label: "Users", path: "/admin/users" },
   { icon: ShoppingCart, label: "Rentals", path: "/admin/rentals" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
-  { icon: FileText, label: "Reports", path: "/admin/reports" },
-  { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];
 
 export default function AdminLayout() {
@@ -89,7 +85,11 @@ export default function AdminLayout() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="text-[var(--text-dark)] hover:text-[var(--PRIMARY-color)] transition-colors p-1"
           >
-            {sidebarCollapsed ? <Menu size={24} /> : <X size={24} />}
+            {sidebarCollapsed ? (
+              <Menu size={24} className="ml-2" />
+            ) : (
+              <X size={24} />
+            )}
           </button>
         </div>
 
@@ -125,14 +125,6 @@ export default function AdminLayout() {
 
         {/* Footer Sidebar (Logout & Notifications) */}
         <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 mb-3">
-            <Bell size={20} className="text-[var(--text-light)]" />
-            {!sidebarCollapsed && (
-              <span className="text-sm text-[var(--text-light)]">
-                3 thông báo
-              </span>
-            )}
-          </div>
           <button
             onClick={logout}
             className="flex items-center gap-3 p-3 rounded-lg text-[var(--text-dark)] hover:bg-[rgba(239,68,68,0.1)] hover:text-red-600 transition-all w-full"
@@ -156,10 +148,6 @@ export default function AdminLayout() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition">
-              <Bell size={20} />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            </button>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] flex items-center justify-center text-white font-bold">
                 A
