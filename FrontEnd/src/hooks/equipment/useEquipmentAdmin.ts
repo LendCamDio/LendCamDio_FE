@@ -89,7 +89,7 @@ const useUpdateEquipment = () => {
  * Hook for ADMIN - Upload equipment image
  * Automatically invalidates equipment queries after success
  */
-const useUploadEquipmentImage = () => {};
+// const useUploadEquipmentImage = () => {};
 
 /**
  * Hook for ADMIN - Delete equipment (soft delete)

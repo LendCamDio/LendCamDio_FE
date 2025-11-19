@@ -11,7 +11,6 @@ import {
   Menu,
   X,
   Package,
-  Bell,
 } from "lucide-react";
 import { motion } from "framer-motion"; // Sử dụng framer-motion cho animation mượt mà
 import { useAuth } from "@/hooks/auth/useAuth";

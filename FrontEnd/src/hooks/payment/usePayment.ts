@@ -16,12 +16,17 @@ import {
   refundPayment,
 } from "@/services/paymentService";
 import type {
-  PaymentMethod,
-  PaymentStatus,
-  CreatePayOSPaymentRequestDto,
   CreatePaymentRequestDto,
+  CreatePayOSPaymentRequestDto,
   UpdatePaymentRequestDto,
-} from "@/types/index.type";
+} from "@/types/entity.type";
+// import type {
+//   PaymentMethod,
+//   PaymentStatus,
+//   CreatePayOSPaymentRequestDto,
+//   CreatePaymentRequestDto,
+//   UpdatePaymentRequestDto,
+// } from "@/types/index.type";
 
 /**
  * 🧾 Fetch all payments (Admin, Supplier)
@@ -88,43 +93,43 @@ export const usePaymentsByRental = (
   });
 };
 
-/**
- * 💳 Fetch payments by method
- */
-export const usePaymentsByMethod = (
-  method: PaymentMethod,
-  page: number,
-  pageSize: number,
-  enabled: boolean = false
-) => {
-  return useQuery({
-    queryKey: ["payments-method", method, page, pageSize],
-    queryFn: () => getPaymentsByMethod(String(method), page, pageSize),
-    enabled,
-    staleTime: 1000 * 60 * 5,
-    retry: 3,
-    refetchOnWindowFocus: false,
-  });
-};
+// /**
+//  * 💳 Fetch payments by method
+//  */
+// export const usePaymentsByMethod = (
+//   method: PaymentMethod,
+//   page: number,
+//   pageSize: number,
+//   enabled: boolean = false
+// ) => {
+//   return useQuery({
+//     queryKey: ["payments-method", method, page, pageSize],
+//     queryFn: () => getPaymentsByMethod(String(method), page, pageSize),
+//     enabled,
+//     staleTime: 1000 * 60 * 5,
+//     retry: 3,
+//     refetchOnWindowFocus: false,
+//   });
+// };
 
-/**
- * 🏷️ Fetch payments by status
- */
-export const usePaymentsByStatus = (
-  status: PaymentStatus,
-  page: number,
-  pageSize: number,
-  enabled: boolean = false
-) => {
-  return useQuery({
-    queryKey: ["payments-status", status, page, pageSize],
-    queryFn: () => getPaymentsByStatus(String(status), page, pageSize),
-    enabled,
-    staleTime: 1000 * 60 * 5,
-    retry: 3,
-    refetchOnWindowFocus: false,
-  });
-};
+// /**
+//  * 🏷️ Fetch payments by status
+//  */
+// export const usePaymentsByStatus = (
+//   status: PaymentStatus,
+//   page: number,
+//   pageSize: number,
+//   enabled: boolean = false
+// ) => {
+//   return useQuery({
+//     queryKey: ["payments-status", status, page, pageSize],
+//     queryFn: () => getPaymentsByStatus(String(status), page, pageSize),
+//     enabled,
+//     staleTime: 1000 * 60 * 5,
+//     retry: 3,
+//     refetchOnWindowFocus: false,
+//   });
+// };
 
 /**
  * 📅 Fetch payments by date range

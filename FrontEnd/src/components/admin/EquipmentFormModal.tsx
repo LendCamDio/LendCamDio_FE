@@ -7,7 +7,6 @@ import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import api from "@/services/api";
 import {
   SUPPLIER_ENDPOINTS,
-  EQUIPMENT_ENDPOINTS,
   EQUIPMENT_IMAGE_ENDPOINTS,
 } from "@/constants/endpoints";
 import {
