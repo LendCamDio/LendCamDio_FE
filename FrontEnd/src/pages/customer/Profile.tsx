@@ -12,10 +12,6 @@ const ProfileInfoTab = lazy(
   () => import("@/components/profile/ProfileInfoTab")
 );
 const SecurityTab = lazy(() => import("@/components/profile/SecurityTab"));
-const OrdersTab = lazy(() => import("@/components/profile/OrdersTab"));
-const NotificationsTab = lazy(
-  () => import("@/components/profile/NotificationsTab")
-);
 
 import {
   passwordSchema,
@@ -170,12 +166,6 @@ const Profile = () => {
                     errors={passwordErrors}
                   />
                 )}
-
-                {/* Orders Tab */}
-                {activeTab === "orders" && <OrdersTab />}
-
-                {/* Notifications Tab */}
-                {activeTab === "notifications" && <NotificationsTab />}
               </div>
             </motion.div>
           </div>

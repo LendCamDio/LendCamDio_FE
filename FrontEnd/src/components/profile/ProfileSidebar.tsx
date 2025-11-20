@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Package, Camera } from "lucide-react";
+import { User, Shield, Camera } from "lucide-react";
 
 interface ProfileSidebarProps {
   user: {
@@ -27,8 +27,6 @@ const ProfileSidebar = ({
   const tabs = [
     { id: "profile", label: "Thông tin cá nhân", icon: User },
     { id: "security", label: "Bảo mật", icon: Shield },
-    { id: "orders", label: "Đơn hàng", icon: Package },
-    { id: "notifications", label: "Thông báo", icon: Bell },
   ] as const;
 
   return (

@@ -1,6 +1,6 @@
-import { Tooltip } from "@/components/ui/Tootlip";
-import { useAuth } from "@/hooks/auth/useAuth";
-import { usePaymentsByCustomer } from "@/hooks/payment/usePayment";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarCheck,
   faClock,
@@ -9,96 +9,130 @@ import {
   faShoppingCart,
   faTruck,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { Tooltip } from "@/components/ui/Tootlip";
+import { useMyOrders } from "@/hooks/order/useOrder";
+import type { OrderResponseDto } from "@/types/order.type";
+import { OrderPaymentStatus, OrderStatus } from "@/types/order.type";
+import { formatCurrency } from "@/utils/currencyFormatter";
 
 const DashboardSection = () => {
   const navigate = useNavigate();
-  const [page] = useState(1);
-  const [pageSize] = useState(100);
-  const { user } = useAuth();
+  const { data: ordersData, isLoading, isError } = useMyOrders();
+  const orders = ordersData ?? [];
 
-  // Fetch statistics data
-  const { data: dataResPayment } = usePaymentsByCustomer(
-    user?.id || "",
-    page,
-    pageSize,
-    Boolean(user?.id)
-  );
-  const { data: dataResRental } = usePaymentsByCustomer(
-    user?.id || "",
-    page,
-    pageSize,
-    Boolean(user?.id)
+  const statusLabels: Record<OrderStatus, string> = useMemo(
+    () => ({
+      [OrderStatus.Pending]: "Chờ xử lý",
+      [OrderStatus.Processing]: "Đang xử lý",
+      [OrderStatus.Shipped]: "Đang giao",
+      [OrderStatus.Delivered]: "Đã hoàn thành",
+      [OrderStatus.Cancelled]: "Đã hủy",
+      [OrderStatus.Refunded]: "Đã hoàn tiền",
+    }),
+    []
   );
 
-  const payments = dataResPayment?.data?.items || [];
-  const rentals = dataResRental?.data?.items || [];
+  const activityMessages: Record<OrderStatus, string> = useMemo(
+    () => ({
+      [OrderStatus.Pending]: "được tạo",
+      [OrderStatus.Processing]: "đang được xử lý",
+      [OrderStatus.Shipped]: "đã xuất kho",
+      [OrderStatus.Delivered]: "đã giao thành công",
+      [OrderStatus.Cancelled]: "đã bị hủy",
+      [OrderStatus.Refunded]: "đã được hoàn tiền",
+    }),
+    []
+  );
 
-  const [totalSpent] = useState(() => {
-    return payments.reduce((sum, payment) => {
-      return sum + payment.amount;
+  const stats = useMemo(() => {
+    const totalOrders = orders.length;
+    const deliveredOrders = orders.filter(
+      (order) => order.status === OrderStatus.Delivered
+    ).length;
+    const pendingOrders = orders.filter((order) =>
+      [OrderStatus.Pending, OrderStatus.Processing].includes(order.status)
+    ).length;
+    const totalSpent = orders.reduce((sum, order) => {
+      if (order.paymentStatus === OrderPaymentStatus.Completed) {
+        return sum + order.totalAmount;
+      }
+      return sum;
     }, 0);
-  });
-  const [totalRental] = useState(() => {
-    return rentals.length;
-  });
 
-  // Sample data
-  const nearlyActivitiesCols = [
-    { header: "ID", accessor: "id" },
-    { header: "Hoạt động", accessor: "activity" },
-    { header: "Thời gian", accessor: "time" },
-  ];
-  const nearlyActivitiesData = [
-    { id: 1, activity: "Đặt hàng #1234", time: "2 giờ trước" },
-    { id: 2, activity: "Hủy đơn #1233", time: "1 ngày trước" },
-    { id: 3, activity: "Cập nhật thông tin cá nhân", time: "3 ngày trước" },
-  ];
-  const recentOrdersData = [
-    {
-      id: 1,
-      orderId: "#1234",
-      date: "2023-10-01",
-      status: "Đang xử lý",
-      total: "500,000đ",
-    },
-    {
-      id: 2,
-      orderId: "#1233",
-      date: "2023-09-28",
-      status: "Hoàn thành",
-      total: "1,200,000đ",
-    },
-    {
-      id: 3,
-      orderId: "#1232",
-      date: "2023-09-25",
-      status: "Hủy",
-      total: "300,000đ",
-    },
-    {
-      id: 4,
-      orderId: "#1231",
-      date: "2023-09-20",
-      status: "Hoàn thành",
-      total: "750,000đ",
-    },
-    {
-      id: 5,
-      orderId: "#1230",
-      date: "2023-09-18",
-      status: "Đang xử lý",
-      total: "620,000đ",
-    },
-  ];
-  const recentOrderColumns = [
-    { header: "Mã đơn hàng", accessor: "orderId" },
-    { header: "Ngày", accessor: "date" },
-    { header: "Trạng thái", accessor: "status" },
-    { header: "Tổng", accessor: "total" },
-  ];
+    return {
+      totalOrders,
+      deliveredOrders,
+      pendingOrders,
+      totalSpent,
+    };
+  }, [orders]);
+
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [orders]);
+
+  const latestOrders = useMemo(() => sortedOrders.slice(0, 5), [sortedOrders]);
+
+  const formatDateTime = (value?: string) => {
+    if (!value) return "Không xác định";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "Không xác định";
+    }
+    return date.toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
+  const formatRelativeTime = (value?: string) => {
+    if (!value) return "Không xác định";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Không xác định";
+
+    const diffMs = Date.now() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+
+    if (diffMinutes < 1) return "Vừa xong";
+    if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${diffDays} ngày trước`;
+
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffWeeks < 4) return `${diffWeeks} tuần trước`;
+
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) return `${diffMonths} tháng trước`;
+
+    const diffYears = Math.floor(diffDays / 365);
+    return `${diffYears} năm trước`;
+  };
+
+  const buildActivityDescription = (order: OrderResponseDto) => {
+    const message = activityMessages[order.status] || "được cập nhật";
+    return `Đơn ${order.orderNumber} ${message}`;
+  };
+
+  const recentActivities = useMemo(
+    () =>
+      latestOrders.map((order) => ({
+        id: order.orderId,
+        activity: buildActivityDescription(order),
+        time: formatRelativeTime(order.updatedAt || order.createdAt),
+      })),
+    [latestOrders]
+  );
 
   return (
     <section className="section" id="userDashboard">
@@ -116,7 +150,9 @@ const DashboardSection = () => {
                 <FontAwesomeIcon icon={faShoppingCart} />
               </div>
               <div className="stat-info">
-                <h3 id="user-total-orders">{totalRental}</h3>
+                <h3 id="user-total-orders">
+                  {isLoading ? "..." : stats.totalOrders.toLocaleString("vi-VN")}
+                </h3>
                 <p>Tổng đơn hàng</p>
               </div>
             </div>
@@ -128,8 +164,12 @@ const DashboardSection = () => {
                 <FontAwesomeIcon icon={faCalendarCheck} />
               </div>
               <div className="stat-info">
-                <h3 id="user-total-bookings">0</h3>
-                <p>Lịch đặt</p>
+                <h3 id="user-completed-orders">
+                  {isLoading
+                    ? "..."
+                    : stats.deliveredOrders.toLocaleString("vi-VN")}
+                </h3>
+                <p>Đơn đã hoàn thành</p>
               </div>
             </div>
           </div>
@@ -141,7 +181,9 @@ const DashboardSection = () => {
               </div>
               <div className="stat-info">
                 <Tooltip content="Tổng chi tiêu của bạn">
-                  <h3 id="user-total-spent">{totalSpent} VND</h3>
+                  <h3 id="user-total-spent">
+                    {isLoading ? "..." : formatCurrency(stats.totalSpent)}
+                  </h3>
                 </Tooltip>
                 <p>Tổng chi tiêu</p>
               </div>
@@ -154,8 +196,12 @@ const DashboardSection = () => {
                 <FontAwesomeIcon icon={faClock} />
               </div>
               <div className="stat-info">
-                <h3 id="user-pending-orders">0</h3>
-                <p>Đơn chờ xử lý</p>
+                <h3 id="user-pending-orders">
+                  {isLoading
+                    ? "..."
+                    : stats.pendingOrders.toLocaleString("vi-VN")}
+                </h3>
+                <p>Đơn đang chờ</p>
               </div>
             </div>
           </div>
@@ -182,20 +228,28 @@ const DashboardSection = () => {
                 <table className="dashboard-card-table">
                   <thead className="dashboard-card-table-header">
                     <tr>
-                      {nearlyActivitiesCols.map((col) => (
-                        <th key={col.accessor}>{col.header}</th>
-                      ))}
+                      <th>Mã đơn</th>
+                      <th>Hoạt động</th>
+                      <th>Thời gian</th>
                     </tr>
                   </thead>
                   <tbody className="dashboard-card-table-body">
-                    {nearlyActivitiesData.length === 0 ? (
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={3}>Đang tải dữ liệu...</td>
+                      </tr>
+                    ) : isError ? (
+                      <tr>
+                        <td colSpan={3}>Không thể tải hoạt động gần đây</td>
+                      </tr>
+                    ) : recentActivities.length === 0 ? (
                       <tr>
                         <td colSpan={3}>Chưa có hoạt động nào</td>
                       </tr>
                     ) : (
-                      nearlyActivitiesData.map((activity) => (
+                      recentActivities.map((activity) => (
                         <tr key={activity.id}>
-                          <td>{activity.id}</td>
+                          <td>{activity.id.slice(0, 8)}...</td>
                           <td>{activity.activity}</td>
                           <td>{activity.time}</td>
                         </tr>
@@ -226,23 +280,32 @@ const DashboardSection = () => {
                 <table className="dashboard-card-table">
                   <thead className="dashboard-card-table-header">
                     <tr>
-                      {recentOrderColumns.map((col) => (
-                        <th key={col.accessor}>{col.header}</th>
-                      ))}
+                      <th>Mã đơn hàng</th>
+                      <th>Ngày</th>
+                      <th>Trạng thái</th>
+                      <th>Tổng</th>
                     </tr>
                   </thead>
                   <tbody className="dashboard-card-table-body">
-                    {recentOrdersData.length === 0 ? (
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={4}>Đang tải dữ liệu...</td>
+                      </tr>
+                    ) : isError ? (
+                      <tr>
+                        <td colSpan={4}>Không thể tải danh sách đơn hàng</td>
+                      </tr>
+                    ) : latestOrders.length === 0 ? (
                       <tr>
                         <td colSpan={4}>Chưa có đơn hàng nào</td>
                       </tr>
                     ) : (
-                      recentOrdersData.map((order) => (
-                        <tr key={order.id}>
-                          <td>{order.id}</td>
-                          <td>{order.date}</td>
-                          <td>{order.status}</td>
-                          <td>{order.total}</td>
+                      latestOrders.map((order) => (
+                        <tr key={order.orderId}>
+                          <td>{order.orderNumber}</td>
+                          <td>{formatDateTime(order.createdAt)}</td>
+                          <td>{statusLabels[order.status]}</td>
+                          <td>{formatCurrency(order.totalAmount)}</td>
                         </tr>
                       ))
                     )}

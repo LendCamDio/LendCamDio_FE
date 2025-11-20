@@ -9,10 +9,9 @@ import {
   SUPPLIER_ENDPOINTS,
   EQUIPMENT_IMAGE_ENDPOINTS,
 } from "@/constants/endpoints";
-import {
-  useCreateEquipment,
-  useUpdateEquipment,
-} from "@/hooks/equipment/useEquipmentAdmin";
+import {   
+  useCreateEquipment, 
+  useUpdateEquipment } from "@/hooks/equipment/useEquipmentAdmin";
 
 type EquipmentFormModalProps = {
   isOpen: boolean;
@@ -81,8 +80,8 @@ const EquipmentFormModal = ({
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [imagePreview, setImagePreview] = useState<string>("");
 
-  const createMutation = useCreateEquipment();
   const updateMutation = useUpdateEquipment();
+  const createMutation = useCreateEquipment()   ;
 
   // Steps: Create mode chỉ có 2 steps (backend không trả equipmentId)
   // Edit mode có đủ 3 steps

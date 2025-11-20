@@ -15,18 +15,14 @@ import {
   deletePayment,
   refundPayment,
 } from "@/services/paymentService";
+// import { getPaymentsByMethod, getPaymentsByStatus } from "@/services/paymentService";
 import type {
   CreatePaymentRequestDto,
   CreatePayOSPaymentRequestDto,
   UpdatePaymentRequestDto,
+  // PaymentMethod,
+  // PaymentStatus,
 } from "@/types/entity.type";
-// import type {
-//   PaymentMethod,
-//   PaymentStatus,
-//   CreatePayOSPaymentRequestDto,
-//   CreatePaymentRequestDto,
-//   UpdatePaymentRequestDto,
-// } from "@/types/index.type";
 
 /**
  * 🧾 Fetch all payments (Admin, Supplier)

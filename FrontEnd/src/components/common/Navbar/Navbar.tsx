@@ -100,22 +100,22 @@ export default function Navbar() {
                   : [
                       // Customer/Supplier dropdown items
                       {
-                        label: "My Profile",
+                        label: "Thông tin cá nhân",
                         to: "/customer/profile",
                         icon: faUser,
                       },
                       {
-                        label: "Settings",
+                        label: "Cài đặt",
                         to: "/customer/settings",
                         icon: faGear,
                       },
                       {
-                        label: "Orders",
+                        label: "Đơn hàng",
                         to: "/customer/orders",
                         icon: faShoppingBag,
                       },
                       {
-                        label: "Cart",
+                        label: "Giỏ hàng",
                         to: "/cart",
                         icon: faShoppingCart,
                       },
