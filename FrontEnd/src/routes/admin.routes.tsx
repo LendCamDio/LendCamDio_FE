@@ -9,6 +9,7 @@ const EquipmentManagement = lazy(
 const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
 const RentalManagement = lazy(() => import("@/pages/admin/RentalManagement"));
 const Analytics = lazy(() => import("@/pages/admin/Analytics"));
+const OrderManagement = lazy(() => import("@/pages/admin/OrderManagement"));
 
 export const adminRoutes = [
   {
@@ -30,6 +31,10 @@ export const adminRoutes = [
       {
         path: "users",
         element: <UserManagement />,
+      },
+      {
+        path: "orders",
+        element: <OrderManagement />,
       },
       {
         path: "rentals",

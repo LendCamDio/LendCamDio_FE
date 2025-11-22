@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import {
-  TrendingUp,
   DollarSign,
   Users,
   Package,
   Calendar,
   Award,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Activity,
 } from "lucide-react";
 import api from "@/services/api";
-import {
-  USER_ENDPOINTS,
-  EQUIPMENT_ENDPOINTS,
-  RENTAL_ENDPOINTS,
-} from "@/constants/endpoints";
+import { ANALYTICS_ENDPOINTS } from "@/constants/endpoints";
 
 interface AnalyticsData {
   totalRevenue: number;
@@ -21,21 +20,21 @@ interface AnalyticsData {
   totalRentals: number;
   activeRentals: number;
   completedRentals: number;
-  revenueGrowth: number;
-  userGrowth: number;
+  pendingRentals: number;
+  cancelledRentals: number;
+  totalCustomers: number;
+  totalSuppliers: number;
+  activeSuppliers: number;
+  verifiedSuppliers: number;
+  totalOrders: number;
+  completedOrders: number;
+  averageRentalValue: number;
+  equipmentUtilization: number;
+  completionRate: number;
 }
 
 const Analytics = () => {
-  const [data, setData] = useState<AnalyticsData>({
-    totalRevenue: 0,
-    totalUsers: 0,
-    totalEquipment: 0,
-    totalRentals: 0,
-    activeRentals: 0,
-    completedRentals: 0,
-    revenueGrowth: 0,
-    userGrowth: 0,
-  });
+  const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,43 +44,8 @@ const Analytics = () => {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-
-      // Fetch all data
-      const [usersRes, equipmentRes, rentalsRes, activeRentalsRes] =
-        await Promise.all([
-          api.get(USER_ENDPOINTS.LIST),
-          api.get(EQUIPMENT_ENDPOINTS.LIST),
-          api.get(RENTAL_ENDPOINTS.GET_ALL),
-          api.get(RENTAL_ENDPOINTS.GET_ACTIVE),
-        ]);
-
-      const userData = usersRes.data?.data;
-      const totalUsers = Array.isArray(userData)
-        ? userData.length
-        : userData?.items?.length || 0;
-
-      const totalEquipment = equipmentRes.data?.data?.items?.length || 0;
-
-      const totalRentals = rentalsRes.data?.data?.items?.length || 0;
-
-      const activeRentals = activeRentalsRes.data?.data?.items?.length || 0;
-
-      // Calculate completed rentals (mock for now)
-      const completedRentals = Math.floor(totalRentals * 0.7);
-
-      // Calculate mock revenue (you'll need real API endpoint)
-      const totalRevenue = totalRentals * 150; // Assuming average $150 per rental
-
-      setData({
-        totalRevenue,
-        totalUsers,
-        totalEquipment,
-        totalRentals,
-        activeRentals,
-        completedRentals,
-        revenueGrowth: 23.5, // Mock percentage
-        userGrowth: 15.3, // Mock percentage
-      });
+      const response = await api.get(ANALYTICS_ENDPOINTS.GET);
+      setData(response.data);
     } catch (error) {
       console.error("Error fetching analytics:", error);
     } finally {
@@ -89,10 +53,25 @@ const Analytics = () => {
     }
   };
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(value);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg text-red-600">Failed to load analytics</div>
       </div>
     );
   }
@@ -115,13 +94,8 @@ const Analytics = () => {
         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <DollarSign className="w-8 h-8" />
-            <div className="flex items-center text-sm font-medium">
-              <TrendingUp className="w-4 h-4 mr-1" />+{data.revenueGrowth}%
-            </div>
           </div>
-          <h3 className="text-2xl font-bold">
-            ${data.totalRevenue.toLocaleString()}
-          </h3>
+          <h3 className="text-2xl font-bold">{formatCurrency(data.totalRevenue)}</h3>
           <p className="text-green-100 text-sm mt-1">Total Revenue</p>
         </div>
 
@@ -129,12 +103,11 @@ const Analytics = () => {
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <Users className="w-8 h-8" />
-            <div className="flex items-center text-sm font-medium">
-              <TrendingUp className="w-4 h-4 mr-1" />+{data.userGrowth}%
-            </div>
           </div>
           <h3 className="text-2xl font-bold">{data.totalUsers}</h3>
-          <p className="text-blue-100 text-sm mt-1">Registered Users</p>
+          <p className="text-blue-100 text-sm mt-1">
+            {data.totalCustomers} customers, {data.totalSuppliers} suppliers
+          </p>
         </div>
 
         {/* Total Equipment */}
@@ -144,7 +117,7 @@ const Analytics = () => {
             <Award className="w-5 h-5" />
           </div>
           <h3 className="text-2xl font-bold">{data.totalEquipment}</h3>
-          <p className="text-purple-100 text-sm mt-1">Total Equipment</p>
+          <p className="text-purple-100 text-sm mt-1">{data.equipmentUtilization}% utilization</p>
         </div>
 
         {/* Active Rentals */}
@@ -156,82 +129,118 @@ const Analytics = () => {
             </div>
           </div>
           <h3 className="text-2xl font-bold">{data.totalRentals}</h3>
-          <p className="text-orange-100 text-sm mt-1">Total Rentals</p>
+          <p className="text-orange-100 text-sm mt-1">{data.completionRate}% completion rate</p>
+        </div>
+      </div>
+
+      {/* Rental Status Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex items-center justify-between mb-2">
+            <Activity className="w-6 h-6 text-blue-600" />
+            <span className="text-sm font-medium text-gray-500">Active</span>
+          </div>
+          <div className="text-2xl font-bold text-blue-600">{data.activeRentals}</div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex items-center justify-between mb-2">
+            <Clock className="w-6 h-6 text-yellow-600" />
+            <span className="text-sm font-medium text-gray-500">Pending</span>
+          </div>
+          <div className="text-2xl font-bold text-yellow-600">{data.pendingRentals}</div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex items-center justify-between mb-2">
+            <CheckCircle className="w-6 h-6 text-green-600" />
+            <span className="text-sm font-medium text-gray-500">Completed</span>
+          </div>
+          <div className="text-2xl font-bold text-green-600">{data.completedRentals}</div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="flex items-center justify-between mb-2">
+            <XCircle className="w-6 h-6 text-red-600" />
+            <span className="text-sm font-medium text-gray-500">Cancelled</span>
+          </div>
+          <div className="text-2xl font-bold text-red-600">{data.cancelledRentals}</div>
         </div>
       </div>
 
       {/* Charts and Details Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Revenue Breakdown */}
+        {/* Supplier Statistics */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Revenue Breakdown
+            Supplier Overview
           </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                 <span className="text-sm font-medium text-gray-700">
-                  Equipment Rentals
+                  Total Suppliers
                 </span>
               </div>
               <span className="text-sm font-bold text-gray-900">
-                ${(data.totalRevenue * 0.75).toLocaleString()}
+                {data.totalSuppliers}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                 <span className="text-sm font-medium text-gray-700">
-                  Studio Bookings
+                  Active Suppliers
                 </span>
               </div>
               <span className="text-sm font-bold text-gray-900">
-                ${(data.totalRevenue * 0.2).toLocaleString()}
+                {data.activeSuppliers}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
                 <span className="text-sm font-medium text-gray-700">
-                  Other Services
+                  Verified Suppliers
                 </span>
               </div>
               <span className="text-sm font-bold text-gray-900">
-                ${(data.totalRevenue * 0.05).toLocaleString()}
+                {data.verifiedSuppliers} ({data.totalSuppliers > 0 ? ((data.verifiedSuppliers / data.totalSuppliers) * 100).toFixed(1) : 0}%)
               </span>
             </div>
           </div>
         </div>
 
-        {/* Popular Equipment */}
+        {/* Order Statistics */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Top Performing Equipment
+            Order Performance
           </h2>
           <div className="space-y-3">
-            {[
-              { name: "Canon EOS R5", rentals: 45, revenue: 6750 },
-              { name: "Sony A7 III", rentals: 38, revenue: 5700 },
-              { name: "Nikon Z6 II", rentals: 32, revenue: 4800 },
-              { name: "DJI Ronin S", rentals: 28, revenue: 4200 },
-              { name: "Godox AD600", rentals: 25, revenue: 3750 },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 border-b border-gray-200 last:border-0"
-              >
-                <div>
-                  <p className="font-medium text-gray-900">{item.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {item.rentals} rentals
-                  </p>
-                </div>
-                <span className="text-sm font-bold text-green-600">
-                  ${item.revenue}
-                </span>
+            <div className="flex items-center justify-between p-3 border-b border-gray-200">
+              <div>
+                <p className="font-medium text-gray-900">Total Orders</p>
+                <p className="text-sm text-gray-500">All time</p>
               </div>
-            ))}
+              <span className="text-2xl font-bold text-gray-900">{data.totalOrders}</span>
+            </div>
+            <div className="flex items-center justify-between p-3 border-b border-gray-200">
+              <div>
+                <p className="font-medium text-gray-900">Completed Orders</p>
+                <p className="text-sm text-gray-500">Successfully fulfilled</p>
+              </div>
+              <span className="text-2xl font-bold text-green-600">{data.completedOrders}</span>
+            </div>
+            <div className="flex items-center justify-between p-3">
+              <div>
+                <p className="font-medium text-gray-900">Avg. Rental Value</p>
+                <p className="text-sm text-gray-500">Per transaction</p>
+              </div>
+              <span className="text-xl font-bold text-blue-600">
+                {formatCurrency(data.averageRentalValue)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -239,13 +248,13 @@ const Analytics = () => {
       {/* Rental Statistics */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-6">
-          Rental Statistics
+          Performance Metrics
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Completion Rate */}
           <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
             <div className="text-4xl font-bold text-green-600 mb-2">
-              {((data.completedRentals / data.totalRentals) * 100).toFixed(1)}%
+              {data.completionRate}%
             </div>
             <p className="text-sm text-gray-600">Completion Rate</p>
             <p className="text-xs text-gray-500 mt-1">
@@ -255,20 +264,17 @@ const Analytics = () => {
 
           {/* Average Rental Value */}
           <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-            <div className="text-4xl font-bold text-blue-600 mb-2">
-              $
-              {data.totalRentals > 0
-                ? Math.round(data.totalRevenue / data.totalRentals)
-                : 0}
+            <div className="text-2xl font-bold text-blue-600 mb-2">
+              {formatCurrency(data.averageRentalValue)}
             </div>
             <p className="text-sm text-gray-600">Avg. Rental Value</p>
             <p className="text-xs text-gray-500 mt-1">Per transaction</p>
           </div>
 
-          {/* Active Utilization */}
+          {/* Equipment Utilization */}
           <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
             <div className="text-4xl font-bold text-purple-600 mb-2">
-              {((data.activeRentals / data.totalEquipment) * 100).toFixed(1)}%
+              {data.equipmentUtilization}%
             </div>
             <p className="text-sm text-gray-600">Equipment Utilization</p>
             <p className="text-xs text-gray-500 mt-1">

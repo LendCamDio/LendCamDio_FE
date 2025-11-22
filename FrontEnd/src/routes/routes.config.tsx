@@ -3,6 +3,7 @@ import { RoleBasedRoute } from "./RoleBasedRoute";
 import { publicRoutes } from "./public.routes";
 import { privateRoutes } from "./private.routes";
 import { adminRoutes } from "./admin.routes";
+import { supplierRoutes } from "./supplier.routes";
 import LoginPage from "@/pages/Login";
 import RegisterPage from "@/pages/Register";
 import ForgotPasswordPage from "@/pages/Forgot-password";
@@ -46,6 +47,15 @@ export const routesConfig = [
     children: [
       {
         children: [...adminRoutes],
+      },
+    ],
+  },
+  {
+    path: "/supplier",
+    element: <RoleBasedRoute allowedRoles={["Supplier"]} />,
+    children: [
+      {
+        children: [...supplierRoutes],
       },
     ],
   },

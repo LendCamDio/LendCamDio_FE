@@ -44,7 +44,16 @@ const CameraRental = () => {
     if (!data?.data?.items) return [];
 
     const items = [...data.data.items];
-    return items;
+    const exceptCategory = ["Studio"];
+    
+    // Filter to show only rental equipment (has dailyPrice and not a studio)
+    return items.filter(item => {
+      // Must have dailyPrice to be a rental item
+      const hasDailyPrice = item.dailyPrice != null && item.dailyPrice > 0;
+      // Exclude Studio category
+      const isNotStudio = !exceptCategory.includes(item.categoryName);
+      return hasDailyPrice && isNotStudio;
+    });
   }, [data?.data?.items]);
 
   const handleLoadMore = () => {

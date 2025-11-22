@@ -70,8 +70,8 @@ const Reviews = () => {
         );
       }
 
-      if (response.items) {
-        let sortedReviews = [...response.items];
+      if (response.data?.items) {
+        let sortedReviews = [...response.data.items];
 
         // Apply sorting
         switch (sortBy) {

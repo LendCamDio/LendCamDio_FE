@@ -1,25 +1,26 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import type { UserInfo, UserRole } from "@/types/entity.type";
+import { UserRole } from "@/types/entity.type";
+import type { UserInfo } from "@/types/entity.type";
 
 interface UserFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: UserFormData) => Promise<void>;
+  onSubmit: (data: UserFormSubmitPayload) => Promise<void>;
   user?: UserInfo | null;
   mode: "edit";
 }
 
 export interface UserFormData {
-  fullName: string;
   email: string;
   phone?: string;
-  dateOfBirth?: string;
-  occupation?: string;
-  incomeLevel?: string;
-  role?: UserRole;
+  role: UserRole;
+  password?: string;
+  confirmPassword?: string;
 }
+
+export type UserFormSubmitPayload = Omit<UserFormData, "confirmPassword">;
 
 const UserFormModal = ({
   isOpen,
@@ -28,15 +29,14 @@ const UserFormModal = ({
   user,
 }: UserFormModalProps) => {
   const [formData, setFormData] = useState<UserFormData>({
-    fullName: user?.fullName || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    dateOfBirth: user?.dateOfBirth || "",
-    occupation: user?.occupation || "",
-    incomeLevel: user?.incomeLevel || "",
-    role: user?.role,
+    role: typeof user?.role === 'string' ? parseInt(user.role) as UserRole : (user?.role ?? UserRole.CUSTOMER),
+    password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -57,14 +57,44 @@ const UserFormModal = ({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        email: user?.email || "",
+        phone: user?.phone || "",
+        role: typeof user?.role === 'string' ? parseInt(user.role) as UserRole : (user?.role ?? UserRole.CUSTOMER),
+        password: "",
+        confirmPassword: "",
+      });
+      setError(null);
+    }
+  }, [isOpen, user]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      setError("Password and confirmation do not match");
+      return;
+    }
+
     setLoading(true);
     try {
-      await onSubmit(formData);
+      const payload: UserFormSubmitPayload = {
+        email: formData.email,
+        phone: formData.phone,
+        role: formData.role,
+      };
+
+      if (formData.password) {
+        payload.password = formData.password;
+      }
+
+      await onSubmit(payload);
       onClose();
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch (submitError) {
+      console.error("Error submitting form:", submitError);
+      setError("Unable to update user right now. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -100,21 +130,11 @@ const UserFormModal = ({
           className="flex flex-col flex-1 overflow-hidden"
         >
           <div className="p-6 space-y-4 overflow-y-auto flex-1">
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
 
             {/* Email */}
             <div>
@@ -132,68 +152,19 @@ const UserFormModal = ({
               />
             </div>
 
-            {/* Phone & Date of Birth */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dateOfBirth: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            {/* Occupation & Income Level */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Occupation
-                </label>
-                <input
-                  type="text"
-                  value={formData.occupation}
-                  onChange={(e) =>
-                    setFormData({ ...formData, occupation: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Income Level
-                </label>
-                <select
-                  value={formData.incomeLevel}
-                  onChange={(e) =>
-                    setFormData({ ...formData, incomeLevel: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select...</option>
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </div>
+            {/* Phone */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
+              </label>
+              <input
+                type="tel"
+                value={formData.phone ?? ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
 
             {/* Role */}
@@ -204,14 +175,48 @@ const UserFormModal = ({
               <select
                 value={formData.role}
                 onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value as UserRole })
+                  setFormData({ ...formData, role: parseInt(e.target.value) as UserRole })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="Customer">Customer</option>
-                <option value="Supplier">Supplier</option>
-                <option value="Admin">Admin</option>
+                <option value={UserRole.CUSTOMER}>{UserRole.CUSTOMER}</option>
+                <option value={UserRole.SUPPLIER}>{UserRole.SUPPLIER}</option>
+                <option value={UserRole.ADMIN}>{UserRole.ADMIN}</option>
               </select>
+            </div>
+
+            {/* Password */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={formData.password ?? ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="Leave blank to keep current"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={formData.confirmPassword ?? ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, confirmPassword: e.target.value })
+                  }
+                  placeholder="Repeat new password"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
           </div>
 

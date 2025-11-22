@@ -3,6 +3,8 @@ export interface JwtPayload {
   email: string;
   AvatarUrl: string;
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"?: string;
+  role?: string;
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": string;
   IsVerified: string;
   jti: string;
@@ -15,6 +17,7 @@ export interface UserTokenPayload {
   id: string;
   email: string;
   role: string;
+  fullName?: string;
 }
 
 export interface AuthContextType {

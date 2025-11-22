@@ -39,6 +39,8 @@ export function RoleBasedRoute({ allowedRoles }: Props) {
       ? allowedRoles.some((r) => r.toLowerCase() === role.toLowerCase())
       : false);
 
+
+
   if (!hasAccess) {
     showToast("Bạn không có quyền truy cập trang này", "error", {
       duration: 2000,

@@ -11,32 +11,46 @@ import {
   Menu,
   X,
   Package,
+  ClipboardList,
+  MessageSquare,
+  UserCircle,
 } from "lucide-react";
 import { motion } from "framer-motion"; // Sử dụng framer-motion cho animation mượt mà
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 
 // Menu items cho sidebar (có thể mở rộng)
-const menuItems = [
+const adminMenuItems = [
   { icon: Home, label: "Dashboard", path: "/admin/dashboard" },
   { icon: Package, label: "Equipment", path: "/admin/equipments" },
   { icon: Users, label: "Users", path: "/admin/users" },
+  { icon: ClipboardList, label: "Orders", path: "/admin/orders" },
   { icon: ShoppingCart, label: "Rentals", path: "/admin/rentals" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
 ];
 
+const supplierMenuItems = [
+  { icon: Package, label: "Equipment", path: "/supplier/equipments" },
+  { icon: ShoppingCart, label: "Rentals", path: "/supplier/rentals" },
+  { icon: MessageSquare, label: "Feedback", path: "/supplier/feedbacks" },
+  { icon: UserCircle, label: "Profile", path: "/supplier/profile" },
+];
+
 export default function AdminLayout() {
-  const { logout, role, isLoading } = useAuth();
+  const { logout, role, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const showToast = useUniqueToast();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
-  // Kiểm tra quyền truy cập admin
+  // Kiểm tra quyền truy cập admin hoặc supplier
   useEffect(() => {
-    if (!isLoading && role?.toLowerCase() !== "admin") {
-      showToast("Bạn không có quyền truy cập trang quản trị", "error");
-      navigate("/", { replace: true });
+    if (!isLoading) {
+      const userRole = role?.toLowerCase();
+      if (userRole !== "admin" && userRole !== "supplier") {
+        showToast("You do not have permission to access this page", "error");
+        navigate("/", { replace: true });
+      }
     }
   }, [role, isLoading, navigate, showToast]);
 
@@ -46,16 +60,20 @@ export default function AdminLayout() {
       <div className="flex h-screen items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang kiểm tra quyền truy cập...</p>
+          <p className="text-gray-600">Checking permissions...</p>
         </div>
       </div>
     );
   }
 
-  // Chỉ render nếu là admin
-  if (role?.toLowerCase() !== "admin") {
+  // Chỉ render nếu là admin hoặc supplier
+  const userRole = role?.toLowerCase();
+  if (userRole !== "admin" && userRole !== "supplier") {
     return null;
   }
+
+  const menuItems = userRole === "admin" ? adminMenuItems : supplierMenuItems;
+  const panelTitle = userRole === "admin" ? "Admin Panel" : "Supplier Panel";
 
   // Animation variants cho sidebar collapse
   const sidebarVariants = {
@@ -77,7 +95,7 @@ export default function AdminLayout() {
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
           {!sidebarCollapsed && (
             <h2 className="text-2xl font-bold bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] bg-clip-text text-transparent">
-              Admin Panel
+              {panelTitle}
             </h2>
           )}
           <button
@@ -106,11 +124,11 @@ export default function AdminLayout() {
               >
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 p-3 transition-all duration-200 rounded-lg ${
+                  className={`flex items-center gap-3 p-3 transition-all duration-200 rounded-lg ${(item.path === "/supplier/equipments" && location.pathname === "/supplier") ||
                     location.pathname.startsWith(item.path)
-                      ? "bg-[var(--primary-color)] text-white shadow-glow"
-                      : "text-[var(--text-dark)] hover:bg-[rgba(59,130,246,0.1)] hover:text-[var(--primary-color)]"
-                  }`}
+                    ? "bg-[var(--primary-color)] text-white shadow-glow"
+                    : "text-[var(--text-dark)] hover:bg-[rgba(59,130,246,0.1)] hover:text-[var(--primary-color)]"
+                    }`}
                 >
                   <item.icon size={20} />
                   {!sidebarCollapsed && (
@@ -125,12 +143,15 @@ export default function AdminLayout() {
         {/* Footer Sidebar (Logout & Notifications) */}
         <div className="p-4 border-t border-gray-200">
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              navigate("/admin/login", { replace: true });
+            }}
             className="flex items-center gap-3 p-3 rounded-lg text-[var(--text-dark)] hover:bg-[rgba(239,68,68,0.1)] hover:text-red-600 transition-all w-full"
           >
             <LogOut size={20} />
             {!sidebarCollapsed && (
-              <span className="font-medium">Đăng xuất</span>
+              <span className="font-medium">Logout</span>
             )}
           </button>
         </div>
@@ -142,25 +163,25 @@ export default function AdminLayout() {
         <header className="bg-white shadow-md border-b border-gray-200 px-6 py-4 flex items-center justify-between z-20">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold text-[var(--text-dark)]">
-              {menuItems.find((item) => location.pathname.startsWith(item.path))
-                ?.label || "Dashboard"}
+              {(location.pathname === "/supplier"
+                ? menuItems.find((item) => item.path === "/supplier/equipments")
+                : menuItems.find((item) => location.pathname.startsWith(item.path))
+              )?.label || "Dashboard"}
             </h1>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[var(--primary-color)] to-[var(--accent-color)] flex items-center justify-center text-white font-bold">
-                A
+                {user?.fullName?.charAt(0).toUpperCase() || (userRole === "admin" ? "A" : "S")}
               </div>
-              {!sidebarCollapsed && ( // Ẩn tên user nếu sidebar collapsed, nhưng navbar độc lập
-                <div className="text-right">
-                  <p className="text-sm font-medium text-[var(--text-dark)]">
-                    Admin User
-                  </p>
-                  <p className="text-xs text-[var(--text-light)]">
-                    admin@example.com
-                  </p>
-                </div>
-              )}
+              <div className="text-right">
+                <p className="text-sm font-medium text-[var(--text-dark)]">
+                  {user?.fullName || (userRole === "admin" ? "Admin User" : "Supplier User")}
+                </p>
+                <p className="text-xs text-[var(--text-light)]">
+                  {user?.email || (userRole === "admin" ? "admin@example.com" : "supplier@example.com")}
+                </p>
+              </div>
             </div>
           </div>
         </header>
@@ -172,7 +193,7 @@ export default function AdminLayout() {
 
         {/* Footer (Optional) */}
         <footer className="bg-white border-t border-gray-200 px-6 py-3 text-center text-sm text-[var(--text-light)]">
-          © 2025 Admin Dashboard. All rights reserved.
+          © 2025 {panelTitle}. All rights reserved.
         </footer>
       </div>
     </div>

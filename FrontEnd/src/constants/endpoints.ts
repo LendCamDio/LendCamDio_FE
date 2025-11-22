@@ -58,6 +58,8 @@ export const USER_ENDPOINTS = {
   UPDATE_AVATAR: (id: string | number) => `/api/users/${id}/avatar`,
   // PUT /api/users/{id}/status
   UPDATE_STATUS: (id: string | number) => `/api/users/${id}/status`,
+  // PUT /api/users/{id}/role
+  UPDATE_ROLE: (id: string | number) => `/api/users/${id}/role`,
   // GET /api/users/debug/claims
   DEBUG_CLAIMS: "/api/users/debug/claims",
 };
@@ -253,4 +255,26 @@ export const SUPPLIER_ENDPOINTS = {
   UPDATE: (id: string) => `/api/suppliers/${id}`,
   DELETE: (id: string) => `/api/suppliers/${id}`,
   BY_STATUS: (status: string) => `/api/suppliers/status/${status}`,
+  BY_USER_ID: (userId: string) => `/api/suppliers/user/${userId}`,
+  UPDATE_VERIFICATION: (id: string) => `/api/suppliers/${id}/verification`,
+  UPDATE_STATUS: (id: string) => `/api/suppliers/${id}/status`,
+};
+
+export const ANALYTICS_ENDPOINTS = {
+  GET: "/api/analytics",
+};
+
+export const IDENTITY_VERIFICATION_ENDPOINTS = {
+  // GET /api/identity-verifications/{id}
+  GET_BY_ID: (id: string) => `/api/identity-verifications/${id}`,
+  // GET /api/identity-verifications/user/{userId}
+  GET_BY_USER_ID: (userId: string) => `/api/identity-verifications/user/${userId}`,
+  // GET /api/identity-verifications/me
+  GET_ME: "/api/identity-verifications/me",
+  // POST /api/identity-verifications
+  CREATE: "/api/identity-verifications",
+  // PUT /api/identity-verifications/{id}
+  UPDATE: (id: string) => `/api/identity-verifications/${id}`,
+  // DELETE /api/identity-verifications/{id}
+  DELETE: (id: string) => `/api/identity-verifications/${id}`,
 };

@@ -1,5 +1,5 @@
 import api from "../api";
-import type { PaginatedData } from "@/types/entity.type";
+import type { ApiResponse, PaginatedData } from "@/types/entity.type";
 
 export interface ReviewResponseDto {
   reviewId: string;
@@ -30,7 +30,7 @@ export interface UpdateReviewRequest {
 const reviewService = {
   // Get all reviews (with pagination)
   getAllReviews: async (page: number = 1, pageSize: number = 10) => {
-    const response = await api.get<PaginatedData<ReviewResponseDto>>(
+    const response = await api.get<ApiResponse<PaginatedData<ReviewResponseDto>>>(
       `/api/reviews?page=${page}&pageSize=${pageSize}`
     );
     return response.data;
@@ -38,25 +38,25 @@ const reviewService = {
 
   // Get review by ID
   getReviewById: async (id: string) => {
-    const response = await api.get<ReviewResponseDto>(`/api/reviews/${id}`);
+    const response = await api.get<ApiResponse<ReviewResponseDto>>(`/api/reviews/${id}`);
     return response.data;
   },
 
   // Create new review
   createReview: async (data: CreateReviewRequest) => {
-    const response = await api.post("/api/reviews", data);
+    const response = await api.post<ApiResponse<ReviewResponseDto>>("/api/reviews", data);
     return response.data;
   },
 
   // Update review
   updateReview: async (id: string, data: UpdateReviewRequest) => {
-    const response = await api.put(`/api/reviews/${id}`, data);
+    const response = await api.put<ApiResponse<ReviewResponseDto>>(`/api/reviews/${id}`, data);
     return response.data;
   },
 
   // Delete review
   deleteReview: async (id: string) => {
-    const response = await api.delete(`/api/reviews/${id}`);
+    const response = await api.delete<ApiResponse<object>>(`/api/reviews/${id}`);
     return response.data;
   },
 
@@ -66,7 +66,7 @@ const reviewService = {
     page: number = 1,
     pageSize: number = 10
   ) => {
-    const response = await api.get<PaginatedData<ReviewResponseDto>>(
+    const response = await api.get<ApiResponse<PaginatedData<ReviewResponseDto>>>(
       `/api/reviews/equipment/${equipmentId}?page=${page}&pageSize=${pageSize}`
     );
     return response.data;
@@ -78,7 +78,7 @@ const reviewService = {
     page: number = 1,
     pageSize: number = 10
   ) => {
-    const response = await api.get<PaginatedData<ReviewResponseDto>>(
+    const response = await api.get<ApiResponse<PaginatedData<ReviewResponseDto>>>(
       `/api/reviews/customer/${customerId}?page=${page}&pageSize=${pageSize}`
     );
     return response.data;
@@ -86,19 +86,19 @@ const reviewService = {
 
   // Get average rating for equipment
   getAverageRating: async (equipmentId: string) => {
-    const response = await api.get<{
+    const response = await api.get<ApiResponse<{
       equipmentId: string;
       averageRating: number;
-    }>(`/api/reviews/equipment/${equipmentId}/average-rating`);
+    }>>(`/api/reviews/equipment/${equipmentId}/average-rating`);
     return response.data;
   },
 
   // Get review count for equipment
   getReviewCount: async (equipmentId: string) => {
-    const response = await api.get<{
+    const response = await api.get<ApiResponse<{
       equipmentId: string;
       reviewCount: number;
-    }>(`/api/reviews/equipment/${equipmentId}/review-count`);
+    }>>(`/api/reviews/equipment/${equipmentId}/review-count`);
     return response.data;
   },
 
@@ -107,11 +107,11 @@ const reviewService = {
     customerId: string,
     equipmentId: string
   ) => {
-    const response = await api.get<{
+    const response = await api.get<ApiResponse<{
       customerId: string;
       equipmentId: string;
       hasReviewed: boolean;
-    }>(`/api/reviews/customer/${customerId}/has-reviewed/${equipmentId}`);
+    }>>(`/api/reviews/customer/${customerId}/has-reviewed/${equipmentId}`);
     return response.data;
   },
 
@@ -121,7 +121,7 @@ const reviewService = {
     page: number = 1,
     pageSize: number = 10
   ) => {
-    const response = await api.get<PaginatedData<ReviewResponseDto>>(
+    const response = await api.get<ApiResponse<PaginatedData<ReviewResponseDto>>>(
       `/api/reviews/rating/${rating}?page=${page}&pageSize=${pageSize}`
     );
     return response.data;

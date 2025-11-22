@@ -45,23 +45,30 @@ export type AuthResponse = {
   user: UserInfo;
 };
 
-// public enum MembershipLevel { Basic, Silver, Gold, Platinum }
-// public enum CustomerStatus { Active, Inactive }
-// public enum UserRole { Customer, Supplier, Admin }
+// Backend enums: MembershipLevel { Basic=0, Silver=1, Gold=2, Platinum=3 }
+// Backend enums: CustomerStatus { Active=0, Inactive=1 }
+// Backend enums: UserRole { Customer=0, Supplier=1, Admin=2 }
+// Backend enums: UserStatus { Active=0, Inactive=1 }
 export enum MembershipLevel {
-  BASIC = "Basic",
-  SILVER = "Silver",
-  GOLD = "Gold",
-  PLATINUM = "Platinum",
+  BASIC = 0,
+  SILVER = 1,
+  GOLD = 2,
+  PLATINUM = 3,
 }
 export enum UserStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
+  ACTIVE = 0,
+  INACTIVE = 1,
 }
 export enum UserRole {
-  CUSTOMER = "Customer",
-  SUPPLIER = "Supplier",
-  ADMIN = "Admin",
+  CUSTOMER = 0,
+  SUPPLIER = 1,
+  ADMIN = 2,
+}
+
+export enum Sex {
+  MALE = 0,
+  FEMALE = 1,
+  OTHER = 2,
 }
 
 export type UserInfo = {
@@ -73,7 +80,22 @@ export type UserInfo = {
   incomeLevel?: string;
   dateOfBirth?: string;
   createdAt: string;
-  role?: UserRole;
+  role?: UserRole | string; // Can be integer enum or string from backend
+  status?: UserStatus; // Integer enum from backend
+  isVerified?: boolean;
+};
+
+export type UserDetailInfo = UserInfo & {
+  avatarUrl?: string;
+  isVerified?: boolean;
+  address?: string;
+  emailVerificationToken?: string | null;
+  emailVerificationTokenExpiry?: string | null;
+  passwordResetToken?: string | null;
+  passwordResetTokenExpiry?: string | null;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 };
 
 export type ChangePasswordRequestDto = {
@@ -107,6 +129,37 @@ export type CustomerDto = {
   loyaltyPoints: number;
   status: UserStatus;
   totalRentals: number;
+  createdAt: string;
+  createdBy?: string;
+  updatedAt?: string;
+  updatedBy?: string;
+};
+
+// Backend enums: SupplierStatus { Active=0, Inactive=1 }
+// VerificationStatus { Pending=0, Verified=1, Rejected=2 }
+export enum SupplierStatus {
+  Active = 0,
+  Inactive = 1,
+}
+
+export enum VerificationStatus {
+  Pending = 0,
+  Verified = 1,
+  Rejected = 2,
+}
+
+export type SupplierDto = {
+  supplierId: string;
+  userId: string;
+  companyName: string;
+  address?: string;
+  phone?: string;
+  rating: number;
+  verificationStatus: VerificationStatus;
+  status: SupplierStatus;
+  fullName: string;
+  email: string;
+  equipmentCount: number;
   createdAt: string;
   createdBy?: string;
   updatedAt?: string;
@@ -532,3 +585,46 @@ export type RentalUpdateRequestDto = {
   status: RentalStatus;
 };
 export type RentalUpdateResponse = ApiResponse<object>;
+
+// #region Identity Verification Types
+export type IdentityVerificationDto = {
+  identityVerificationId: string;
+  userId: string;
+  fullName: string;
+  dateOfBirth: string;
+  sex: Sex;
+  placeOfBirth: string;
+  placeOfResidence: string;
+  citizenId: string;
+  providedDate: string;
+  provider: string;
+  createdAt: string;
+  createdBy?: string | null;
+  updatedAt?: string | null;
+  updatedBy?: string | null;
+};
+
+export type CreateIdentityVerificationRequestDto = {
+  fullName: string;
+  dateOfBirth: string;
+  sex: Sex;
+  placeOfBirth: string;
+  placeOfResidence: string;
+  citizenId: string;
+  providedDate: string;
+  provider: string;
+};
+
+export type UpdateIdentityVerificationRequestDto = {
+  fullName?: string;
+  dateOfBirth?: string;
+  sex?: Sex;
+  placeOfBirth?: string;
+  placeOfResidence?: string;
+  citizenId?: string;
+  providedDate?: string;
+  provider?: string;
+};
+
+export type IdentityVerificationResponse = ApiResponse<IdentityVerificationDto>;
+// #endregion

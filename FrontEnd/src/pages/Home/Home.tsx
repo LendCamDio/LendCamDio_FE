@@ -1,5 +1,6 @@
 import Loading from "@/components/common/Loading/Loading";
 import { useAuth } from "@/hooks/auth/useAuth";
+import { useEquipmentList } from "@/hooks/equipment/useEquipment";
 import {
   faClock,
   faStar,
@@ -7,13 +8,38 @@ import {
   type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
 
 // Lazy load the DashboardSection component
 const DashboardSection = lazy(() => import("../customer/DashboardSection"));
 
 const Home = () => {
   const { role } = useAuth();
+
+  // Fetch equipment data from API
+  const { data: equipmentData, isLoading: isLoadingEquipment } = useEquipmentList(1, 100, "all", "");
+
+  // Get 3 random equipment items
+  const featuredEquipment = useMemo(() => {
+    if (!equipmentData?.data?.items || equipmentData.data.items.length === 0) {
+      return [];
+    }
+    
+    const items = [...equipmentData.data.items];
+    const shuffled = items.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3).map(item => ({
+      equipmentId: item.equipmentId,
+      image: item.imageUrl || "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a",
+      title: item.name,
+      description: item.description || "",
+      price: item.dailyPrice 
+        ? `${item.dailyPrice.toLocaleString('vi-VN')}đ/ngày` 
+        : item.price 
+        ? `${item.price.toLocaleString('vi-VN')}đ` 
+        : "Liên hệ",
+      isDailyPrice: !!item.dailyPrice
+    }));
+  }, [equipmentData]);
 
   // #region Sample data for studios and equipment
   const studios = [
@@ -38,37 +64,6 @@ const Home = () => {
       description:
         "Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.",
       price: "1.000.000đ/ngày",
-    },
-  ];
-  const featuredEquipment = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Canon EOS R5",
-      description: "Máy ảnh mirrorless full-frame cao cấp, 45MP.",
-      price: "800.000đ/ngày",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Sony A7 III",
-      description:
-        "Máy ảnh mirrorless full-frame, 24MP, khả năng chụp đêm tuyệt vời.",
-      price: "700.000đ/ngày",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Fujifilm X-T4",
-      description: "Máy ảnh mirrorless APS-C, 26MP, màu sắc sống động.",
-      price: "600.000đ/ngày",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Nikon Z6 II",
-      description: "Máy ảnh mirrorless full-frame, 24MP, quay video 4K.",
-      price: "750.000đ/ngày",
     },
   ];
   const whyChooseUsSection = {
@@ -170,39 +165,50 @@ const Home = () => {
             Máy ảnh và phụ kiện chuyên nghiệp cho thuê
           </p>
 
-          <div className="row">
-            {featuredEquipment.map((equipment, index) => (
-              <div
-                className="col-md-3 mb-4"
-                key={`equipment-${equipment.title}-${index}`}
-              >
-                <div className="card-outstanding animate-fade-in-up">
-                  <img
-                    src={equipment.image}
-                    alt={equipment.title}
-                    className="card-outstanding-img-top"
-                  />
-                  <div className="card-outstanding-body">
-                    <h5 className="card-title">{equipment.title}</h5>
-                    <p className="card-text">{equipment.description}</p>
-                    <div className="price">{equipment.price}</div>
-                    <button
-                      className="btn-primary book-btn"
-                      data-item-name={equipment.title}
-                    >
-                      Thêm vào giỏ
-                    </button>
+          {isLoadingEquipment ? (
+            <div className="text-center py-5">
+              <Loading />
+            </div>
+          ) : (
+            <>
+              <div className="row">
+                {featuredEquipment.map((equipment, index) => (
+                  <div
+                    className="col-md-4 mb-4"
+                    key={`equipment-${equipment.equipmentId}-${index}`}
+                  >
+                    <div className="card-outstanding animate-fade-in-up h-full">
+                      <img
+                        src={equipment.image}
+                        alt={equipment.title}
+                        className="card-outstanding-img-top"
+                      />
+                      <div className="card-outstanding-body">
+                        <h5 className="card-title">{equipment.title}</h5>
+                        <p className="card-text line-clamp-3">{equipment.description}</p>
+                        <div className="price">{equipment.price}</div>
+                        <a 
+                          href={equipment.isDailyPrice ? "/cameras" : "/products"} 
+                          className="btn-primary book-btn"
+                        >
+                          {equipment.isDailyPrice ? "Thuê ngay" : "Mua ngay"}
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="text-center mt-4">
-            <a href="/products" className="btn-outline-primary">
-              Xem tất cả thiết bị
-            </a>
-          </div>
+              <div className="text-center mt-4">
+                <a href="/cameras" className="btn-outline-primary me-3">
+                  Xem thiết bị cho thuê
+                </a>
+                <a href="/products" className="btn-outline-primary">
+                  Xem thiết bị bán
+                </a>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

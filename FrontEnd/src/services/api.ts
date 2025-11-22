@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants/endpoints";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+
 import { logout } from "./authService";
 
 // Tạo instance axios
@@ -25,7 +25,7 @@ api.interceptors.request.use(
         // Kiểm tra token hết hạn
         if (Date.now() > timeExpMs) {
           localStorage.removeItem("token");
-          useNavigate()("/auth/login", { replace: true });
+          window.location.href = "/auth/login";
           throw new Error("Token expired");
         }
 
@@ -33,7 +33,7 @@ api.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       } catch (error) {
         localStorage.removeItem("token");
-        useNavigate()("/auth/login", { replace: true });
+        window.location.href = "/auth/login";
         throw new Error(error as string);
       }
     }

@@ -11,6 +11,7 @@ const Settings = lazy(() => import("../pages/customer/Settings"));
 const AiAssistant = lazy(() => import("../pages/customer/AiAssistant"));
 const Reviews = lazy(() => import("../pages/customer/Reviews"));
 const Recommendations = lazy(() => import("../pages/customer/Recommendations"));
+const IdentityVerification = lazy(() => import("../pages/customer/IdentityVerification"));
 const BookingListPage = lazy(() => import("../pages/customer/BookingListPage"));
 const MyRentalsPage = lazy(() => import("../pages/customer/MyRentalsPage"));
 const RentalPaymentPage = lazy(() => import("../pages/customer/RentalPaymentPage"));
@@ -43,6 +44,10 @@ export const privateRoutes = [
           {
             path: "profile",
             element: <Profile />,
+          },
+          {
+            path: "identity-verification",
+            element: <IdentityVerification />,
           },
           {
             path: "booking-history",
@@ -117,17 +122,5 @@ export const privateRoutes = [
   {
     path: "/payment/:paymentId",
     element: <PaymentPage />,
-  },
-  {
-    path: "/suppliers",
-    element: <RoleBasedRoute allowedRoles={["Supplier"]} />,
-    children: [
-      {
-        children: [
-          { index: true, element: <Navigate to="profile" replace /> },
-          { path: "profile", element: <div>SupplierProfile</div> },
-        ],
-      },
-    ],
   },
 ];

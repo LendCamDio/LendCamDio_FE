@@ -77,7 +77,7 @@ export const getCustomersByMembershipLevel = async (
   pageSize: number
 ): Promise<CustomerResponse> => {
   try {
-    const res = await api.get(CUSTOMER_ENDPOINTS.BY_MEMBERSHIP_LEVEL(level), {
+    const res = await api.get(CUSTOMER_ENDPOINTS.BY_MEMBERSHIP_LEVEL(level.toString()), {
       params: { page, pageSize },
     });
     return res.data;
@@ -93,7 +93,7 @@ export const getCustomersByStatus = async (
   pageSize: number
 ): Promise<CustomerResponse> => {
   try {
-    const res = await api.get(CUSTOMER_ENDPOINTS.BY_STATUS(status), {
+    const res = await api.get(CUSTOMER_ENDPOINTS.BY_STATUS(status.toString()), {
       params: { page, pageSize },
     });
     return res.data;

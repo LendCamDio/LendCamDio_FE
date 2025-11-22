@@ -12,6 +12,9 @@ const ProfileInfoTab = lazy(
   () => import("@/components/profile/ProfileInfoTab")
 );
 const SecurityTab = lazy(() => import("@/components/profile/SecurityTab"));
+const IdentityVerificationTab = lazy(
+  () => import("@/components/profile/IdentityVerificationTab")
+);
 
 import {
   passwordSchema,
@@ -31,7 +34,7 @@ const Profile = () => {
   };
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "security" | "orders" | "notifications"
+    "profile" | "security" | "identity" | "orders" | "notifications"
   >("profile");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -140,6 +143,7 @@ const Profile = () => {
 
             {/* Main Content */}
             <motion.div
+              key={activeTab}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
@@ -166,6 +170,9 @@ const Profile = () => {
                     errors={passwordErrors}
                   />
                 )}
+
+                {/* Identity Verification Tab */}
+                {activeTab === "identity" && <IdentityVerificationTab />}
               </div>
             </motion.div>
           </div>

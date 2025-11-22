@@ -6,6 +6,7 @@ import {
   useAllEquipmentList,
   useDeleteEquipment,
 } from "@/hooks/equipment/useEquipmentAdmin";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 const EquipmentFilters = lazy(() => import("../equipments/EquipmentFilters"));
 const EquipmentEmptyState = lazy(
@@ -22,6 +23,7 @@ const EquipmentFormModal = lazy(
 const Loading = lazy(() => import("@/components/common/Loading/LoadingCircle"));
 
 const EquipmentManagement = () => {
+  const { user } = useAuth();
   const showToast = useUniqueToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -47,7 +49,13 @@ const EquipmentManagement = () => {
     data: equipmentData,
     isLoading: loading,
     error,
-  } = useAllEquipmentList(currentPage, pageSize, filterCategory, searchTerm);
+  } = useAllEquipmentList(
+    currentPage,
+    pageSize,
+    filterCategory,
+    searchTerm,
+    user?.role === "Supplier" ? user.id : undefined
+  );
 
   const equipments = equipmentData?.data?.items || [];
   const totalPages = equipmentData?.data?.pages || 1;

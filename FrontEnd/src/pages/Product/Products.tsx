@@ -54,36 +54,32 @@ const Products = () => {
   const sortedEquips = useMemo(() => {
     if (!data?.data?.items) return [];
 
-    const items = [...data.data.items];
+    // Filter to show only sale equipment (has price, not dailyPrice)
+    const saleItems = data.data.items.filter(item => {
+      // Must have price (for sale) and should not be primarily a rental item
+      const hasPrice = item.price != null && item.price > 0;
+      return hasPrice;
+    });
+
     switch (sortBy) {
       case "name":
-        return items.sort((a, b) => a.name.localeCompare(b.name));
+        return saleItems.sort((a, b) => a.name.localeCompare(b.name));
       case "price-low":
-        return items.sort((a, b) => {
-          const priceA = a.dailyPrice ?? a.price;
-          const priceB = b.dailyPrice ?? b.price;
-          // Xử lý trường hợp item không có giá (đẩy chúng xuống cuối)
-          if (priceA == null) return 1;
-          if (priceB == null) return -1;
+        return saleItems.sort((a, b) => {
+          const priceA = a.price!;
+          const priceB = b.price!;
           return priceA - priceB;
         });
       case "price-high":
-        return items
-          .sort((a, b) => {
-            const priceA = a.dailyPrice ?? a.price;
-            const priceB = b.dailyPrice ?? b.price;
-
-            // Xử lý trường hợp item không có giá (đẩy chúng xuống cuối)
-            if (priceA == null) return 1;
-            if (priceB == null) return -1;
-
-            return priceA - priceB;
-          })
-          .reverse();
+        return saleItems.sort((a, b) => {
+          const priceA = a.price!;
+          const priceB = b.price!;
+          return priceB - priceA;
+        });
       case "popular":
-        return items.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        return saleItems.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       default:
-        return items;
+        return saleItems;
     }
   }, [data?.data?.items, sortBy]);
 
@@ -106,10 +102,10 @@ const Products = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl">
-              Sản phẩm & Dịch vụ
+              Mua Sắm Thiết Bị
             </h1>
             <p className="text-sm sm:text-base lg:text-lg mt-2">
-              Khám phá tất cả studio và thiết bị chụp ảnh chuyên nghiệp
+              Khám phá thiết bị chụp ảnh chuyên nghiệp để sở hữu
             </p>
           </div>
           <div className="search-bar mt-4">

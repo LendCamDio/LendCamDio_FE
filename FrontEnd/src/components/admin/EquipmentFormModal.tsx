@@ -12,6 +12,7 @@ import {
 import {   
   useCreateEquipment, 
   useUpdateEquipment } from "@/hooks/equipment/useEquipmentAdmin";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 type EquipmentFormModalProps = {
   isOpen: boolean;
@@ -53,6 +54,8 @@ const EquipmentFormModal = ({
   mode,
   onSuccess,
 }: EquipmentFormModalProps) => {
+  const { user } = useAuth();
+  const isSupplier = user?.role === "Supplier";
   const showToast = useUniqueToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [createdEquipmentId, setCreatedEquipmentId] = useState<string | null>(
@@ -107,6 +110,9 @@ const EquipmentFormModal = ({
   // Fetch suppliers
   useEffect(() => {
     const fetchSuppliers = async () => {
+      // If user is supplier, no need to fetch list
+      if (isSupplier) return;
+      
       try {
         const response = await api.get(SUPPLIER_ENDPOINTS.LIST, {
           params: { page: 1, pageSize: 100 },
@@ -124,7 +130,7 @@ const EquipmentFormModal = ({
     if (isOpen) {
       fetchSuppliers();
     }
-  }, [isOpen]);
+  }, [isOpen, isSupplier]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -170,7 +176,7 @@ const EquipmentFormModal = ({
         name: "",
         description: "",
         categoryId: "",
-        supplierId: "",
+        supplierId: isSupplier && user?.id ? user.id : "",
         stockQuantity: 1,
         dailyPrice: 0,
         price: 0,
@@ -184,7 +190,7 @@ const EquipmentFormModal = ({
       setCurrentStep(1);
       setCreatedEquipmentId(null);
     }
-  }, [equipment, mode, isOpen]);
+  }, [equipment, mode, isOpen, isSupplier, user]);
 
   // Handle image file selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -631,6 +637,7 @@ const EquipmentFormModal = ({
                       ))}
                     </select>
                   </div>
+                  {!isSupplier && (
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Supplier
@@ -659,6 +666,7 @@ const EquipmentFormModal = ({
                       ))}
                     </select>
                   </div>
+                  )}
                 </div>
 
                 {/* Stock & Condition */}

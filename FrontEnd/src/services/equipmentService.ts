@@ -523,3 +523,53 @@ export async function updateEquipmentStock(
     timestamp: new Date().toISOString(),
   };
 }
+
+/**
+ * Get equipment by supplier
+ * Endpoint: GET /api/equipments/supplier/{supplierId}?page=1&pageSize=10
+ */
+export async function getEquipmentsBySupplier(
+  supplierId: string,
+  page: number,
+  pageSize: number
+): Promise<EquipmentResponse> {
+  try {
+    const params = { page, pageSize };
+    console.log(
+      `🏭 GET /api/equipments/supplier/${supplierId} with params:`,
+      params
+    );
+
+    const res = await api.get(EQUIPMENT_ENDPOINTS.SUPPLIER(supplierId), {
+      params,
+    });
+
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+
+    await fetchRatingsForEquipment(res.data.data.items);
+    console.log(
+      "✅ Fetched",
+      res.data.data.items.length,
+      "equipments for supplier"
+    );
+
+    return {
+      success: res.data.success,
+      data: res.data.data,
+      timestamp: res.data.timestamp,
+    };
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
+  }
+  return {
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
+  };
+}

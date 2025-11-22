@@ -46,11 +46,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
               email: decoded.email,
               fullName:
                 decoded[
-                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
                 ], // Lấy tên đầy đủ
-              role: decoded[
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-              ],
+              role: (() => {
+                const r =
+                  decoded[
+                  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                  ] ||
+                  decoded[
+                  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"
+                  ] ||
+                  (decoded as any).role ||
+                  (decoded as any).Role ||
+                  (decoded as any).roles;
+                return Array.isArray(r) ? r[0] : r;
+              })(),
               isVerified: decoded.IsVerified === "True" && "true", // Chuyển đổi chuỗi "True" thành boolean
               avatarUrl: decoded.AvatarUrl,
             });
@@ -96,9 +106,19 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setUser({
           id: decoded.sub,
           email: decoded.email,
-          role: decoded[
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-          ],
+          role: (() => {
+            const r =
+              decoded[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ] ||
+              decoded[
+              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role"
+              ] ||
+              (decoded as any).role ||
+              (decoded as any).Role ||
+              (decoded as any).roles;
+            return Array.isArray(r) ? r[0] : r;
+          })(),
         });
 
         // console.log("Login successful. Decoded token:", decoded);

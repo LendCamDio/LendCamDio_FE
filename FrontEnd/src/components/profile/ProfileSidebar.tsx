@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Shield, Camera } from "lucide-react";
+import { User, Shield, Camera, IdCard } from "lucide-react";
 
 interface ProfileSidebarProps {
   user: {
@@ -7,9 +7,9 @@ interface ProfileSidebarProps {
     fullName?: string;
     role?: string;
   } | null;
-  activeTab: "profile" | "security" | "orders" | "notifications";
+  activeTab: "profile" | "security" | "identity" | "orders" | "notifications";
   setActiveTab: (
-    tab: "profile" | "security" | "orders" | "notifications"
+    tab: "profile" | "security" | "identity" | "orders" | "notifications"
   ) => void;
   avatarPreview: string | null;
   isEditing: boolean;
@@ -27,6 +27,7 @@ const ProfileSidebar = ({
   const tabs = [
     { id: "profile", label: "Thông tin cá nhân", icon: User },
     { id: "security", label: "Bảo mật", icon: Shield },
+    { id: "identity", label: "Xác thực CCCD", icon: IdCard },
   ] as const;
 
   return (

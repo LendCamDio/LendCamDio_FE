@@ -4,6 +4,7 @@ import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
 import { ConfirmDialog } from "@/components/ui/Dialog";
 import api from "@/services/api";
 import { RENTAL_ENDPOINTS } from "@/constants/endpoints";
+import RentalDetailModal from "@/components/admin/RentalDetailModal";
 
 interface Rental {
   rentalId: string;
@@ -33,6 +34,7 @@ const RentalManagement = () => {
   const [actionType, setActionType] = useState<"approve" | "complete" | null>(
     null
   );
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   const pageSize = 10;
 
@@ -293,7 +295,14 @@ const RentalManagement = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button
+                        onClick={() => {
+                          setSelectedRentalId(rental.rentalId);
+                          setDetailModalOpen(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-900"
+                        title="View Details"
+                      >
                         <Eye className="w-5 h-5" />
                       </button>
                       {rental.status === "Pending" && (
@@ -424,6 +433,16 @@ const RentalManagement = () => {
           </div>
         </div>
       )}
+
+      <RentalDetailModal
+        isOpen={detailModalOpen}
+        onClose={() => {
+          setDetailModalOpen(false);
+          setSelectedRentalId(null);
+        }}
+        rentalId={selectedRentalId}
+        onStatusUpdate={fetchRentals}
+      />
     </div>
   );
 };

@@ -26,6 +26,7 @@ export default function AdminLoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loginRole, setLoginRole] = useState<"Admin" | "Supplier">("Admin");
   const {
     register,
     handleSubmit,
@@ -41,16 +42,21 @@ export default function AdminLoginPage() {
   ) => {
     if (credentialResponse.credential) {
       setLoading(true);
-      showToast("Processing admin login...", "info");
+      showToast(`Processing ${loginRole.toLowerCase()} login...`, "info");
       const result = await loginWithGoogle(
         credentialResponse.credential,
-        "Admin"
+        loginRole
       );
 
       if (result.success && result.data) {
-        login(result.data.token, false);
-        showToast("Admin login successful", "success");
-        navigate("/admin");
+        await login(result.data.token, false);
+        showToast(`${loginRole} login successful`, "success");
+        // Redirect based on role
+        if (loginRole === "Supplier") {
+          navigate("/supplier");
+        } else {
+          navigate("/admin");
+        }
       } else {
         const errorMessage = result.error?.message || "Login failed";
         showToast(errorMessage, "error");
@@ -61,15 +67,20 @@ export default function AdminLoginPage() {
 
   const handleAdminLogin = async (data: LoginSchema) => {
     setLoading(true);
-    showToast("Đang xử lý đăng nhập admin...", "info");
+    showToast(`Đang xử lý đăng nhập ${loginRole.toLowerCase()}...`, "info");
 
-    // Gửi userType: "Admin" lên server
-    const result = await loginWithEmail(data.email, data.password, "Admin");
+    // Gửi userType: "Admin" hoặc "Supplier" lên server
+    const result = await loginWithEmail(data.email, data.password, loginRole);
 
     if (result.success && result.data) {
-      login(result.data.token, false);
-      showToast("Đăng nhập admin thành công", "success");
-      navigate("/admin"); // Chuyển hướng đến admin dashboard
+      await login(result.data.token, false);
+      showToast(`Đăng nhập ${loginRole} thành công`, "success");
+      // Redirect based on role
+      if (loginRole === "Supplier") {
+        navigate("/supplier");
+      } else {
+        navigate("/admin");
+      }
     } else {
       const errorMessage = result.error?.message || "Đăng nhập thất bại";
       showToast(errorMessage, "error");
@@ -99,6 +110,30 @@ export default function AdminLoginPage() {
             <p className="text-gray-600 text-sm">
               Đăng nhập an toàn cho quản trị viên hệ thống
             </p>
+          </div>
+
+          {/* Role Selection */}
+          <div className="flex p-1 mb-6 bg-gray-100 rounded-lg">
+            <button
+              type="button"
+              onClick={() => setLoginRole("Admin")}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${loginRole === "Admin"
+                ? "bg-white text-blue-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
+            >
+              Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginRole("Supplier")}
+              className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${loginRole === "Supplier"
+                ? "bg-white text-blue-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
+            >
+              Supplier
+            </button>
           </div>
 
           {/* Login Form */}

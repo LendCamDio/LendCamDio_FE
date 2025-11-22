@@ -61,7 +61,7 @@ export default function LoginPage() {
         const decoded = jwtDecode<JwtPayload>(result.data.token);
         if (
           decoded[
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
           ] !== userType
         ) {
           logout();

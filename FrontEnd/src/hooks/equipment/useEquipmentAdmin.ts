@@ -8,6 +8,7 @@ import {
   updateEquipmentStock,
   getEquipmentsByCategory,
   getAllEquipmentBySearchName,
+  getEquipmentsBySupplier,
 } from "@/services/equipmentService";
 import type {
   CreateEquipmentRequestDto,
@@ -23,10 +24,14 @@ const useAllEquipmentList = (
   page: number,
   pageSize: number,
   selectedCategory?: string,
-  searchName?: string
+  searchName?: string,
+  supplierId?: string
 ) => {
   let serviceFn = () => getEquipments(page, pageSize);
-  if (searchName) {
+
+  if (supplierId) {
+    serviceFn = () => getEquipmentsBySupplier(supplierId, page, pageSize);
+  } else if (searchName) {
     serviceFn = () => getAllEquipmentBySearchName(searchName, page, pageSize);
   } else {
     serviceFn = () =>
@@ -36,7 +41,14 @@ const useAllEquipmentList = (
   }
 
   return useQuery({
-    queryKey: ["all-equipments", page, pageSize, selectedCategory, searchName],
+    queryKey: [
+      "all-equipments",
+      page,
+      pageSize,
+      selectedCategory,
+      searchName,
+      supplierId,
+    ],
     queryFn: serviceFn,
     staleTime: 1000 * 60 * 10, // keep data fresh for 10 minutes
     retry: 3, // Retry failed requests up to 3 times
