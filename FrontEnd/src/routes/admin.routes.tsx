@@ -10,6 +10,7 @@ const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
 const RentalManagement = lazy(() => import("@/pages/admin/RentalManagement"));
 const Analytics = lazy(() => import("@/pages/admin/Analytics"));
 const OrderManagement = lazy(() => import("@/pages/admin/OrderManagement"));
+const AdManagement = lazy(() => import("@/pages/admin/AdManagement"));
 
 export const adminRoutes = [
   {
@@ -43,6 +44,10 @@ export const adminRoutes = [
       {
         path: "analytics",
         element: <Analytics />,
+      },
+      {
+        path: "ads",
+        element: <AdManagement />,
       },
     ],
     ErrorElement: <div>AdminLayoutError</div>,

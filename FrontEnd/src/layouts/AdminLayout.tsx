@@ -14,6 +14,8 @@ import {
   ClipboardList,
   MessageSquare,
   UserCircle,
+  Megaphone,
+  TrendingUp,
 } from "lucide-react";
 import { motion } from "framer-motion"; // Sử dụng framer-motion cho animation mượt mà
 import { useAuth } from "@/hooks/auth/useAuth";
@@ -27,6 +29,7 @@ const adminMenuItems = [
   { icon: ClipboardList, label: "Orders", path: "/admin/orders" },
   { icon: ShoppingCart, label: "Rentals", path: "/admin/rentals" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+  { icon: Megaphone, label: "Ad Campaigns", path: "/admin/ads" },
 ];
 
 const supplierMenuItems = [
@@ -34,6 +37,8 @@ const supplierMenuItems = [
   { icon: ShoppingCart, label: "Rentals", path: "/supplier/rentals" },
   { icon: MessageSquare, label: "Feedback", path: "/supplier/feedbacks" },
   { icon: UserCircle, label: "Profile", path: "/supplier/profile" },
+  { icon: TrendingUp, label: "Ad Packages", path: "/supplier/ad-packages" },
+  { icon: Megaphone, label: "My Campaigns", path: "/supplier/my-campaigns" },
 ];
 
 export default function AdminLayout() {

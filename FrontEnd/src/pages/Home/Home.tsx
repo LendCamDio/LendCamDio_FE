@@ -8,7 +8,14 @@ import {
   type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useEffect, useState } from "react";
+import {
+  getActiveAdsByPosition,
+  trackAdClick,
+  trackAdView,
+} from "@/services/adCampaign.service";
+import { AdPosition } from "@/types/adCampaign.type";
+import type { AdCampaignPublic } from "@/types/adCampaign.type";
 
 // Lazy load the DashboardSection component
 const DashboardSection = lazy(() => import("../customer/DashboardSection"));
@@ -91,6 +98,49 @@ const Home = () => {
   };
   // #endregion
 
+  // Ads: top banner and sidebar/promotions
+  const [topAds, setTopAds] = useState<AdCampaignPublic[]>([]);
+  const [promoAds, setPromoAds] = useState<AdCampaignPublic[]>([]);
+  const [loadingAds, setLoadingAds] = useState<boolean>(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const resTop = await getActiveAdsByPosition(AdPosition.HomePageTop);
+        const resPromo = await getActiveAdsByPosition(
+          AdPosition.SidebarFeatured
+        );
+
+        const extract = (res: any) => {
+          // Support either paginated response or direct array
+          if (!res) return [] as AdCampaignPublic[];
+          const maybeItems = res.data?.items ?? res.data ?? res.items ?? res;
+          return Array.isArray(maybeItems) ? maybeItems : [];
+        };
+
+        const top = extract(resTop);
+        const promo = extract(resPromo);
+
+        if (!mounted) return;
+        setTopAds(top);
+        setPromoAds(promo);
+
+        // Fire-and-forget: track views for visible ads
+        top.forEach((a) => trackAdView(a.campaignId).catch(() => {}));
+        promo.forEach((a) => trackAdView(a.campaignId).catch(() => {}));
+      } catch (e) {
+        // ignore
+      } finally {
+        if (mounted) setLoadingAds(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <>
       {/* Hero Section */}
@@ -113,6 +163,76 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Top Ad Banner */}
+      {!loadingAds && topAds.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="card-outstanding ad-top animate-fade-in-up">
+              <img
+                src={topAds[0].imageUrl || "https://via.placeholder.com/1200x300?text=Promotion"}
+                alt={topAds[0].title}
+                className="card-outstanding-img-top"
+              />
+              <div className="card-outstanding-body text-center">
+                <h3 className="card-title">{topAds[0].title}</h3>
+                {topAds[0].description && (
+                  <p className="card-text line-clamp-2">{topAds[0].description}</p>
+                )}
+                <div className="mt-3">
+                  <a
+                    href={topAds[0].targetUrl}
+                    onClick={() => trackAdClick(topAds[0].campaignId).catch(() => {})}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-primary"
+                  >
+                    Xem chi tiết
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Promotions Grid / Sidebar Featured Ads */}
+      {!loadingAds && promoAds.length > 0 && (
+        <section className="section bg-[var(--bg-light)]">
+          <div className="container">
+            <h2 className="section-title">Khuyến mãi nổi bật</h2>
+            <p className="section-subtitle">Các chiến dịch được tài trợ</p>
+            <div className="row">
+              {promoAds.map((ad, idx) => (
+                <div className="col-md-4 mb-4" key={`promo-${ad.campaignId}-${idx}`}>
+                  <div className="card-outstanding h-full animate-fade-in-up">
+                    <img
+                      src={ad.imageUrl || "https://via.placeholder.com/400x200?text=Ad"}
+                      alt={ad.title}
+                      className="card-outstanding-img-top"
+                    />
+                    <div className="card-outstanding-body">
+                      <h5 className="card-title">{ad.title}</h5>
+                      {ad.description && <p className="card-text line-clamp-3">{ad.description}</p>}
+                      <div className="mt-2">
+                        <a
+                          href={ad.targetUrl}
+                          onClick={() => trackAdClick(ad.campaignId).catch(() => {})}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-outline-primary"
+                        >
+                          Tìm hiểu
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {role && role !== "admin" && (
         <Suspense fallback={<Loading />}>
