@@ -96,7 +96,7 @@ export default function RegisterPage() {
   return (
     <div>
       {/* User Type Selection */}
-      <div className="user-type-selection mb-4">
+      {/* <div className="user-type-selection mb-4">
         <div className="text-center mb-3">
           <h3>Chọn loại tài khoản</h3>
           <p style={{ color: "#666", fontSize: "0.9rem" }}>
@@ -111,7 +111,7 @@ export default function RegisterPage() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Register Form */}
       <div className="auth-form">
