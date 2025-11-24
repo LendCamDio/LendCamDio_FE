@@ -10,7 +10,11 @@ import type {
   ApiResponse,
 } from "@/types/entity.type";
 import api from "./api";
-import { EQUIPMENT_ENDPOINTS, REVIEW_ENDPOINTS } from "@/constants/endpoints";
+import {
+  EQUIPMENT_ENDPOINTS,
+  RENTAL_ENDPOINTS,
+  REVIEW_ENDPOINTS,
+} from "@/constants/endpoints";
 import { handleApiError } from "./apiErrorHandler";
 
 /**
@@ -573,3 +577,29 @@ export async function getEquipmentsBySupplier(
     timestamp: new Date().toISOString(),
   };
 }
+
+/**
+ * Get top rented equipments
+ * Endpoint: GET /api/equipments/top-rented?topN=3
+ */
+export const getTopRentedEquipment = async (
+  topN: number
+): Promise<EquipmentResponse> => {
+  try {
+    const res = await api.get(RENTAL_ENDPOINTS.TOP_RENTED(topN));
+    if (!res.data?.data?.items) {
+      return {
+        success: res.data.success,
+        data: res.data.data,
+        timestamp: res.data.timestamp,
+      };
+    }
+  } catch (error) {
+    handleApiError<Equipment[]>(error);
+  }
+  return {
+    success: false,
+    data: {} as PaginatedData<Equipment>,
+    timestamp: new Date().toISOString(),
+  };
+};

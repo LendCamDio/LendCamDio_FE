@@ -227,6 +227,7 @@ export const RENTAL_ENDPOINTS = {
   APPROVE: (id: string) => `/api/rentals/${id}/approve`,
   CANCEL: (id: string) => `/api/rentals/${id}/cancel`,
   COMPLETE: (id: string) => `/api/rentals/${id}/complete`,
+  TOP_RENTED: (topN: number) => `/api/rental-histories/top-rented/${topN}`,
 };
 
 export const CART_ENDPOINTS = {
@@ -268,7 +269,8 @@ export const IDENTITY_VERIFICATION_ENDPOINTS = {
   // GET /api/identity-verifications/{id}
   GET_BY_ID: (id: string) => `/api/identity-verifications/${id}`,
   // GET /api/identity-verifications/user/{userId}
-  GET_BY_USER_ID: (userId: string) => `/api/identity-verifications/user/${userId}`,
+  GET_BY_USER_ID: (userId: string) =>
+    `/api/identity-verifications/user/${userId}`,
   // GET /api/identity-verifications/me
   GET_ME: "/api/identity-verifications/me",
   // POST /api/identity-verifications

@@ -16,63 +16,87 @@ import {
 } from "@/services/adCampaign.service";
 import { AdPosition } from "@/types/adCampaign.type";
 import type { AdCampaignPublic } from "@/types/adCampaign.type";
+import { useNavigate } from "react-router-dom";
+// import { useTopRentedEquipment } from "@/hooks/equipment/useEquipmentUser";
 
 // Lazy load the DashboardSection component
 const DashboardSection = lazy(() => import("../customer/DashboardSection"));
 
 const Home = () => {
   const { role } = useAuth();
+  const navigate = useNavigate();
+
+  // fetch studios data from API
+  const { data: topRentedData } = useEquipmentList(1, 3, "studio", "");
+  const dataSource = topRentedData?.data?.items || [];
+
+  const studios = dataSource
+    .map((item) => ({
+      image: item.imageUrl,
+      name: item.name,
+      description: item.description,
+      price: item.dailyPrice
+        ? `${item.dailyPrice.toLocaleString("vi-VN")}đ/ngày`
+        : item.price
+        ? `${item.price.toLocaleString("vi-VN")}đ`
+        : "Liên hệ",
+      equipmentId: item.equipmentId,
+    }))
+    .sort(() => 0.5 - Math.random()); // random order
 
   // Fetch equipment data from API
-  const { data: equipmentData, isLoading: isLoadingEquipment } = useEquipmentList(1, 100, "all", "");
+  const { data: equipmentData, isLoading: isLoadingEquipment } =
+    useEquipmentList(1, 100, "all", "");
 
   // Get 3 random equipment items
   const featuredEquipment = useMemo(() => {
     if (!equipmentData?.data?.items || equipmentData.data.items.length === 0) {
       return [];
     }
-    
+
     const items = [...equipmentData.data.items];
     const shuffled = items.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3).map(item => ({
+    return shuffled.slice(0, 3).map((item) => ({
       equipmentId: item.equipmentId,
-      image: item.imageUrl || "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a",
+      imageUrl:
+        item.imageUrl ||
+        "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a",
       title: item.name,
       description: item.description || "",
-      price: item.dailyPrice 
-        ? `${item.dailyPrice.toLocaleString('vi-VN')}đ/ngày` 
-        : item.price 
-        ? `${item.price.toLocaleString('vi-VN')}đ` 
+      price: item.dailyPrice
+        ? `${item.dailyPrice.toLocaleString("vi-VN")}đ/ngày`
+        : item.price
+        ? `${item.price.toLocaleString("vi-VN")}đ`
         : "Liên hệ",
-      isDailyPrice: !!item.dailyPrice
+      isDailyPrice: !!item.dailyPrice,
     }));
   }, [equipmentData]);
 
   // #region Sample data for studios and equipment
-  const studios = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-      title: "Studio Modern A",
-      description: "Studio hiện đại với không gian rộng rãi",
-      price: "1.200.000đ/ngày",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-      title: "Studio Vintage B",
-      description: "",
-      price: "1.500.000đ/ngày",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-      title: "Studio Minimalist C",
-      description:
-        "Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.",
-      price: "1.000.000đ/ngày",
-    },
-  ];
+  // const studios = [
+  //   {
+  //     image:
+  //       "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+  //     title: "Studio Modern A",
+  //     description: "Studio hiện đại với không gian rộng rãi",
+  //     price: "1.200.000đ/ngày",
+  //   },
+  //   {
+  //     image:
+  //       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+  //     title: "Studio Vintage B",
+  //     description: "",
+  //     price: "1.500.000đ/ngày",
+  //   },
+  //   {
+  //     image:
+  //       "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+  //     title: "Studio Minimalist C",
+  //     description:
+  //       "Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.Thiết kế tối giản với tông màu trắng chủ đạo, phù hợp cho chụp ảnh sản phẩm và concept clean.",
+  //     price: "1.000.000đ/ngày",
+  //   },
+  // ];
   const whyChooseUsSection = {
     title: "Tại sao chọn LENSCAMDIO?",
     features: [
@@ -170,19 +194,26 @@ const Home = () => {
           <div className="container">
             <div className="card-outstanding ad-top animate-fade-in-up">
               <img
-                src={topAds[0].imageUrl || "https://via.placeholder.com/1200x300?text=Promotion"}
+                src={
+                  topAds[0].imageUrl ||
+                  "https://via.placeholder.com/1200x300?text=Promotion"
+                }
                 alt={topAds[0].title}
                 className="card-outstanding-img-top"
               />
               <div className="card-outstanding-body text-center">
                 <h3 className="card-title">{topAds[0].title}</h3>
                 {topAds[0].description && (
-                  <p className="card-text line-clamp-2">{topAds[0].description}</p>
+                  <p className="card-text line-clamp-2">
+                    {topAds[0].description}
+                  </p>
                 )}
                 <div className="mt-3">
                   <a
                     href={topAds[0].targetUrl}
-                    onClick={() => trackAdClick(topAds[0].campaignId).catch(() => {})}
+                    onClick={() =>
+                      trackAdClick(topAds[0].campaignId).catch(() => {})
+                    }
                     target="_blank"
                     rel="noreferrer"
                     className="btn-primary"
@@ -204,20 +235,32 @@ const Home = () => {
             <p className="section-subtitle">Các chiến dịch được tài trợ</p>
             <div className="row">
               {promoAds.map((ad, idx) => (
-                <div className="col-md-4 mb-4" key={`promo-${ad.campaignId}-${idx}`}>
+                <div
+                  className="col-md-4 mb-4"
+                  key={`promo-${ad.campaignId}-${idx}`}
+                >
                   <div className="card-outstanding h-full animate-fade-in-up">
                     <img
-                      src={ad.imageUrl || "https://via.placeholder.com/400x200?text=Ad"}
+                      src={
+                        ad.imageUrl ||
+                        "https://via.placeholder.com/400x200?text=Ad"
+                      }
                       alt={ad.title}
                       className="card-outstanding-img-top"
                     />
                     <div className="card-outstanding-body">
                       <h5 className="card-title">{ad.title}</h5>
-                      {ad.description && <p className="card-text line-clamp-3">{ad.description}</p>}
+                      {ad.description && (
+                        <p className="card-text line-clamp-3">
+                          {ad.description}
+                        </p>
+                      )}
                       <div className="mt-2">
                         <a
                           href={ad.targetUrl}
-                          onClick={() => trackAdClick(ad.campaignId).catch(() => {})}
+                          onClick={() =>
+                            trackAdClick(ad.campaignId).catch(() => {})
+                          }
                           target="_blank"
                           rel="noreferrer"
                           className="btn-outline-primary"
@@ -248,31 +291,33 @@ const Home = () => {
             Khám phá những studio chụp ảnh đẹp nhất của chúng tôi
           </p>
           <div className="row">
-            {studios.map((studio, index) => (
-              <div
-                className="col-md-4 mb-5 "
-                key={`studio-${studio.title}-${index}`}
-              >
-                <div className="card-outstanding animate-fade-in-up h-full">
-                  <img
-                    src={studio.image}
-                    alt={studio.title}
-                    className="card-outstanding-img-top"
-                  />
-                  <div className="card-outstanding-body">
-                    <h5 className="card-title">{studio.title}</h5>
-                    <p className="card-text">{studio.description}</p>
-                    <div className="price">{studio.price}</div>
-                    <button
-                      className="btn-primary book-btn"
-                      data-studio-name={studio.title}
-                    >
-                      Đặt lịch ngay
-                    </button>
+            {studios.length > 0 &&
+              studios.map((studio, index) => (
+                <div
+                  className="col-md-4 mb-5 "
+                  key={`studio-${studio.name}-${index}`}
+                >
+                  <div className="card-outstanding animate-fade-in-up h-full">
+                    <img
+                      src={studio.image}
+                      alt={studio.name}
+                      className="card-outstanding-img-top"
+                    />
+                    <div className="card-outstanding-body">
+                      <h5 className="card-title">{studio.name}</h5>
+                      <p className="card-text">{studio.description}</p>
+                      <div className="price">{studio.price}</div>
+                      <button
+                        className="btn-primary book-btn"
+                        data-studio-name={studio.name}
+                        onClick={() => navigate(`/studios`)}
+                      >
+                        Đặt lịch ngay
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </section>
@@ -299,16 +344,20 @@ const Home = () => {
                   >
                     <div className="card-outstanding animate-fade-in-up h-full">
                       <img
-                        src={equipment.image}
+                        src={equipment.imageUrl}
                         alt={equipment.title}
                         className="card-outstanding-img-top"
                       />
                       <div className="card-outstanding-body">
                         <h5 className="card-title">{equipment.title}</h5>
-                        <p className="card-text line-clamp-3">{equipment.description}</p>
+                        <p className="card-text line-clamp-3">
+                          {equipment.description}
+                        </p>
                         <div className="price">{equipment.price}</div>
-                        <a 
-                          href={equipment.isDailyPrice ? "/cameras" : "/products"} 
+                        <a
+                          href={
+                            equipment.isDailyPrice ? "/cameras" : "/products"
+                          }
                           className="btn-primary book-btn"
                         >
                           {equipment.isDailyPrice ? "Thuê ngay" : "Mua ngay"}

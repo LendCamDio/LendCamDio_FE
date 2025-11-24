@@ -4,6 +4,7 @@ import {
   getAvailableEquipments,
   getAvailableEquipmentsByCategory,
   getEquipmentBySearchName,
+  getTopRentedEquipment,
 } from "@/services/equipmentService";
 
 /**
@@ -54,4 +55,17 @@ const useEquipmentDetail = (id: string, enabled: boolean = false) => {
   });
 };
 
-export { useEquipmentList, useEquipmentDetail };
+/*
+ * Top rented equipments
+ */
+const useTopRentedEquipment = (topN: number) => {
+  return useQuery({
+    queryKey: ["topRentedEquipment", topN],
+    queryFn: () => getTopRentedEquipment(topN),
+    staleTime: 1000 * 60 * 5,
+    retry: 3,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export { useEquipmentList, useEquipmentDetail, useTopRentedEquipment };

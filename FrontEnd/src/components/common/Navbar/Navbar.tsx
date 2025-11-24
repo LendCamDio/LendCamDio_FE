@@ -30,7 +30,7 @@ const NAV_ITEMS = [
   { name: "Sản phẩm", to: "/products", icon: faBox },
   {
     name: "Lịch của tôi",
-    to: "/customer/booking-history",
+    to: "/bookings",
     icon: faCalendarCheck,
   },
   { name: "Liên hệ", to: "/contact", icon: faEnvelope },
