@@ -17,6 +17,7 @@ import {
 import { AdPosition } from "@/types/adCampaign.type";
 import type { AdCampaignPublic } from "@/types/adCampaign.type";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 // import { useTopRentedEquipment } from "@/hooks/equipment/useEquipmentUser";
 
 // Lazy load the DashboardSection component
@@ -198,11 +199,16 @@ const Home = () => {
                   topAds[0].imageUrl ||
                   "https://via.placeholder.com/1200x300?text=Promotion"
                 }
+                onError={(e) => {
+                  e.currentTarget.src = "../../assets/defaultPic1.jpg";
+                }}
                 alt={topAds[0].title}
                 className="card-outstanding-img-top"
               />
               <div className="card-outstanding-body text-center">
-                <h3 className="card-title">{topAds[0].title}</h3>
+                <h3 className="text-2xl font-bold card-title">
+                  {topAds[0].title}
+                </h3>
                 {topAds[0].description && (
                   <p className="card-text line-clamp-2">
                     {topAds[0].description}
@@ -231,46 +237,67 @@ const Home = () => {
       {!loadingAds && promoAds.length > 0 && (
         <section className="section bg-[var(--bg-light)]">
           <div className="container">
-            <h2 className="section-title">Khuyến mãi nổi bật</h2>
-            <p className="section-subtitle">Các chiến dịch được tài trợ</p>
-            <div className="row">
+            <h2 className="section-title text-center">Khuyến mãi nổi bật</h2>
+            <p className="section-subtitle text-center mb-4">
+              Các chiến dịch được tài trợ
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {promoAds.map((ad, idx) => (
-                <div
-                  className="col-md-4 mb-4"
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
                   key={`promo-${ad.campaignId}-${idx}`}
+                  className="rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
                 >
-                  <div className="card-outstanding h-full animate-fade-in-up">
+                  {/* Image */}
+                  <div className="relative h-48 overflow-hidden">
                     <img
                       src={
                         ad.imageUrl ||
                         "https://via.placeholder.com/400x200?text=Ad"
                       }
                       alt={ad.title}
-                      className="card-outstanding-img-top"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="card-outstanding-body">
-                      <h5 className="card-title">{ad.title}</h5>
-                      {ad.description && (
-                        <p className="card-text line-clamp-3">
-                          {ad.description}
-                        </p>
-                      )}
-                      <div className="mt-2">
-                        <a
-                          href={ad.targetUrl}
-                          onClick={() =>
-                            trackAdClick(ad.campaignId).catch(() => {})
-                          }
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn-outline-primary"
-                        >
-                          Tìm hiểu
-                        </a>
-                      </div>
+                    <span className="absolute top-3 right-3 bg-white/80 backdrop-blur px-2 py-1 rounded-md text-xs font-medium text-gray-800 shadow">
+                      Được tài trợ
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 flex flex-col h-full">
+                    <h5 className="text-lg font-semibold text-gray-900 line-clamp-1">
+                      {ad.title}
+                    </h5>
+
+                    {ad.description && (
+                      <p className="text-gray-600 text-sm mt-2 line-clamp-3">
+                        {ad.description}
+                      </p>
+                    )}
+
+                    <div className="mt-auto pt-4">
+                      <a
+                        href={ad.targetUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="
+                    w-full inline-flex items-center justify-center 
+                    px-4 py-2 rounded-lg 
+                    bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)]
+                    text-white font-medium shadow-md hover:shadow-lg transition-all
+                  "
+                        onClick={() =>
+                          trackAdClick(ad.campaignId).catch(() => {})
+                        }
+                      >
+                        Tìm hiểu
+                      </a>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -304,7 +331,9 @@ const Home = () => {
                       className="card-outstanding-img-top"
                     />
                     <div className="card-outstanding-body">
-                      <h5 className="card-title">{studio.name}</h5>
+                      <h5 className="text-xl font-bold card-title">
+                        {studio.name}
+                      </h5>
                       <p className="card-text">{studio.description}</p>
                       <div className="price">{studio.price}</div>
                       <button
