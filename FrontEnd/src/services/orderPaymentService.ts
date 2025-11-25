@@ -90,6 +90,20 @@ export const getPayOSPaymentInfoForOrder = async (
   }
 };
 
+// 🔄 Verify and sync order payment from PayOS
+export const verifyOrderPayment = async (
+  orderCode: number
+): Promise<ApiResponse<any>> => {
+  try {
+    const res = await api.post<ApiResponse<any>>(
+      PAYMENT_ENDPOINTS.VERIFY_ORDER_PAYMENT(orderCode)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<any>(error);
+  }
+};
+
 // 🏦 Cancel PayOS payment for order
 export const cancelPayOSPaymentForOrder = async (
   orderCode: number,

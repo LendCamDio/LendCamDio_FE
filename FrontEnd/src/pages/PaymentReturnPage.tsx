@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPayOSPaymentInfoForOrder } from "@/services/orderPaymentService";
+import { getPayOSPaymentInfoForOrder, verifyOrderPayment } from "@/services/orderPaymentService";
 
 const PaymentReturnPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -57,7 +57,10 @@ const PaymentReturnPage: React.FC = () => {
           // Let's use the GetPayOSPaymentInfoForOrder endpoint which returns info.
           // If it returns success, we are good.
 
-          // Use the service to get payment info
+          // Use the service to verify and sync payment status first
+          await verifyOrderPayment(parseInt(orderCode));
+
+          // Then get the updated payment info
           const response = await getPayOSPaymentInfoForOrder(parseInt(orderCode));
 
           if (response.success && response.data && response.data.paymentInfo) {
