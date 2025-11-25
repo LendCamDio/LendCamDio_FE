@@ -2,7 +2,7 @@ import api from "./api";
 import { PAYMENT_ENDPOINTS } from "../constants/endpoints";
 import type {
   OrderPaymentLinkResponseDto,
-  PayOSPaymentInfoResponseDto,
+  PayOSOrderPaymentInfoResponse,
 } from "@/types/payment.type";
 import type { ApiResponse } from "@/types/entity.type";
 import { handleApiError } from "./apiErrorHandler";
@@ -79,14 +79,14 @@ export const handlePayOSWebhookForOrder = async (
 // 🏦 Get PayOS payment info for order
 export const getPayOSPaymentInfoForOrder = async (
   orderCode: number
-): Promise<ApiResponse<PayOSPaymentInfoResponseDto>> => {
+): Promise<ApiResponse<PayOSOrderPaymentInfoResponse>> => {
   try {
-    const res = await api.get<ApiResponse<PayOSPaymentInfoResponseDto>>(
+    const res = await api.get<ApiResponse<PayOSOrderPaymentInfoResponse>>(
       PAYMENT_ENDPOINTS.PAYOS_INFO_FOR_ORDER(orderCode)
     );
     return res.data;
   } catch (error) {
-    return handleApiError<PayOSPaymentInfoResponseDto>(error);
+    return handleApiError<PayOSOrderPaymentInfoResponse>(error);
   }
 };
 

@@ -24,6 +24,11 @@ export interface PayOSPaymentInfoResponseDto {
   data: Record<string, any>;
 }
 
+export interface PayOSOrderPaymentInfoResponse {
+  orderCode: number;
+  paymentInfo: PayOSPaymentInfoResponseDto;
+}
+
 // Payment Methods
 export interface PaymentMethodOption {
   label: string;

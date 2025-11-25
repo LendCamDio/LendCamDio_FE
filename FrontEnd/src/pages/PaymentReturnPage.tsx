@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import axios from "axios";
+import { getPayOSPaymentInfoForOrder } from "@/services/orderPaymentService";
 
 const PaymentReturnPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -57,16 +57,11 @@ const PaymentReturnPage: React.FC = () => {
           // Let's use the GetPayOSPaymentInfoForOrder endpoint which returns info.
           // If it returns success, we are good.
 
-          const response = await axios.get(
-            `/api/payments/orders/payos/${orderCode}`
-          );
+          // Use the service to get payment info
+          const response = await getPayOSPaymentInfoForOrder(parseInt(orderCode));
 
-          if (
-            response.data &&
-            response.data.data &&
-            response.data.data.paymentInfo
-          ) {
-            const paymentInfo = response.data.data.paymentInfo;
+          if (response.success && response.data && response.data.paymentInfo) {
+            const paymentInfo = response.data.paymentInfo;
             if (paymentInfo.status === "PAID") {
               setStatus("success");
               setMessage("Thanh toán thành công!");
@@ -129,15 +124,15 @@ const PaymentReturnPage: React.FC = () => {
               status === "success"
                 ? "text-green-600"
                 : status === "failed"
-                ? "text-red-600"
-                : "text-gray-700"
+                  ? "text-red-600"
+                  : "text-gray-700"
             }
           >
             {status === "loading"
               ? "Đang xử lý..."
               : status === "success"
-              ? "Thanh toán thành công"
-              : "Thanh toán thất bại"}
+                ? "Thanh toán thành công"
+                : "Thanh toán thất bại"}
           </CardTitle>
           <CardDescription>{message}</CardDescription>
         </CardHeader>
