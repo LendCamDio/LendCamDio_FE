@@ -3,7 +3,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, Home, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDateTime } from "@/utils/format";
-import { PaymentStatus } from "@/types/entity.type";
 import { useGetPayOSPaymentInfoForOrder } from "@/hooks/payment/useOrderPayment";
 
 export const PaymentSuccessPage: React.FC = () => {
@@ -29,12 +28,12 @@ export const PaymentSuccessPage: React.FC = () => {
     !!orderCode
   );
 
-  const payment = paymentData?.data?.data;
+  const payment = paymentData?.data?.paymentInfo;
 
   const status = payment?.status?.toString()?.toLowerCase();
 
-  const isSuccess = status === PaymentStatus.Paid;
-  const isPending = status === PaymentStatus.Pending;
+  const isSuccess = status === "paid";
+  const isPending = status === "pending";
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -119,19 +118,18 @@ export const PaymentSuccessPage: React.FC = () => {
                 <div className="flex justify-between pt-2 border-t">
                   <span className="text-gray-600">Trạng thái:</span>
                   <span
-                    className={`font-semibold ${
-                      isSuccess
-                        ? "text-green-600"
-                        : isPending
+                    className={`font-semibold ${isSuccess
+                      ? "text-green-600"
+                      : isPending
                         ? "text-yellow-600"
                         : "text-red-600"
-                    }`}
+                      }`}
                   >
                     {isSuccess
                       ? "Đã thanh toán"
                       : isPending
-                      ? "Đang chờ"
-                      : "Thất bại"}
+                        ? "Đang chờ"
+                        : "Thất bại"}
                   </span>
                 </div>
               </div>
