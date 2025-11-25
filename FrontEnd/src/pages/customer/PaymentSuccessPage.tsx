@@ -1,5 +1,4 @@
 import { useGetPayOSPaymentInfoForOrder } from "@/hooks/payment/useOrderPayment";
-import { PaymentStatus } from "@/types/entity.type";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -23,8 +22,8 @@ const PaymentSuccessPage = () => {
   const payment = paymentData?.data?.data;
   const status = payment?.status?.toString().toLowerCase();
 
-  const isSuccess = status === PaymentStatus.Paid.toLowerCase();
-  const isPending = status === PaymentStatus.Pending.toLowerCase();
+  const isSuccess = status === "paid";
+  const isPending = status === "pending";
   const isCancelled = status === "cancel" || status === "canceled";
 
   // Auto-redirect khi success → chuyển sang trang đơn hàng

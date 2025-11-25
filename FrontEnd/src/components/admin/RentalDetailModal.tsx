@@ -14,7 +14,11 @@ import api from "@/services/api";
 import { RENTAL_ENDPOINTS, PAYMENT_ENDPOINTS } from "@/constants/endpoints";
 import { formatCurrency, formatDateTime } from "@/utils/format";
 import { useUniqueToast } from "@/hooks/notification/useUniqueToast";
-import type { RentalResponseDto, PaymentResponseDto } from "@/types/entity.type";
+import type {
+  RentalResponseDto,
+  PaymentResponseDto,
+} from "@/types/entity.type";
+import { PaymentStatus } from "@/types/entity.type";
 
 type RentalDetailModalProps = {
   isOpen: boolean;
@@ -64,7 +68,9 @@ const RentalDetailModal = ({
 
         // Fetch Payments for this Rental
         try {
-          const paymentRes = await api.get(PAYMENT_ENDPOINTS.BY_RENTAL(rentalId));
+          const paymentRes = await api.get(
+            PAYMENT_ENDPOINTS.BY_RENTAL(rentalId)
+          );
           if (paymentRes.data?.success) {
             setPayments(paymentRes.data.data.items || []);
           }
@@ -72,7 +78,6 @@ const RentalDetailModal = ({
           console.warn("Failed to load payments", err);
           // Don't fail the whole modal if payments fail
         }
-
       } catch (err: any) {
         console.error("Error fetching rental detail:", err);
         setError(err.message || "Unable to load rental details.");
@@ -87,7 +92,7 @@ const RentalDetailModal = ({
 
   const handleAction = async (action: "approve" | "complete" | "cancel") => {
     if (!rentalId) return;
-    
+
     setActionLoading(true);
     try {
       let endpoint = "";
@@ -111,23 +116,29 @@ const RentalDetailModal = ({
         method,
         url: endpoint,
         data: body,
-        headers: action === "cancel" ? { "Content-Type": "application/json" } : undefined
+        headers:
+          action === "cancel"
+            ? { "Content-Type": "application/json" }
+            : undefined,
       });
 
       showToast(`Rental ${action}d successfully`, "success");
-      
+
       // Refresh data
       const rentalRes = await api.get(RENTAL_ENDPOINTS.GET_BY_ID(rentalId));
       if (rentalRes.data?.success) {
         setRental(rentalRes.data.data);
       }
-      
+
       if (onStatusUpdate) {
         onStatusUpdate();
       }
     } catch (error: any) {
       console.error(`Error ${action}ing rental:`, error);
-      showToast(error.response?.data?.message || `Failed to ${action} rental`, "error");
+      showToast(
+        error.response?.data?.message || `Failed to ${action} rental`,
+        "error"
+      );
     } finally {
       setActionLoading(false);
     }
@@ -139,16 +150,34 @@ const RentalDetailModal = ({
     let label = "Unknown";
 
     switch (statusStr) {
-      case "0": label = "Pending"; colorClass = "bg-yellow-100 text-yellow-800"; break;
-      case "1": label = "Approved"; colorClass = "bg-blue-100 text-blue-800"; break;
-      case "2": label = "Active"; colorClass = "bg-green-100 text-green-800"; break;
-      case "3": label = "Completed"; colorClass = "bg-gray-100 text-gray-800"; break;
-      case "4": label = "Cancelled"; colorClass = "bg-red-100 text-red-800"; break;
-      default: label = statusStr;
+      case "0":
+        label = "Pending";
+        colorClass = "bg-yellow-100 text-yellow-800";
+        break;
+      case "1":
+        label = "Approved";
+        colorClass = "bg-blue-100 text-blue-800";
+        break;
+      case "2":
+        label = "Active";
+        colorClass = "bg-green-100 text-green-800";
+        break;
+      case "3":
+        label = "Completed";
+        colorClass = "bg-gray-100 text-gray-800";
+        break;
+      case "4":
+        label = "Cancelled";
+        colorClass = "bg-red-100 text-red-800";
+        break;
+      default:
+        label = statusStr;
     }
 
     return (
-      <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
+      <span
+        className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}
+      >
         {label}
       </span>
     );
@@ -245,7 +274,9 @@ const RentalDetailModal = ({
                     <div className="flex gap-3">
                       <User className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-gray-500 text-xs uppercase">Customer</p>
+                        <p className="text-gray-500 text-xs uppercase">
+                          Customer
+                        </p>
                         <p className="font-medium text-gray-900">
                           {rental.customerName}
                         </p>
@@ -254,7 +285,9 @@ const RentalDetailModal = ({
                     <div className="flex gap-3">
                       <Package className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-gray-500 text-xs uppercase">Equipment</p>
+                        <p className="text-gray-500 text-xs uppercase">
+                          Equipment
+                        </p>
                         <p className="font-medium text-gray-900">
                           {rental.equipmentName}
                         </p>
@@ -272,59 +305,71 @@ const RentalDetailModal = ({
                   </h3>
                 </div>
                 <div className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                   <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                      <p className="text-xs text-blue-600 uppercase font-semibold">Total Price</p>
-                      <p className="text-lg font-bold text-blue-900">{formatCurrency(rental.totalPrice)}</p>
-                   </div>
-                   <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
-                      <p className="text-xs text-orange-600 uppercase font-semibold">Deposit</p>
-                      <p className="text-lg font-bold text-orange-900">{formatCurrency(rental.deposit)}</p>
-                   </div>
-                   <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
-                      <p className="text-xs text-purple-600 uppercase font-semibold">Insurance Fee</p>
-                      <p className="text-lg font-bold text-purple-900">{formatCurrency(rental.insuranceFee)}</p>
-                   </div>
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <p className="text-xs text-blue-600 uppercase font-semibold">
+                      Total Price
+                    </p>
+                    <p className="text-lg font-bold text-blue-900">
+                      {formatCurrency(rental.totalPrice)}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                    <p className="text-xs text-orange-600 uppercase font-semibold">
+                      Deposit
+                    </p>
+                    <p className="text-lg font-bold text-orange-900">
+                      {formatCurrency(rental.deposit)}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <p className="text-xs text-purple-600 uppercase font-semibold">
+                      Insurance Fee
+                    </p>
+                    <p className="text-lg font-bold text-purple-900">
+                      {formatCurrency(rental.insuranceFee)}
+                    </p>
+                  </div>
                 </div>
               </div>
 
               {/* Actions */}
               <div className="flex flex-wrap gap-3 justify-end border-t border-gray-100 pt-4">
-                 {rental.status.toString() === "0" && ( // Pending
-                    <>
-                      <button
-                        onClick={() => handleAction("approve")}
-                        disabled={actionLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                      >
-                        <CheckCircle className="w-4 h-4" /> Approve
-                      </button>
-                      <button
-                        onClick={() => handleAction("cancel")}
-                        disabled={actionLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                      >
-                        <XCircle className="w-4 h-4" /> Cancel
-                      </button>
-                    </>
-                 )}
-                 {rental.status.toString() === "1" && ( // Approved
+                {rental.status.toString() === "0" && ( // Pending
+                  <>
                     <button
-                        onClick={() => handleAction("cancel")}
-                        disabled={actionLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                      >
-                        <XCircle className="w-4 h-4" /> Cancel
-                      </button>
-                 )}
-                 {rental.status.toString() === "2" && ( // Active
+                      onClick={() => handleAction("approve")}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                    >
+                      <CheckCircle className="w-4 h-4" /> Approve
+                    </button>
                     <button
-                        onClick={() => handleAction("complete")}
-                        disabled={actionLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        <CheckCircle className="w-4 h-4" /> Complete
-                      </button>
-                 )}
+                      onClick={() => handleAction("cancel")}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                    >
+                      <XCircle className="w-4 h-4" /> Cancel
+                    </button>
+                  </>
+                )}
+                {rental.status.toString() === "1" && ( // Approved
+                  <button
+                    onClick={() => handleAction("cancel")}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  >
+                    <XCircle className="w-4 h-4" /> Cancel
+                  </button>
+                )}
+                {rental.status.toString() === "2" && ( // Active
+                  <button
+                    onClick={() => handleAction("complete")}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <CheckCircle className="w-4 h-4" /> Complete
+                  </button>
+                )}
               </div>
 
               {/* Payment History */}
@@ -346,26 +391,36 @@ const RentalDetailModal = ({
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {payment.method === 0 ? "VNPay" : payment.method === 1 ? "Cash" : "PayOS"}
+                              {payment.method === 0
+                                ? "VNPay"
+                                : payment.method === 1
+                                ? "Cash"
+                                : "PayOS"}
                             </p>
                             <p className="text-xs text-gray-500">
                               {formatDateTime(payment.createdAt)}
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-4 sm:justify-end">
                           <span className="font-mono font-medium text-gray-900">
                             {formatCurrency(payment.amount)}
                           </span>
                           <span
                             className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                              payment.status === 1 ? "bg-green-100 text-green-800" : 
-                              payment.status === 2 ? "bg-red-100 text-red-800" : 
-                              "bg-yellow-100 text-yellow-800"
+                              payment.status === PaymentStatus.Paid
+                                ? "bg-green-100 text-green-800"
+                                : payment.status === PaymentStatus.Failed
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
-                            {payment.status === 1 ? "Paid" : payment.status === 2 ? "Failed" : "Pending"}
+                            {payment.status === PaymentStatus.Paid
+                              ? "Paid"
+                              : payment.status === PaymentStatus.Failed
+                              ? "Failed"
+                              : "Pending"}
                           </span>
                         </div>
                       </div>
