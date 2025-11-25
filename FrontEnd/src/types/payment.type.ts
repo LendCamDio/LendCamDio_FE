@@ -20,6 +20,8 @@ export interface PayOSPaymentInfoResponseDto {
   status: string;
   createdAt: string;
   expiredAt?: string;
+  paidAt?: string;
+  data: Record<string, any>;
 }
 
 // Payment Methods
