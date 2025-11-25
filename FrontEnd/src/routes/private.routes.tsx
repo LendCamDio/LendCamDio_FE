@@ -120,10 +120,6 @@ export const privateRoutes = [
     element: <PaymentTestPage />,
   },
   {
-    path: "/payment/return",
-    element: <PaymentSuccessPage />,
-  },
-  {
     path: "/payment/:paymentId",
     element: <PaymentPage />,
   },

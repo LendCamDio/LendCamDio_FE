@@ -1,7 +1,7 @@
 import { lazy as lazyImport } from "react";
 import { getEquipmentById } from "@/services/equipmentService";
 import ErrorPage from "@/pages/Error";
-import type { Equipment } from "@/types/entity.type"; 
+import type { Equipment } from "@/types/entity.type";
 import type { LoaderFunctionArgs } from "react-router-dom";
 // Lazy load the component
 const Home = lazyImport(() => import("@/pages/Home/Home"));
@@ -12,6 +12,7 @@ const Products = lazyImport(() => import("@/pages/Product/Products"));
 const ProductDetail = lazyImport(() => import("@/pages/Product/ProductDetail"));
 const Contacts = lazyImport(() => import("@/pages/Contacts"));
 const VerifyEmail = lazyImport(() => import("@/pages/VerifyEmail"));
+const PaymentReturnPage = lazyImport(() => import("@/pages/PaymentReturnPage"));
 
 // Define public routes
 export const publicRoutes = [
@@ -93,5 +94,9 @@ export const publicRoutes = [
   {
     path: "/verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "/payment/return",
+    element: <PaymentReturnPage />,
   },
 ];

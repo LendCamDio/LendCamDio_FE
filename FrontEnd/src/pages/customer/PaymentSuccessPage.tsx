@@ -15,7 +15,7 @@ export const PaymentSuccessPage: React.FC = () => {
     // Extract order code from URL params
     const code = searchParams.get('orderCode');
     const status = searchParams.get('status');
-    
+
     if (code) {
       setOrderCode(parseInt(code));
     }
@@ -110,14 +110,13 @@ export const PaymentSuccessPage: React.FC = () => {
                 )}
                 <div className="flex justify-between pt-2 border-t">
                   <span className="text-gray-600">Trạng thái:</span>
-                  <span className={`font-semibold ${
-                    isSuccess ? 'text-green-600' :
-                    isPending ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
+                  <span className={`font-semibold ${isSuccess ? 'text-green-600' :
+                      isPending ? 'text-yellow-600' :
+                        'text-red-600'
+                    }`}>
                     {isSuccess ? 'Đã thanh toán' :
-                     isPending ? 'Đang chờ' :
-                     'Thất bại'}
+                      isPending ? 'Đang chờ' :
+                        'Thất bại'}
                   </span>
                 </div>
               </div>
