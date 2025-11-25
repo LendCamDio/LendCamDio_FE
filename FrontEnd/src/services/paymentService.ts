@@ -27,10 +27,17 @@ export const getAllPayments = async (
   }
 };
 
+export const getPayOSOrderForOrder = (orderCode: number) =>
+  api.get(PAYMENT_ENDPOINTS.PAYOS_INFO_FOR_ORDER(orderCode));
+
 // 🔍 Get payment by ID
-export const getPaymentById = async (id: string): Promise<ApiResponse<PaymentResponseDto>> => {
+export const getPaymentById = async (
+  id: string
+): Promise<ApiResponse<PaymentResponseDto>> => {
   try {
-    const res = await api.get<ApiResponse<PaymentResponseDto>>(PAYMENT_ENDPOINTS.DETAILS(id));
+    const res = await api.get<ApiResponse<PaymentResponseDto>>(
+      PAYMENT_ENDPOINTS.DETAILS(id)
+    );
     return res.data;
   } catch (error) {
     return handleApiError<PaymentResponseDto>(error);
@@ -232,7 +239,7 @@ export const getPayOSPaymentInfo = async (
 ): Promise<ApiResponse<PayOSPaymentInfoResponseDto>> => {
   try {
     const res = await api.get<ApiResponse<PayOSPaymentInfoResponseDto>>(
-      PAYMENT_ENDPOINTS.PAYOS_INFO(orderCode)
+      PAYMENT_ENDPOINTS.PAYOS_INFO_FOR_ORDER(orderCode)
     );
     return res.data;
   } catch (error) {

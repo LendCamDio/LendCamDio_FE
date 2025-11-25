@@ -7,12 +7,25 @@ import {
   cancelPayOSPaymentForOrder,
 } from "@/services/orderPaymentService";
 import type { OrderPaymentLinkResponseDto } from "@/types/payment.type";
+import { getPayOSOrderForOrder } from "@/services/paymentService";
 
 // Query Keys
 export const orderPaymentQueryKeys = {
   all: ["orderPayments"],
-  info: (orderCode: number) => [...orderPaymentQueryKeys.all, "info", orderCode],
+  info: (orderCode: number) => [
+    ...orderPaymentQueryKeys.all,
+    "info",
+    orderCode,
+  ],
 };
+
+export function usePayOSOrderStatus(orderCode: number) {
+  return useQuery({
+    queryKey: ["orderPayment", orderCode],
+    queryFn: () => getPayOSOrderForOrder(orderCode),
+    enabled: !!orderCode,
+  });
+}
 
 /**
  * Hook: Create Order Payment
@@ -31,8 +44,14 @@ export const useCreateOrderPayment = () => {
  */
 export const useCompleteOrderPayment = () => {
   return useMutation({
-    mutationFn: async (params: { orderPaymentId: string; transactionId: string }) => {
-      return await completeOrderPayment(params.orderPaymentId, params.transactionId);
+    mutationFn: async (params: {
+      orderPaymentId: string;
+      transactionId: string;
+    }) => {
+      return await completeOrderPayment(
+        params.orderPaymentId,
+        params.transactionId
+      );
     },
   });
 };

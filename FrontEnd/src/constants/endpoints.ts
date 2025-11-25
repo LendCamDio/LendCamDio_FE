@@ -184,13 +184,16 @@ export const PAYMENT_ENDPOINTS = {
     `/api/payments/total-for-period?startDate=${startDate}&endDate=${endDate}`,
   CONFIRM: (id: string) => `/api/payments/${id}/confirm`,
 
+  // PayOS endpoints for regular payments
   CREATE_PAYOS: "/api/payments/create-payos",
   PAYOS_WEBHOOK: "/api/payments/payos/webhook",
-  PAYOS_INFO: (orderCode: number) => `/api/payments/payos/${orderCode}`,
+  PAYOS_RETURN: "/api/payments/payos/return",
+  PAYOS_CANCEL_REDIRECT: "/api/payments/payos/cancel",
   PAYOS_ORDER: (orderCode: number) => `/api/payments/payos/order/${orderCode}`,
   PAYOS_CANCEL: (orderCode: number) =>
     `/api/payments/payos/${orderCode}/cancel`,
 
+  // Order payment endpoints
   CREATE_ORDER_PAYMENT: "/api/payments/orders",
   COMPLETE_ORDER_PAYMENT: (orderPaymentId: string) =>
     `/api/payments/orders/${orderPaymentId}/complete`,

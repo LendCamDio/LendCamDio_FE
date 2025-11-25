@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { usePaymentByOrderCode } from '@/hooks/payment/usePayment';
-import { CheckCircle, XCircle, Loader2, Home, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { formatCurrency, formatDateTime } from '@/utils/format';
-import { PaymentStatus } from '@/types/entity.type';
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { CheckCircle, XCircle, Loader2, Home, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatCurrency, formatDateTime } from "@/utils/format";
+import { PaymentStatus } from "@/types/entity.type";
+import { useGetPayOSPaymentInfoForOrder } from "@/hooks/payment/useOrderPayment";
 
 export const PaymentSuccessPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -13,25 +13,29 @@ export const PaymentSuccessPage: React.FC = () => {
 
   useEffect(() => {
     // Extract order code from URL params
-    const code = searchParams.get('orderCode');
-    const status = searchParams.get('status');
+    const code = searchParams.get("orderCode");
+    const status = searchParams.get("status");
 
     if (code) {
       setOrderCode(parseInt(code));
     }
 
     // Log payment status from PayOS
-    console.log('Payment callback:', { code, status });
+    console.log("Payment callback:", { code, status });
   }, [searchParams]);
 
-  const { data: paymentData, isLoading } = usePaymentByOrderCode(
+  const { data: paymentData, isLoading } = useGetPayOSPaymentInfoForOrder(
     orderCode || 0,
     !!orderCode
   );
 
   const payment = paymentData?.data;
-  const isSuccess = payment?.status === PaymentStatus.Paid;
-  const isPending = payment?.status === PaymentStatus.Pending;
+  const isSuccess =
+    payment?.status.toLowerCase() ===
+    PaymentStatus.Paid.toString().toLowerCase();
+  const isPending =
+    payment?.status.toLowerCase() ===
+    PaymentStatus.Pending.toString().toLowerCase();
 
   if (isLoading) {
     return (
@@ -86,11 +90,15 @@ export const PaymentSuccessPage: React.FC = () => {
           {/* Payment Details */}
           {payment && (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Chi tiết thanh toán</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">
+                Chi tiết thanh toán
+              </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Mã đơn hàng:</span>
-                  <span className="font-mono font-medium">{payment.payOsOrderCode}</span>
+                  <span className="font-mono font-medium">
+                    {/* {payment.payOsOrderCode} */}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Số tiền:</span>
@@ -102,21 +110,30 @@ export const PaymentSuccessPage: React.FC = () => {
                   <span className="text-gray-600">Phương thức:</span>
                   <span className="font-medium">PayOS</span>
                 </div>
-                {payment.paidAt && (
+                {payment.createdAt && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Thời gian:</span>
-                    <span className="font-medium">{formatDateTime(payment.paidAt)}</span>
+                    <span className="font-medium">
+                      {formatDateTime(payment.createdAt)}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between pt-2 border-t">
                   <span className="text-gray-600">Trạng thái:</span>
-                  <span className={`font-semibold ${isSuccess ? 'text-green-600' :
-                      isPending ? 'text-yellow-600' :
-                        'text-red-600'
-                    }`}>
-                    {isSuccess ? 'Đã thanh toán' :
-                      isPending ? 'Đang chờ' :
-                        'Thất bại'}
+                  <span
+                    className={`font-semibold ${
+                      isSuccess
+                        ? "text-green-600"
+                        : isPending
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {isSuccess
+                      ? "Đã thanh toán"
+                      : isPending
+                      ? "Đang chờ"
+                      : "Thất bại"}
                   </span>
                 </div>
               </div>
@@ -126,14 +143,14 @@ export const PaymentSuccessPage: React.FC = () => {
           {/* Actions */}
           <div className="space-y-3">
             <Button
-              onClick={() => navigate('/customer/rentals')}
+              onClick={() => navigate("/customer/rentals")}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
               <FileText className="w-4 h-4 mr-2" />
               Xem đơn thuê của tôi
             </Button>
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
               variant="outline"
               className="w-full"
             >
@@ -145,7 +162,8 @@ export const PaymentSuccessPage: React.FC = () => {
           {/* Additional Info */}
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-xs text-blue-800">
-              💡 Bạn có thể xem chi tiết đơn thuê và theo dõi trạng thái tại trang "Đơn thuê của tôi"
+              💡 Bạn có thể xem chi tiết đơn thuê và theo dõi trạng thái tại
+              trang "Đơn thuê của tôi"
             </p>
           </div>
         </div>
