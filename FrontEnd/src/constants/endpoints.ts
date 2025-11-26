@@ -202,6 +202,8 @@ export const PAYMENT_ENDPOINTS = {
   PAYOS_WEBHOOK_FOR_ORDER: "/api/payments/orders/payos/webhook",
   PAYOS_INFO_FOR_ORDER: (orderCode: number) =>
     `/api/payments/orders/payos/${orderCode}`,
+  PAYOS_ORDER_TO_ORDERID: (orderCode: number) =>
+    `/api/payments/orders/payos/${orderCode}/order`,
   VERIFY_ORDER_PAYMENT: (orderCode: number) =>
     `/api/payments/orders/payos/${orderCode}/verify`,
   PAYOS_CANCEL_FOR_ORDER: (orderCode: number) =>
