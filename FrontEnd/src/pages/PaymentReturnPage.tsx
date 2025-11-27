@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPayOSPaymentInfoForOrder, verifyOrderPayment } from "@/services/orderPaymentService";
+import {
+  getPayOSPaymentInfoForOrder,
+  verifyOrderPayment,
+  getOrderIdByPayOsOrderCode,
+} from "@/services/orderPaymentService";
 
 const PaymentReturnPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -96,15 +100,29 @@ const PaymentReturnPage: React.FC = () => {
     verifyPayment();
   }, [searchParams]);
 
-  const handleNavigate = () => {
+  const handleNavigate = async () => {
     const orderCode = searchParams.get("orderCode");
-    if (status === "success") {
-      console.log("Navigating to success page with orderCode:", orderCode);
-      navigate(`/payment/success?orderCode=${orderCode}&status=PAID`);
-    } else {
-      console.log("Navigating to failed page with orderCode:", orderCode);
-      navigate(`/payment/failed?orderCode=${orderCode}&status=CANCELLED`);
+
+    // Always attempt to navigate to the internal order detail page.
+    // Resolve the internal orderId from PayOS order code and navigate to order detail.
+    if (!orderCode) {
+      // If no orderCode is present, fallback to the orders list
+      navigate("/orders");
+      return;
     }
+
+    try {
+      const res = await getOrderIdByPayOsOrderCode(parseInt(orderCode));
+      if (res.success && res.data && res.data.OrderId) {
+        navigate(`/order/${res.data.OrderId}`);
+        return;
+      }
+    } catch (err) {
+      console.warn("Failed to resolve orderId from PayOS order code:", err);
+    }
+
+    // Fallback: go to orders list if we can't resolve an order id
+    navigate("/orders");
   };
 
   return (

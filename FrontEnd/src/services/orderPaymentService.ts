@@ -90,6 +90,20 @@ export const getPayOSPaymentInfoForOrder = async (
   }
 };
 
+// Get orderId for a PayOS order code
+export const getOrderIdByPayOsOrderCode = async (
+  orderCode: number
+): Promise<ApiResponse<{ OrderId: string }>> => {
+  try {
+    const res = await api.get<ApiResponse<{ OrderId: string }>>(
+      PAYMENT_ENDPOINTS.PAYOS_ORDER_TO_ORDERID(orderCode)
+    );
+    return res.data;
+  } catch (error) {
+    return handleApiError<{ OrderId: string }>(error);
+  }
+};
+
 // 🔄 Verify and sync order payment from PayOS
 export const verifyOrderPayment = async (
   orderCode: number

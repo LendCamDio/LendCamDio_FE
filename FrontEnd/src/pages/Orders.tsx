@@ -404,9 +404,17 @@ export const OrdersPage: React.FC = () => {
 
                     {(order.status === OrderStatus.Processing ||
                       order.status === OrderStatus.Shipped) && (
-                      <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium cursor-not-allowed opacity-50">
-                        Đã nhận được hàng
+                      <button className="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors text-sm font-medium cursor-not-allowed opacity-80">
+                        Chờ nhận hàng
                       </button>
+                    )}
+
+                    {order.status === OrderStatus.Delivered && (
+                      <div className="flex items-center gap-2">
+                        <button className="px-4 py-2 border border-green-200 text-green-700 rounded bg-green-50 text-sm font-medium cursor-default">
+                          Đã nhận được
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
